@@ -45,10 +45,15 @@ An SOP created with this tool typically contains:
 
 ##  File Structure
 SOP-Designer/
+
 ├── index.html # The tool
+
 ├── README.md # This documentation
+
 ├── LICENSE # MIT License
+
 └── assets/
+
 └── screenshot.png # Example screenshot
 
 ---
