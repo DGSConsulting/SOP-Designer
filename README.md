@@ -1,8 +1,6 @@
-Here’s a polished version of your README draft—it keeps the clarity of your original while tightening the flow, improving readability, and matching the tone of other well-structured GitHub projects:
-
 ---
 
-# SOP Builder
+# SOP Designer
 
 A lightweight, browser-based tool for creating **Standard Operating Procedures (SOPs)** with live preview and export options.
 No installation required—just open and start building.
@@ -19,29 +17,31 @@ No installation required—just open and start building.
 
 ---
 
-## 🚀 How to Use
+## 🚀 Getting Started
 
-1. **Setup** – Download `index.html` and open it in any modern browser
-2. **Build** – Fill in the form fields and add procedure steps
-3. **Preview** – Click **Update Preview** to format your SOP instantly
-4. **Export** – Download as **HTML** (shareable) or **JSON** (editable)
+1. **Download** this repository or just `index.html`
+2. Open `index.html` in any modern browser
+3. Fill in the form fields and add procedure steps
+4. Click **Update Preview** to see your formatted SOP
+5. Export as **HTML** (shareable) or **JSON** (editable)
 
 ---
 
-## 🌐 GitHub Pages Deployment
+## 🌐 GitHub Pages Hosting
 
-You can host this tool directly using GitHub Pages:
+You can host this tool directly with GitHub Pages:
 
 1. Fork this repository
 2. Go to **Settings → Pages**
-3. Deploy from the **main branch**
-4. Access at: https://dgsconsulting.github.io/SOP-Designer/
+3. Set **Branch: main** and **/ (root)**
+4. Access your live version at:
+   `https://dgsconsulting.github.io/SOP-Designer/`
 
 ---
 
 ## 📄 Example SOP Structure
 
-A standard SOP built with this tool will include:
+A standard SOP created with this tool includes:
 
 * Title, version, and dates
 * Purpose and scope
@@ -53,22 +53,27 @@ A standard SOP built with this tool will include:
 ## 📂 File Structure
 
 ```
-sop-builder/
+SOP-Designer/
 ├── index.html    # Complete application
-└── README.md     # Documentation
+├── README.md     # Documentation
+└── LICENSE       # MIT License
 ```
 
 ---
 
 ## 🤝 Contributing
 
-Spotted a bug or have a feature request?
-Open an [issue](../../issues) or submit a pull request.
+Contributions are welcome!
+
+* Open an [issue](../../issues) for bug reports or feature requests
+* Submit a pull request if you’d like to improve the tool
 
 ---
 
 ## 📜 License
 
-MIT License – free for personal or commercial use.
+This project is licensed under the [MIT License](LICENSE).
+Free for personal or commercial use.
 
 ---
+
