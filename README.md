@@ -1,69 +1,98 @@
+
+---
+
 # SOP Designer
 
-A lightweight, browser-based tool for building **Standard Operating Procedures (SOPs)** with live preview and export options. No installation—just open and go.
+A simple, browser-based tool for creating **Standard Operating Procedures (SOPs)** with live preview and one-click export. No installs, no setup—just open and start building.
+
+Perfect for small teams, consultants, or anyone who needs clean SOPs without bulky software.
 
 ![SOP Designer Screenshot](assets/screenshot.png)
 
 ---
 
-##  Features
-- **Live Preview** — See your SOP formatted instantly  
-- **Export Options** — Save as **HTML** for sharing or **JSON** for backup/editing  
-- **Dynamic Steps** — Add, edit, or remove procedures on the fly  
-- **Mobile-Friendly** — Works on phones, tablets, and desktop browsers  
-- **Zero Dependencies** — Just one `index.html` file—no setup, no install
+## ✨ Features
+
+**Build Quickly**
+
+* Live preview updates instantly
+* Add, edit, or remove steps on the fly
+
+**Share Easily**
+
+* Export as **HTML** (for sharing) or **JSON** (for backup/editing)
+* Clean, professional formatting that works on any device
+
+**No Setup Needed**
+
+* Runs in any modern browser
+* Just one file: `index.html`
+* Mobile-friendly design for phones, tablets, and desktops
 
 ---
 
-##  Getting Started
-1. Clone the repo or download `index.html`  
-2. Open it in any modern browser  
-3. Fill out the form and add your procedure steps  
-4. Click **Update Preview** to see the formatted SOP  
-5. Export as **HTML** or **JSON**
+## 🚀 Getting Started
+
+Choose how you want to use SOP Designer:
+
+**Option A: Run locally**
+
+1. Download or clone this repo
+2. Open `index.html` in your browser
+3. Start building your SOP
+
+**Option B: Host online with GitHub Pages**
+
+1. Fork this repo
+2. Go to **Settings → Pages**
+3. Under "Branch," select **main** and root (`/`)
+4. Visit: `https://your-username.github.io/SOP-Designer/`
 
 ---
 
-##  GitHub Pages Hosting
-Host the tool live via GitHub Pages:
-1. Fork this repo  
-2. Go to **Settings → Pages**  
-3. Select **Branch: main** and **/ (root)**  
-4. Visit your live site at:  
-   `https://dgsconsulting.github.io/SOP-Designer/`
+## 📄 Example SOP
+
+Here’s what a finished SOP might look like:
+
+```
+Title: New Employee Onboarding  
+Version: 1.0 | Date: 2025-08-17  
+
+Purpose: Ensure smooth onboarding for new hires.  
+
+Steps:  
+1. Create company email account  
+2. Issue laptop and software credentials  
+3. Schedule orientation session  
+4. Assign first-week mentor  
+```
 
 ---
 
-##  Example SOP Structure
-An SOP created with this tool typically contains:
-- Title, version, and dates  
-- Purpose and scope  
-- Numbered steps  
-- Clean, professional styling
+## 📂 File Structure
 
----
-
-##  File Structure
+```
 SOP-Designer/
-
-├── index.html # The tool
-
-├── README.md # This documentation
-
-├── LICENSE # MIT License
-
+├── index.html       # Main tool
+├── README.md        # Documentation
+├── LICENSE          # MIT License
 └── assets/
-
-└── screenshot.png # Example screenshot
-
----
-
-##  Contributing
-Got ideas or fixes? Please contribute:
-- Report issues or feature requests [here](../../issues)  
-- Submit a pull request to help improve the tool
+    └── screenshot.png
+```
 
 ---
 
-##  License
-Distributed under the [MIT License](LICENSE)—free for personal or commercial use.
+## 🤝 Contributing
+
+Got an idea or fix? Jump in:
+
+* Open an issue for bugs or feature requests
+* Submit a pull request for improvements (typos, docs, or code tweaks welcome!)
+
+---
+
+## 📜 License
+
+Released under the [MIT License](LICENSE) — free for personal or commercial use.
+
+---
