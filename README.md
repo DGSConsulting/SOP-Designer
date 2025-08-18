@@ -5,6 +5,7 @@
 A lightweight, browser-based tool for creating **Standard Operating Procedures (SOPs)** with live preview and export options.
 No installation required—just open and start building.
 
+![SOP Designer Screenshot](assets/SOP Designer Screenshot.png)
 ---
 
 ## ✨ Features
