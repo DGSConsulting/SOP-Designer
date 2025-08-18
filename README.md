@@ -30,7 +30,7 @@ Host the tool live via GitHub Pages:
 2. Go to **Settings → Pages**  
 3. Select **Branch: main** and **/ (root)**  
 4. Visit your live site at:  
-   `https://<your-username>.github.io/SOP-Designer/`
+   `https://dgsconsulting.github.io/SOP-Designer/`
 
 ---
 
