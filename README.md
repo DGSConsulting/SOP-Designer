@@ -35,7 +35,7 @@ You can host this tool directly using GitHub Pages:
 1. Fork this repository
 2. Go to **Settings → Pages**
 3. Deploy from the **main branch**
-4. Access at: 
+4. Access at: https://dgsconsulting.github.io/SOP-Designer/
 
 ---
 
