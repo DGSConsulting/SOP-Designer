@@ -46,7 +46,7 @@ Choose how you want to use SOP Designer:
 1. Fork this repo
 2. Go to **Settings → Pages**
 3. Under "Branch," select **main** and root (`/`)
-4. Visit: `https://your-username.github.io/SOP-Designer/`
+4. Visit: `https://dgsconsulting.github.io/SOP-Designer/`
 
 ---
 
