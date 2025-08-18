@@ -1,39 +1,74 @@
-SOP Builder
-A simple web-based tool to create Standard Operating Procedures with live preview and export options. No installation required - works in any browser.
-Features
+Here’s a polished version of your README draft—it keeps the clarity of your original while tightening the flow, improving readability, and matching the tone of other well-structured GitHub projects:
 
-Live Preview: See your SOP as you build it
-Export Options: Download as HTML or JSON
-Dynamic Steps: Add/remove procedure steps easily
-Mobile Friendly: Works on all devices
-No Dependencies: Single HTML file, no setup needed
+---
 
-How to Use
+# SOP Builder
 
-Setup: Download index.html and open in your browser
-Build: Fill in the form fields and add procedure steps
-Preview: Click "Update Preview" to see the formatted SOP
-Export: Download as HTML for sharing or JSON for backup
+A lightweight, browser-based tool for creating **Standard Operating Procedures (SOPs)** with live preview and export options.
+No installation required—just open and start building.
 
-GitHub Pages
+---
 
-Fork this repository
-Go to Settings → Pages
-Deploy from main branch
-Access at https://yourusername.github.io/sop-builder
+## ✨ Features
 
-Example SOP Structure
+* **Live Preview** – See your SOP formatted in real-time
+* **Export Options** – Download as **HTML** (for sharing) or **JSON** (for backup/editing)
+* **Dynamic Steps** – Add, edit, or remove procedure steps on the fly
+* **Mobile Friendly** – Works on phones, tablets, and desktops
+* **Zero Dependencies** – A single `index.html` file, no setup required
 
-Title, version, and dates
-Purpose and scope
-Numbered procedure steps
-Professional formatting
+---
 
-File Structure
+## 🚀 How to Use
+
+1. **Setup** – Download `index.html` and open it in any modern browser
+2. **Build** – Fill in the form fields and add procedure steps
+3. **Preview** – Click **Update Preview** to format your SOP instantly
+4. **Export** – Download as **HTML** (shareable) or **JSON** (editable)
+
+---
+
+## 🌐 GitHub Pages Deployment
+
+You can host this tool directly using GitHub Pages:
+
+1. Fork this repository
+2. Go to **Settings → Pages**
+3. Deploy from the **main branch**
+4. Access at: `https://yourusername.github.io/sop-builder`
+
+---
+
+## 📄 Example SOP Structure
+
+A standard SOP built with this tool will include:
+
+* Title, version, and dates
+* Purpose and scope
+* Numbered procedure steps
+* Clean, professional formatting
+
+---
+
+## 📂 File Structure
+
+```
 sop-builder/
 ├── index.html    # Complete application
-└── README.md     # This file
-Contributing
-Found a bug or have an idea? Open an issue or submit a pull request.
-License
-MIT License - use freely for personal or commercial projects.
+└── README.md     # Documentation
+```
+
+---
+
+## 🤝 Contributing
+
+Spotted a bug or have a feature request?
+Open an [issue](../../issues) or submit a pull request.
+
+---
+
+## 📜 License
+
+MIT License – free for personal or commercial use.
+
+---
