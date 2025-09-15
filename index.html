@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Favicon -->
-  <link rel="icon" type="image/png" href="assets/logo-icon-t.png" />
-    <title>SOP Builder</title>
+    <link rel="icon" type="image/png" href="assets/logo-icon-t.png" />
+    <title>📝 SOP Designer - DGS Consulting</title>
     <style>
         * {
             margin: 0;
@@ -14,39 +14,37 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #9CAF88 0%, #6B8E5A 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(90deg, #9CAF88 0%, #6B8E5A 50%, #4A5D23 100%);
             min-height: 100vh;
+            color: #333;
             padding: 20px;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
+            background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
         }
 
         .header {
-            background: linear-gradient(135deg, #6B8E5A 0%, #4A5D23 100%);
-            color: white;
-            padding: 30px;
             text-align: center;
+            color: white;
+            padding: 40px 30px;
+            background: linear-gradient(90deg, #9CAF88 0%, #6B8E5A 50%, #4A5D23 100%);
         }
 
         .header h1 {
-            font-size: 2.5em;
+            font-size: 2.5rem;
             margin-bottom: 10px;
-            font-weight: 300;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .header p {
-            font-size: 1.1em;
+            font-size: 1.2rem;
             opacity: 0.9;
         }
 
@@ -74,7 +72,7 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #2c3e50;
+            color: #228b22;
             font-size: 1.1em;
         }
 
@@ -94,8 +92,8 @@
         .form-group textarea:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #228b22;
+            box-shadow: 0 0 0 3px rgba(34, 139, 34, 0.1);
             transform: translateY(-1px);
         }
 
@@ -116,6 +114,7 @@
             margin-bottom: 15px;
             position: relative;
             transition: all 0.3s ease;
+            border-left: 4px solid #228b22;
         }
 
         .step-item:hover {
@@ -130,7 +129,7 @@
         }
 
         .step-number {
-            background: #667eea;
+            background: #228b22;
             color: white;
             width: 30px;
             height: 30px;
@@ -149,21 +148,21 @@
         }
 
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2e8b57, #228b22);
             color: white;
-            padding: 12px 25px;
+            padding: 15px 30px;
             border: none;
             border-radius: 25px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 1rem;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 15px rgba(34, 139, 34, 0.4);
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(34, 139, 34, 0.6);
         }
 
         .btn-secondary {
@@ -198,8 +197,8 @@
         }
 
         .preview h2 {
-            color: #2c3e50;
-            border-bottom: 3px solid #667eea;
+            color: #228b22;
+            border-bottom: 3px solid #228b22;
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
@@ -209,7 +208,7 @@
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 25px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #228b22;
         }
 
         .preview .steps-list {
@@ -222,7 +221,7 @@
             padding: 20px;
             background: #f8f9fa;
             border-radius: 10px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #228b22;
             position: relative;
         }
 
@@ -231,7 +230,7 @@
             position: absolute;
             left: -2px;
             top: -2px;
-            background: #667eea;
+            background: #228b22;
             color: white;
             width: 25px;
             height: 25px;
@@ -265,7 +264,7 @@
             }
             
             .header h1 {
-                font-size: 2em;
+                font-size: 2rem;
             }
             
             .actions {
@@ -281,49 +280,54 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>SOP Builder</h1>
-            <p>Create professional Standard Operating Procedures with ease</p>
+            <h1>📝 SOP Designer</h1>
+            <p>Professional Process Documentation Tool by DGS Consulting</p>
         </div>
 
         <div class="main-content">
             <div class="builder-section">
                 <div class="form-group">
-                    <label for="sopTitle">SOP Title</label>
+                    <label for="sopTitle">📋 SOP Title</label>
                     <input type="text" id="sopTitle" placeholder="e.g., Customer Service Protocol">
                 </div>
 
                 <div class="form-group">
-                    <label for="sopPurpose">Purpose</label>
+                    <label for="sopPurpose">🎯 Purpose</label>
                     <textarea id="sopPurpose" placeholder="Describe the purpose and objectives of this SOP..."></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="sopScope">Scope</label>
+                    <label for="sopScope">📊 Scope</label>
                     <textarea id="sopScope" placeholder="Define who this SOP applies to and under what conditions..."></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="sopResponsibility">Responsibility</label>
+                    <label for="sopResponsibility">👥 Responsibility</label>
                     <input type="text" id="sopResponsibility" placeholder="e.g., Customer Service Team Lead">
                 </div>
 
                 <div class="form-group">
-                    <label for="sopVersion">Version</label>
+                    <label for="sopVersion">🔢 Version</label>
                     <input type="text" id="sopVersion" value="1.0" placeholder="1.0">
                 </div>
 
                 <div class="form-group">
-                    <label for="sopDate">Effective Date</label>
+                    <label for="sopDate">📅 Effective Date</label>
                     <input type="date" id="sopDate">
                 </div>
 
                 <div class="steps-container">
-                    <label>Procedure Steps</label>
+                    <label>⚙️ Procedure Steps</label>
                     <div id="stepsContainer"></div>
                     <button type="button" class="btn btn-secondary" onclick="addStep()">Add Step</button>
                 </div>
@@ -465,12 +469,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${sopData.title || 'Standard Operating Procedure'}</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
-        h2, h3 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
-        .meta-info { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #3498db; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
+        h2, h3 { color: #228b22; border-bottom: 2px solid #228b22; padding-bottom: 5px; }
+        .meta-info { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #228b22; }
         .steps-list { counter-reset: step-counter; }
-        .step { counter-increment: step-counter; margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 5px; position: relative; border-left: 4px solid #3498db; }
-        .step::before { content: counter(step-counter); position: absolute; left: -2px; top: -2px; background: #3498db; color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+        .step { counter-increment: step-counter; margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 5px; position: relative; border-left: 4px solid #228b22; }
+        .step::before { content: counter(step-counter); position: absolute; left: -2px; top: -2px; background: #228b22; color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
         .step h4 { margin: 0 0 8px 0; color: #2c3e50; }
         .step p { margin: 0; color: #666; }
     </style>
@@ -532,17 +536,6 @@
 
         // Add initial step
         addStep();
-
-        // CSS for fade out animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeOut {
-                from { opacity: 1; transform: translateY(0); }
-                to { opacity: 0; transform: translateY(-10px); }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
     </script>
 
     <footer style="
@@ -560,7 +553,5 @@
         <a href="https://www.instagram.com/dgsconsult/" target="_blank" style="color:#fff; text-decoration:none; margin:0 8px;">Instagram</a>
       </p>
     </footer>
-</body>
-</html>
 </body>
 </html>
