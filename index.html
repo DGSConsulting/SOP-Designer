@@ -3,21 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Step & Branch Editor Prototype</title>
+<title>Flowchart Step & Branch Editor Prototype</title>
 <style>
   body { font-family: sans-serif; margin: 20px; background: #f4f4f4; }
   h1 { margin-bottom: 10px; }
   .controls { margin-bottom: 10px; }
   button { margin-right: 5px; }
-  .step-card { background: #fff; padding: 10px; margin-bottom: 10px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  #steps-container { display: flex; flex-direction: column; gap: 10px; }
+  .step-card { background: #fff; padding: 10px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative; }
   .branches-container { margin-top: 10px; padding-left: 10px; border-left: 2px dashed #ccc; }
   .branch-row { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
   input, select { padding: 4px; }
+  .dragging { opacity: 0.5; }
+  svg { position: absolute; top: 0; left: 0; pointer-events: none; overflow: visible; }
 </style>
 </head>
 <body>
 
-<h1>Step & Branch Editor Prototype</h1>
+<h1>Flowchart Step & Branch Editor</h1>
 
 <div class="controls">
   <button onclick="addStep()">+ Add Step</button>
@@ -26,6 +29,7 @@
 </div>
 
 <div id="steps-container"></div>
+<svg id="connections"></svg>
 
 <script>
 let store = { steps: [] };
@@ -64,6 +68,7 @@ function addStep() {
 function deleteStep(stepId) {
   pushHistory();
   store.steps = store.steps.filter(s => s.id !== stepId);
+  store.steps.forEach(s => s.branches.forEach(b => { if(b.target === stepId) b.target = ""; }));
   renderAll();
 }
 
@@ -85,6 +90,7 @@ function updateStepTitle(stepId, value) {
   pushHistory();
   const step = store.steps.find(s => s.id === stepId);
   step.title = value;
+  renderConnections();
 }
 
 function updateBranch(stepId, branchId, field, value) {
@@ -92,16 +98,38 @@ function updateBranch(stepId, branchId, field, value) {
   const step = store.steps.find(s => s.id === stepId);
   const branch = step.branches.find(b => b.id === branchId);
   branch[field] = value;
+  renderConnections();
 }
 
 function renderAll() {
   const container = document.getElementById("steps-container");
   container.innerHTML = "";
   
-  store.steps.forEach(step => {
+  store.steps.forEach((step, idx) => {
     const stepDiv = document.createElement("div");
     stepDiv.className = "step-card";
-    
+    stepDiv.draggable = true;
+    stepDiv.dataset.id = step.id;
+
+    stepDiv.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', step.id);
+      stepDiv.classList.add('dragging');
+    });
+    stepDiv.addEventListener('dragend', () => {
+      stepDiv.classList.remove('dragging');
+    });
+    stepDiv.addEventListener('dragover', e => e.preventDefault());
+    stepDiv.addEventListener('drop', e => {
+      const draggedId = e.dataTransfer.getData('text/plain');
+      if(draggedId === step.id) return;
+      pushHistory();
+      const draggedIndex = store.steps.findIndex(s => s.id === draggedId);
+      const targetIndex = store.steps.findIndex(s => s.id === step.id);
+      const [draggedStep] = store.steps.splice(draggedIndex, 1);
+      store.steps.splice(targetIndex, 0, draggedStep);
+      renderAll();
+    });
+
     const titleInput = document.createElement("input");
     titleInput.value = step.title;
     titleInput.oninput = e => updateStepTitle(step.id, e.target.value);
@@ -112,7 +140,6 @@ function renderAll() {
     deleteBtn.onclick = () => deleteStep(step.id);
     stepDiv.appendChild(deleteBtn);
 
-    // Branches
     const branchContainer = document.createElement("div");
     branchContainer.className = "branches-container";
 
@@ -124,7 +151,7 @@ function renderAll() {
     step.branches.forEach(branch => {
       const row = document.createElement("div");
       row.className = "branch-row";
-      
+
       const conditionInput = document.createElement("input");
       conditionInput.placeholder = "Condition";
       conditionInput.value = branch.condition;
@@ -157,10 +184,44 @@ function renderAll() {
     stepDiv.appendChild(branchContainer);
     container.appendChild(stepDiv);
   });
+
+  renderConnections();
+}
+
+// Draw simple SVG lines between steps based on branch targets
+function renderConnections() {
+  const svg = document.getElementById("connections");
+  svg.innerHTML = "";
+  store.steps.forEach(step => {
+    const stepDiv = document.querySelector(`.step-card[data-id='${step.id}']`);
+    const rect = stepDiv.getBoundingClientRect();
+    const startX = rect.right - 10;
+    const startY = rect.top + rect.height/2 + window.scrollY;
+
+    step.branches.forEach(branch => {
+      if(!branch.target) return;
+      const targetDiv = document.querySelector(`.step-card[data-id='${branch.target}']`);
+      if(!targetDiv) return;
+      const tRect = targetDiv.getBoundingClientRect();
+      const endX = tRect.left + 10;
+      const endY = tRect.top + tRect.height/2 + window.scrollY;
+
+      const line = document.createElementNS("http://www.w3.org/2000/svg","line");
+      line.setAttribute("x1", startX);
+      line.setAttribute("y1", startY);
+      line.setAttribute("x2", endX);
+      line.setAttribute("y2", endY);
+      line.setAttribute("stroke","#007bff");
+      line.setAttribute("stroke-width","2");
+      svg.appendChild(line);
+    });
+  });
 }
 
 // Initial render
 renderAll();
+window.addEventListener('resize', renderConnections);
+window.addEventListener('scroll', renderConnections);
 </script>
 
 </body>
