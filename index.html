@@ -1,557 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/logo-icon-t.png" />
-    <title>📝 SOP Designer - DGS Consulting</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(90deg, #9CAF88 0%, #6B8E5A 50%, #4A5D23 100%);
-            min-height: 100vh;
-            color: #333;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            text-align: center;
-            color: white;
-            padding: 40px 30px;
-            background: linear-gradient(90deg, #9CAF88 0%, #6B8E5A 50%, #4A5D23 100%);
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            min-height: 80vh;
-        }
-
-        .builder-section {
-            padding: 30px;
-            border-right: 1px solid #eee;
-        }
-
-        .preview-section {
-            padding: 30px;
-            background: #f8f9fa;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #228b22;
-            font-size: 1.1em;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e6ed;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #228b22;
-            box-shadow: 0 0 0 3px rgba(34, 139, 34, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .steps-container {
-            margin-bottom: 25px;
-        }
-
-        .step-item {
-            background: white;
-            border: 2px solid #e0e6ed;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            position: relative;
-            transition: all 0.3s ease;
-            border-left: 4px solid #228b22;
-        }
-
-        .step-item:hover {
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .step-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .step-number {
-            background: #228b22;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-right: 15px;
-            font-size: 14px;
-        }
-
-        .step-content input,
-        .step-content textarea {
-            margin-bottom: 10px;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #2e8b57, #228b22);
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(34, 139, 34, 0.4);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(34, 139, 34, 0.6);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-            box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
-        }
-
-        .btn-small {
-            padding: 8px 15px;
-            font-size: 14px;
-            margin-left: 10px;
-        }
-
-        .actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
-
-        .preview {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            min-height: 500px;
-        }
-
-        .preview h2 {
-            color: #228b22;
-            border-bottom: 3px solid #228b22;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        .preview .meta-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            border-left: 4px solid #228b22;
-        }
-
-        .preview .steps-list {
-            counter-reset: step-counter;
-        }
-
-        .preview .step {
-            counter-increment: step-counter;
-            margin-bottom: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border-left: 4px solid #228b22;
-            position: relative;
-        }
-
-        .preview .step::before {
-            content: counter(step-counter);
-            position: absolute;
-            left: -2px;
-            top: -2px;
-            background: #228b22;
-            color: white;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .preview .step h4 {
-            margin-bottom: 8px;
-            color: #2c3e50;
-            font-size: 1.1em;
-        }
-
-        .preview .step p {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .builder-section {
-                border-right: none;
-                border-bottom: 1px solid #eee;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .actions {
-                justify-content: center;
-            }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeOut {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-10px); }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step & Branch Editor Prototype</title>
+<style>
+  body { font-family: sans-serif; margin: 20px; background: #f4f4f4; }
+  h1 { margin-bottom: 10px; }
+  .controls { margin-bottom: 10px; }
+  button { margin-right: 5px; }
+  .step-card { background: #fff; padding: 10px; margin-bottom: 10px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  .branches-container { margin-top: 10px; padding-left: 10px; border-left: 2px dashed #ccc; }
+  .branch-row { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
+  input, select { padding: 4px; }
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📝 SOP Designer</h1>
-            <p>Professional Process Documentation Tool by DGS Consulting</p>
-        </div>
 
-        <div class="main-content">
-            <div class="builder-section">
-                <div class="form-group">
-                    <label for="sopTitle">📋 SOP Title</label>
-                    <input type="text" id="sopTitle" placeholder="e.g., Customer Service Protocol">
-                </div>
+<h1>Step & Branch Editor Prototype</h1>
 
-                <div class="form-group">
-                    <label for="sopPurpose">🎯 Purpose</label>
-                    <textarea id="sopPurpose" placeholder="Describe the purpose and objectives of this SOP..."></textarea>
-                </div>
+<div class="controls">
+  <button onclick="addStep()">+ Add Step</button>
+  <button onclick="undo()">⎌ Undo</button>
+  <button onclick="redo()">⎌ Redo</button>
+</div>
 
-                <div class="form-group">
-                    <label for="sopScope">📊 Scope</label>
-                    <textarea id="sopScope" placeholder="Define who this SOP applies to and under what conditions..."></textarea>
-                </div>
+<div id="steps-container"></div>
 
-                <div class="form-group">
-                    <label for="sopResponsibility">👥 Responsibility</label>
-                    <input type="text" id="sopResponsibility" placeholder="e.g., Customer Service Team Lead">
-                </div>
+<script>
+let store = { steps: [] };
+const history = [];
+let historyPointer = -1;
+const MAX_HISTORY = 50;
 
-                <div class="form-group">
-                    <label for="sopVersion">🔢 Version</label>
-                    <input type="text" id="sopVersion" value="1.0" placeholder="1.0">
-                </div>
+function pushHistory() {
+  history.splice(historyPointer + 1);
+  history.push(JSON.stringify(store));
+  if (history.length > MAX_HISTORY) history.shift();
+  historyPointer = history.length - 1;
+}
 
-                <div class="form-group">
-                    <label for="sopDate">📅 Effective Date</label>
-                    <input type="date" id="sopDate">
-                </div>
+function undo() {
+  if(historyPointer <= 0) return;
+  historyPointer--;
+  store = JSON.parse(history[historyPointer]);
+  renderAll();
+}
 
-                <div class="steps-container">
-                    <label>⚙️ Procedure Steps</label>
-                    <div id="stepsContainer"></div>
-                    <button type="button" class="btn btn-secondary" onclick="addStep()">Add Step</button>
-                </div>
+function redo() {
+  if(historyPointer >= history.length - 1) return;
+  historyPointer++;
+  store = JSON.parse(history[historyPointer]);
+  renderAll();
+}
 
-                <div class="actions">
-                    <button class="btn" onclick="generatePreview()">Update Preview</button>
-                    <button class="btn btn-secondary" onclick="exportSOP()">Export HTML</button>
-                    <button class="btn btn-secondary" onclick="exportJSON()">Export JSON</button>
-                    <button class="btn btn-danger" onclick="clearAll()">Clear All</button>
-                </div>
-            </div>
+function addStep() {
+  pushHistory();
+  const newStep = { id: Date.now().toString(), title: "New Step", branches: [] };
+  store.steps.push(newStep);
+  renderAll();
+}
 
-            <div class="preview-section">
-                <div class="preview" id="preview">
-                    <h2>SOP Preview</h2>
-                    <p style="color: #666; font-style: italic;">Fill in the form and click "Update Preview" to see your SOP</p>
-                </div>
-            </div>
-        </div>
-    </div>
+function deleteStep(stepId) {
+  pushHistory();
+  store.steps = store.steps.filter(s => s.id !== stepId);
+  renderAll();
+}
 
-    <script>
-        let stepCounter = 0;
-        let sopData = {
-            title: '',
-            purpose: '',
-            scope: '',
-            responsibility: '',
-            version: '1.0',
-            effectiveDate: '',
-            steps: []
-        };
+function addBranch(stepId) {
+  pushHistory();
+  const step = store.steps.find(s => s.id === stepId);
+  step.branches.push({ id: Date.now().toString(), condition: "", target: "" });
+  renderAll();
+}
 
-        function addStep() {
-            stepCounter++;
-            const container = document.getElementById('stepsContainer');
-            const stepDiv = document.createElement('div');
-            stepDiv.className = 'step-item fade-in';
-            stepDiv.innerHTML = `
-                <div class="step-header">
-                    <div class="step-number">${stepCounter}</div>
-                    <button type="button" class="btn btn-danger btn-small" onclick="removeStep(this)">Remove</button>
-                </div>
-                <div class="step-content">
-                    <input type="text" placeholder="Step title..." class="step-title">
-                    <textarea placeholder="Detailed description of this step..." class="step-description"></textarea>
-                </div>
-            `;
-            container.appendChild(stepDiv);
-        }
+function deleteBranch(stepId, branchId) {
+  pushHistory();
+  const step = store.steps.find(s => s.id === stepId);
+  step.branches = step.branches.filter(b => b.id !== branchId);
+  renderAll();
+}
 
-        function removeStep(button) {
-            const stepItem = button.closest('.step-item');
-            stepItem.style.animation = 'fadeOut 0.3s ease-out';
-            setTimeout(() => {
-                stepItem.remove();
-                updateStepNumbers();
-            }, 300);
-        }
+function updateStepTitle(stepId, value) {
+  pushHistory();
+  const step = store.steps.find(s => s.id === stepId);
+  step.title = value;
+}
 
-        function updateStepNumbers() {
-            const steps = document.querySelectorAll('.step-item');
-            steps.forEach((step, index) => {
-                const numberDiv = step.querySelector('.step-number');
-                numberDiv.textContent = index + 1;
-            });
-            stepCounter = steps.length;
-        }
+function updateBranch(stepId, branchId, field, value) {
+  pushHistory();
+  const step = store.steps.find(s => s.id === stepId);
+  const branch = step.branches.find(b => b.id === branchId);
+  branch[field] = value;
+}
 
-        function generatePreview() {
-            // Collect form data
-            sopData.title = document.getElementById('sopTitle').value;
-            sopData.purpose = document.getElementById('sopPurpose').value;
-            sopData.scope = document.getElementById('sopScope').value;
-            sopData.responsibility = document.getElementById('sopResponsibility').value;
-            sopData.version = document.getElementById('sopVersion').value;
-            sopData.effectiveDate = document.getElementById('sopDate').value;
+function renderAll() {
+  const container = document.getElementById("steps-container");
+  container.innerHTML = "";
+  
+  store.steps.forEach(step => {
+    const stepDiv = document.createElement("div");
+    stepDiv.className = "step-card";
+    
+    const titleInput = document.createElement("input");
+    titleInput.value = step.title;
+    titleInput.oninput = e => updateStepTitle(step.id, e.target.value);
+    stepDiv.appendChild(titleInput);
 
-            // Collect steps
-            sopData.steps = [];
-            const stepItems = document.querySelectorAll('.step-item');
-            stepItems.forEach(item => {
-                const title = item.querySelector('.step-title').value;
-                const description = item.querySelector('.step-description').value;
-                if (title.trim() || description.trim()) {
-                    sopData.steps.push({ title, description });
-                }
-            });
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "✕ Delete Step";
+    deleteBtn.onclick = () => deleteStep(step.id);
+    stepDiv.appendChild(deleteBtn);
 
-            // Generate preview
-            const preview = document.getElementById('preview');
-            let html = `
-                <h2>${sopData.title || 'SOP Title'}</h2>
-                <div class="meta-info">
-                    <strong>Version:</strong> ${sopData.version}<br>
-                    <strong>Effective Date:</strong> ${sopData.effectiveDate || 'Not specified'}<br>
-                    <strong>Responsibility:</strong> ${sopData.responsibility || 'Not specified'}
-                </div>
-            `;
+    // Branches
+    const branchContainer = document.createElement("div");
+    branchContainer.className = "branches-container";
 
-            if (sopData.purpose) {
-                html += `
-                    <h3>Purpose</h3>
-                    <p>${sopData.purpose}</p>
-                `;
-            }
+    const addBranchBtn = document.createElement("button");
+    addBranchBtn.textContent = "+ Add Branch";
+    addBranchBtn.onclick = () => addBranch(step.id);
+    branchContainer.appendChild(addBranchBtn);
 
-            if (sopData.scope) {
-                html += `
-                    <h3>Scope</h3>
-                    <p>${sopData.scope}</p>
-                `;
-            }
+    step.branches.forEach(branch => {
+      const row = document.createElement("div");
+      row.className = "branch-row";
+      
+      const conditionInput = document.createElement("input");
+      conditionInput.placeholder = "Condition";
+      conditionInput.value = branch.condition;
+      conditionInput.oninput = e => updateBranch(step.id, branch.id, 'condition', e.target.value);
+      row.appendChild(conditionInput);
 
-            if (sopData.steps.length > 0) {
-                html += `<h3>Procedure</h3><div class="steps-list">`;
-                sopData.steps.forEach(step => {
-                    html += `
-                        <div class="step">
-                            <h4>${step.title || 'Untitled Step'}</h4>
-                            <p>${step.description || 'No description provided'}</p>
-                        </div>
-                    `;
-                });
-                html += '</div>';
-            }
+      const targetSelect = document.createElement("select");
+      const emptyOpt = document.createElement("option");
+      emptyOpt.value = "";
+      emptyOpt.textContent = "→ Next Step";
+      targetSelect.appendChild(emptyOpt);
+      store.steps.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s.id;
+        opt.textContent = s.title;
+        if(s.id === branch.target) opt.selected = true;
+        targetSelect.appendChild(opt);
+      });
+      targetSelect.onchange = e => updateBranch(step.id, branch.id, 'target', e.target.value);
+      row.appendChild(targetSelect);
 
-            preview.innerHTML = html;
-        }
+      const delBranchBtn = document.createElement("button");
+      delBranchBtn.textContent = "✕";
+      delBranchBtn.onclick = () => deleteBranch(step.id, branch.id);
+      row.appendChild(delBranchBtn);
 
-        function exportSOP() {
-            generatePreview();
-            const previewContent = document.getElementById('preview').innerHTML;
-            
-            const fullHTML = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${sopData.title || 'Standard Operating Procedure'}</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
-        h2, h3 { color: #228b22; border-bottom: 2px solid #228b22; padding-bottom: 5px; }
-        .meta-info { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #228b22; }
-        .steps-list { counter-reset: step-counter; }
-        .step { counter-increment: step-counter; margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 5px; position: relative; border-left: 4px solid #228b22; }
-        .step::before { content: counter(step-counter); position: absolute; left: -2px; top: -2px; background: #228b22; color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
-        .step h4 { margin: 0 0 8px 0; color: #2c3e50; }
-        .step p { margin: 0; color: #666; }
-    </style>
-</head>
-<body>
-    ${previewContent}
-</body>
-</html>`;
+      branchContainer.appendChild(row);
+    });
 
-            downloadFile(fullHTML, `${sopData.title || 'SOP'}.html`, 'text/html');
-        }
+    stepDiv.appendChild(branchContainer);
+    container.appendChild(stepDiv);
+  });
+}
 
-        function exportJSON() {
-            generatePreview();
-            const jsonData = JSON.stringify(sopData, null, 2);
-            downloadFile(jsonData, `${sopData.title || 'SOP'}.json`, 'application/json');
-        }
+// Initial render
+renderAll();
+</script>
 
-        function downloadFile(content, filename, contentType) {
-            const blob = new Blob([content], { type: contentType });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function clearAll() {
-            if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
-                document.getElementById('sopTitle').value = '';
-                document.getElementById('sopPurpose').value = '';
-                document.getElementById('sopScope').value = '';
-                document.getElementById('sopResponsibility').value = '';
-                document.getElementById('sopVersion').value = '1.0';
-                document.getElementById('sopDate').value = '';
-                document.getElementById('stepsContainer').innerHTML = '';
-                document.getElementById('preview').innerHTML = `
-                    <h2>SOP Preview</h2>
-                    <p style="color: #666; font-style: italic;">Fill in the form and click "Update Preview" to see your SOP</p>
-                `;
-                stepCounter = 0;
-                sopData = {
-                    title: '',
-                    purpose: '',
-                    scope: '',
-                    responsibility: '',
-                    version: '1.0',
-                    effectiveDate: '',
-                    steps: []
-                };
-            }
-        }
-
-        // Set today's date as default
-        document.getElementById('sopDate').value = new Date().toISOString().split('T')[0];
-
-        // Add initial step
-        addStep();
-    </script>
-
-    <footer style="
-      background: linear-gradient(90deg, #9CAF88 0%, #6B8E5A 50%, #4A5D23 100%);
-      color:#fff;
-      text-align:center;
-      padding:20px;
-      margin-top:50px;
-      font-size:14px;
-    ">
-      <p>© 2025 DGS Consulting — Streamline Today, Scale Tomorrow</p>
-      <p>
-        <a href="mailto:DGSConsult@consultant.com" style="color:#fff; text-decoration:none; margin:0 8px;">Contact</a> |
-        <a href="https://www.linkedin.com/company/dgs-consutling/" target="_blank" style="color:#fff; text-decoration:none; margin:0 8px;">LinkedIn</a> |
-        <a href="https://www.instagram.com/dgsconsult/" target="_blank" style="color:#fff; text-decoration:none; margin:0 8px;">Instagram</a>
-      </p>
-    </footer>
 </body>
 </html>
