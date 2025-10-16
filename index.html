@@ -3,37 +3,193 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOP Manager - MVP</title>
+<title>SOP Manager - Production Ready</title>
 <style>
   * { box-sizing: border-box; }
   body { 
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
-    display: flex; 
     margin: 0; 
     height: 100vh;
     background: #f5f5f5;
+    display: flex;
   }
   
-  #editor { 
-    width: 45%; 
-    padding: 16px; 
-    overflow-y: auto; 
+  #sidebar {
+    width: 280px;
+    background: #2c3e50;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #1a252f;
+    overflow-y: auto;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+  }
+  
+  .sidebar-header {
+    padding: 16px;
+    border-bottom: 1px solid #34495e;
+    background: #1a252f;
+  }
+  
+  .sidebar-header h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  .sidebar-content {
+    flex: 1;
+    padding: 12px;
+    overflow-y: auto;
+  }
+  
+  .sop-item {
+    padding: 10px;
+    margin: 6px 0;
+    background: rgba(255,255,255,0.08);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  
+  .sop-item:hover {
+    background: rgba(255,255,255,0.15);
+  }
+  
+  .sop-item.active {
+    border-color: #4CAF50;
+    background: rgba(76, 175, 80, 0.2);
+  }
+  
+  .sop-item-name {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .sop-item-meta {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    margin-top: 4px;
+  }
+  
+  .sop-item-actions {
+    font-size: 11px;
+    margin-top: 6px;
+    display: flex;
+    gap: 4px;
+  }
+  
+  .sop-item-actions button {
+    padding: 3px 6px;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: background 0.2s;
+  }
+  
+  .sop-item-actions button:hover {
+    background: rgba(255,255,255,0.3);
+  }
+  
+  .sidebar-footer {
+    padding: 12px;
+    border-top: 1px solid #34495e;
+  }
+  
+  .new-sop-btn {
+    width: 100%;
+    padding: 10px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    transition: background 0.2s;
+  }
+  
+  .new-sop-btn:hover {
+    background: #45a049;
+  }
+  
+  .search-box {
+    padding: 0 12px 12px;
+  }
+  
+  .search-box input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 4px;
+    font-size: 12px;
+    background: rgba(0,0,0,0.2);
+    color: white;
+  }
+  
+  .search-box input::placeholder {
+    color: rgba(255,255,255,0.5);
+  }
+  
+  #main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  #editor {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  .editor-left {
+    width: 45%;
+    padding: 20px;
+    overflow-y: auto;
     border-right: 1px solid #ddd;
     background: #fff;
     display: flex;
     flex-direction: column;
   }
   
-  #diagram { 
-    width: 55%; 
-    padding: 16px; 
-    overflow: auto; 
+  .editor-right {
+    width: 55%;
+    padding: 20px;
+    overflow: auto;
     background: #f9f9f9;
+    display: flex;
+    flex-direction: column;
   }
   
   h1, h2, h3 { margin: 0 0 12px 0; }
-  h1 { font-size: 20px; color: #333; }
-  h2 { font-size: 16px; color: #555; margin-top: 16px; }
+  h1 { font-size: 22px; color: #333; font-weight: 600; }
+  h2 { font-size: 16px; color: #555; font-weight: 600; }
+  h3 { font-size: 13px; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  
+  .sop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  
+  .sop-name-input {
+    width: 100%;
+    font-size: 16px;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
   
   .toolbar {
     display: flex;
@@ -51,11 +207,16 @@
     cursor: pointer;
     font-size: 13px;
     font-weight: 500;
-    transition: background 0.2s;
+    transition: all 0.2s;
   }
   
-  button:hover { background: #45a049; }
-  button:disabled { background: #ccc; cursor: not-allowed; }
+  button:hover { 
+    background: #45a049;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  button:active { transform: translateY(0); }
+  button:disabled { background: #ccc; cursor: not-allowed; transform: none; }
   
   .secondary {
     background: #2196F3;
@@ -67,16 +228,40 @@
   }
   .tertiary:hover { background: #555; }
   
+  .danger {
+    background: #f44336;
+  }
+  .danger:hover { background: #da190b; }
+  
   .steps-list {
     flex: 1;
     overflow-y: auto;
     margin-bottom: 16px;
+    padding-right: 8px;
+  }
+  
+  .steps-list::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .steps-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+  
+  .steps-list::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 4px;
+  }
+  
+  .steps-list::-webkit-scrollbar-thumb:hover {
+    background: #ccc;
   }
   
   .step-card {
     background: #fff;
     margin: 8px 0;
-    padding: 10px;
+    padding: 12px;
     border: 2px solid #e0e0e0;
     border-radius: 4px;
     cursor: move;
@@ -85,12 +270,27 @@
   
   .step-card:hover {
     border-color: #4CAF50;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   }
   
   .step-card.dragging {
-    opacity: 0.6;
+    opacity: 0.5;
     background: #f0f0f0;
+    transform: scale(0.98);
+  }
+  
+  .step-number {
+    display: inline-block;
+    background: #4CAF50;
+    color: white;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 600;
+    margin-right: 8px;
   }
   
   .step-input {
@@ -100,6 +300,7 @@
     border-radius: 3px;
     font-size: 13px;
     font-family: inherit;
+    margin: 6px 0;
   }
   
   .step-controls {
@@ -115,23 +316,34 @@
   }
   
   .branch {
-    margin-left: 16px;
+    margin-left: 20px;
     margin-top: 8px;
-    padding-left: 10px;
-    border-left: 3px solid #2196F3;
-    padding: 8px;
+    padding: 10px;
     background: #f0f7ff;
+    border-left: 3px solid #2196F3;
     border-radius: 3px;
+    position: relative;
   }
   
-  .templates-section {
+  .branch::before {
+    content: "↳";
+    position: absolute;
+    left: -18px;
+    color: #2196F3;
+    font-weight: bold;
+  }
+  
+  .section {
     margin-top: 16px;
     padding: 12px;
     background: #f5f5f5;
     border-radius: 4px;
+    border-left: 4px solid #4CAF50;
   }
   
-  .templates-section h3 { margin-top: 0; }
+  .section h3 {
+    margin-top: 0;
+  }
   
   .template-grid {
     display: grid;
@@ -140,28 +352,56 @@
   }
   
   .template-btn {
-    padding: 6px 8px;
-    font-size: 11px;
+    padding: 8px;
+    font-size: 12px;
     background: #FF9800;
-    text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    text-align: center;
   }
   
   .template-btn:hover { background: #e68900; }
+  
+  .tags-input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  .tag {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid #90caf9;
+  }
+  
+  .tag:hover {
+    background: #bbdefb;
+  }
+  
+  .tag .remove {
+    margin-left: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
   
   #svgDiagram {
     background: white;
     border: 1px solid #ddd;
     border-radius: 4px;
-  }
-  
-  .export-section {
-    margin-top: 16px;
-    padding: 12px;
-    background: #f5f5f5;
-    border-radius: 4px;
+    flex: 1;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   }
   
   .modal {
@@ -171,155 +411,402 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.6);
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    animation: fadeIn 0.2s;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
   
   .modal.active { display: flex; }
   
   .modal-content {
     background: white;
-    padding: 20px;
+    padding: 24px;
     border-radius: 8px;
-    max-width: 500px;
+    max-width: 600px;
     width: 90%;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    max-height: 80vh;
+    overflow-y: auto;
   }
   
-  .modal-content h2 { margin-top: 0; }
+  .modal-content h2 { margin-top: 0; font-size: 18px; }
   
   .share-link {
-    padding: 8px;
+    padding: 10px;
     background: #f0f0f0;
     border: 1px solid #ddd;
     border-radius: 3px;
-    font-family: monospace;
-    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
     word-break: break-all;
-    margin: 8px 0;
+    margin: 12px 0;
     user-select: all;
+    max-height: 80px;
+    overflow-y: auto;
+  }
+  
+  .version-item {
+    padding: 12px;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin: 8px 0;
+    font-size: 12px;
+  }
+  
+  .version-item-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  
+  .version-time {
+    color: #666;
+    font-size: 11px;
+  }
+  
+  .version-actions {
+    display: flex;
+    gap: 6px;
+  }
+  
+  .version-actions button {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  
+  .comment-section {
+    margin-top: 12px;
+    padding: 12px;
+    background: #fffbea;
+    border-radius: 4px;
+    border-left: 4px solid #FFC107;
+  }
+  
+  .comment-input-group {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  
+  .comment-input-group input {
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 12px;
+  }
+  
+  .comment-input-group input:first-child {
+    max-width: 130px;
+  }
+  
+  .comment-input-group input:nth-child(2) {
+    flex: 1;
+  }
+  
+  .comment-input-group button {
+    padding: 6px 12px;
+  }
+  
+  .comments-list {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .comment {
+    padding: 10px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 3px;
+    margin: 6px 0;
+    font-size: 12px;
+  }
+  
+  .comment-author {
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .comment-time {
+    color: #999;
+    font-size: 11px;
+    margin-left: 8px;
+  }
+  
+  .comment-text {
+    margin-top: 4px;
+    color: #555;
+    line-height: 1.4;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+  }
+  
+  .btn-group {
+    display: flex;
+    gap: 4px;
+  }
+  
+  .status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #e3f2fd;
+    color: #1976d2;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
   }
   
   @media (max-width: 1024px) {
-    #editor { width: 50%; }
-    #diagram { width: 50%; }
+    #sidebar { width: 220px; }
+    .editor-left { width: 50%; }
+    .editor-right { width: 50%; }
   }
   
   @media (max-width: 768px) {
     body { flex-direction: column; }
-    #editor { width: 100%; height: 50%; border-right: none; border-bottom: 1px solid #ddd; }
-    #diagram { width: 100%; height: 50%; }
+    #sidebar { width: 100%; height: auto; flex-direction: row; max-height: 100px; }
+    .sidebar-content { display: none; }
+    #editor { flex-direction: column; }
+    .editor-left { width: 100%; height: 50%; border-right: none; border-bottom: 1px solid #ddd; }
+    .editor-right { width: 100%; height: 50%; }
+    .template-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 
-<div id="editor">
-  <h1>📋 SOP Manager</h1>
-  
-  <div class="toolbar">
-    <button onclick="addStep()">+ Add Step</button>
-    <button onclick="undo()" id="undoBtn" disabled>↶ Undo</button>
-    <button onclick="redo()" id="redoBtn" disabled>↷ Redo</button>
-    <button class="secondary" onclick="openShareModal()">🔗 Share</button>
-    <button class="secondary" onclick="exportPDF()">📄 Export PDF</button>
+<!-- Sidebar: SOP Library -->
+<div id="sidebar">
+  <div class="sidebar-header">
+    <h1>📚 SOP Manager</h1>
   </div>
   
-  <div class="steps-list" id="stepsList"></div>
+  <div class="search-box">
+    <input type="text" id="searchBox" placeholder="Search..." onkeyup="searchSOPs()">
+  </div>
   
-  <div class="templates-section">
-    <h3>Templates</h3>
-    <div class="template-grid">
-      <button class="template-btn" onclick="loadTemplate('onboarding')">Client Onboarding</button>
-      <button class="template-btn" onclick="loadTemplate('invoicing')">Invoicing Process</button>
-      <button class="template-btn" onclick="loadTemplate('qa')">QA Checklist</button>
-    </div>
+  <div class="sidebar-content" id="sopList"></div>
+  
+  <div class="sidebar-footer">
+    <button class="new-sop-btn" onclick="createNewSOP()">+ New SOP</button>
   </div>
 </div>
 
-<div id="diagram">
-  <h2>Diagram</h2>
-  <svg id="svgDiagram" width="100%" height="600"></svg>
+<!-- Main Editor Area -->
+<div id="main">
+  <div id="editor">
+    <!-- Left: Steps Editor -->
+    <div class="editor-left">
+      <div class="sop-header">
+        <div>
+          <h1 id="sopTitle">Untitled SOP</h1>
+          <span class="status-badge" id="sopStatus">DRAFT</span>
+        </div>
+      </div>
+      
+      <input type="text" id="sopNameInput" class="sop-name-input" placeholder="Enter SOP Name" onchange="updateSOPName()">
+      
+      <div class="toolbar">
+        <button onclick="addStep()">➕ Add Step</button>
+        <button onclick="undo()" id="undoBtn" disabled>↶ Undo</button>
+        <button onclick="redo()" id="redoBtn" disabled>↷ Redo</button>
+        <button class="secondary" onclick="openShareModal()">🔗 Share</button>
+        <button class="secondary" onclick="exportPDF()">📄 PDF</button>
+        <button class="secondary" onclick="openVersionsModal()">⏱️ History</button>
+      </div>
+      
+      <div class="steps-list" id="stepsList"></div>
+      
+      <!-- Tags Section -->
+      <div class="section">
+        <h3>Tags</h3>
+        <input type="text" class="tags-input" id="tagsInput" placeholder="Add tags (comma-separated)" onchange="updateTags()">
+        <div class="tags-list" id="tagsList"></div>
+      </div>
+      
+      <!-- Templates Section -->
+      <div class="section">
+        <h3>Templates</h3>
+        <div class="template-grid">
+          <button class="template-btn" onclick="loadTemplate('onboarding')">🎯 Onboarding</button>
+          <button class="template-btn" onclick="loadTemplate('invoicing')">💰 Invoicing</button>
+          <button class="template-btn" onclick="loadTemplate('qa')">✓ QA</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right: Diagram -->
+    <div class="editor-right">
+      <h2>Flow Diagram</h2>
+      <svg id="svgDiagram" width="100%" height="100%"></svg>
+    </div>
+  </div>
 </div>
 
 <!-- Share Modal -->
 <div id="shareModal" class="modal">
   <div class="modal-content">
     <h2>Share SOP</h2>
-    <p>Share this link with collaborators (read-only):</p>
+    <p>Share this read-only link with collaborators:</p>
     <div class="share-link" id="shareLink"></div>
-    <button onclick="copyToClipboard()">📋 Copy Link</button>
+    <button onclick="copyToClipboard()" class="secondary">📋 Copy Link</button>
     <button class="tertiary" onclick="closeShareModal()">Close</button>
   </div>
 </div>
 
+<!-- Version History Modal -->
+<div id="versionsModal" class="modal">
+  <div class="modal-content">
+    <h2>Version History</h2>
+    <p>Click "Restore" to revert to a previous version.</p>
+    <div id="versionsList" style="max-height: 400px; overflow-y: auto;"></div>
+    <button class="tertiary" onclick="closeVersionsModal()" style="margin-top: 12px;">Close</button>
+  </div>
+</div>
+
+<!-- Comments Modal -->
+<div id="commentModal" class="modal">
+  <div class="modal-content">
+    <h2>Comments & Feedback</h2>
+    <div class="comment-section">
+      <div class="comment-input-group">
+        <input type="text" id="commentAuthorInput" placeholder="Your name">
+        <input type="text" id="commentTextInput" placeholder="Add feedback..." onkeypress="if(event.key==='Enter') addComment()">
+        <button onclick="addComment()" class="secondary">Post</button>
+      </div>
+      <div class="comments-list" id="commentsList"></div>
+    </div>
+    <button class="tertiary" onclick="closeCommentModal()" style="margin-top: 12px;">Close</button>
+  </div>
+</div>
+
 <script>
-// --- State Management ---
+// ============ STATE ============
+let allSOPs = {};
+let currentSOPId = null;
 let steps = [];
 let history = [];
 let redoStack = [];
-let currentSopId = 'default-' + Date.now();
+let versions = [];
+let comments = [];
+let tags = [];
 
-// --- Templates ---
+// ============ TEMPLATES ============
 const templates = {
   onboarding: [
     { text: "Receive client intake form", branches: [] },
-    { text: "Create client folder structure", branches: [] },
-    { text: "Send welcome email with login credentials", branches: [] },
-    { text: "Schedule onboarding call", branches: [] }
+    { text: "Create client folder & email account", branches: [] },
+    { text: "Send welcome email with credentials", branches: [] },
+    { text: "Schedule kickoff call", branches: [] },
+    { text: "Add to project management tool", branches: [] }
   ],
   invoicing: [
-    { text: "Collect hours/expenses from team", branches: [] },
-    { text: "Generate invoice from template", branches: [
-      { text: "Review invoice for accuracy", branches: [] }
+    { text: "Collect timesheets from team", branches: [] },
+    { text: "Compile expenses & receipts", branches: [
+      { text: "Verify all expenses are approved", branches: [] }
     ]},
+    { text: "Generate invoice from template", branches: [] },
+    { text: "Review invoice for accuracy", branches: [] },
     { text: "Send invoice to client", branches: [] },
     { text: "Log in accounting system", branches: [] }
   ],
   qa: [
     { text: "Pull latest code from main branch", branches: [] },
-    { text: "Run automated tests", branches: [
-      { text: "If tests fail: fix bugs", branches: [] }
+    { text: "Run full automated test suite", branches: [
+      { text: "If tests fail: bug fix & re-test", branches: [] }
     ]},
-    { text: "Manual smoke testing", branches: [] },
-    { text: "Approve for staging", branches: [] }
+    { text: "Manual smoke testing on staging", branches: [] },
+    { text: "Performance baseline check", branches: [] },
+    { text: "Approve & deploy to production", branches: [] }
   ]
 };
 
-// --- History/Undo-Redo ---
-function saveHistory() {
-  history.push(JSON.stringify(steps));
+// ============ SOP MANAGEMENT ============
+function createNewSOP() {
+  const name = prompt("Enter SOP name:", "My New SOP");
+  if (name && name.trim()) {
+    const id = 'sop-' + Date.now();
+    allSOPs[id] = {
+      id,
+      name: name.trim(),
+      steps: [{ text: "Step 1", branches: [] }],
+      tags: [],
+      comments: [],
+      versions: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    loadSOP(id);
+    saveToStorage();
+  }
+}
+
+function loadSOP(id) {
+  if (!allSOPs[id]) return;
+  
+  currentSOPId = id;
+  const sop = allSOPs[id];
+  
+  steps = JSON.parse(JSON.stringify(sop.steps));
+  comments = JSON.parse(JSON.stringify(sop.comments || []));
+  tags = [...(sop.tags || [])];
+  versions = [...(sop.versions || [])];
+  
+  history = [JSON.stringify(steps)];
   redoStack = [];
-  if (history.length > 50) history.shift();
+  
+  document.getElementById('sopNameInput').value = sop.name;
+  document.getElementById('sopTitle').textContent = sop.name;
+  document.getElementById('tagsInput').value = tags.join(', ');
+  
+  renderSOPList();
+  renderSteps();
+  renderDiagram();
+  renderTags();
   updateHistoryButtons();
 }
 
-function undo() {
-  if (history.length > 1) {
-    redoStack.push(history.pop());
-    steps = JSON.parse(history[history.length - 1]);
-    render();
-    updateHistoryButtons();
+function updateSOPName() {
+  if (!currentSOPId) return;
+  const newName = document.getElementById('sopNameInput').value.trim();
+  if (newName) {
+    allSOPs[currentSOPId].name = newName;
+    document.getElementById('sopTitle').textContent = newName;
+    renderSOPList();
+    saveToStorage();
   }
 }
 
-function redo() {
-  if (redoStack.length) {
-    steps = JSON.parse(redoStack.pop());
-    history.push(JSON.stringify(steps));
-    render();
-    updateHistoryButtons();
+function deleteSOP(id) {
+  if (confirm('Delete this SOP? This cannot be undone.')) {
+    delete allSOPs[id];
+    if (currentSOPId === id) {
+      const firstSOP = Object.keys(allSOPs)[0];
+      if (firstSOP) loadSOP(firstSOP);
+      else createNewSOP();
+    }
+    renderSOPList();
+    saveToStorage();
   }
 }
 
-function updateHistoryButtons() {
-  document.getElementById('undoBtn').disabled = history.length <= 1;
-  document.getElementById('redoBtn').disabled = redoStack.length === 0;
+function searchSOPs() {
+  const query = document.getElementById('searchBox').value.toLowerCase();
+  renderSOPList(query);
 }
 
-// --- Step Management ---
+// ============ STEPS ============
 function addStep(text = "New Step") {
   steps.push({ text, branches: [] });
   saveHistory();
@@ -346,9 +833,9 @@ function moveStep(fromIdx, toIdx) {
 }
 
 function addBranch(stepIdx) {
-  const branchText = prompt("Branch step text:");
-  if (branchText) {
-    steps[stepIdx].branches.push({ text: branchText, branches: [] });
+  const branchText = prompt("Enter branch step text:");
+  if (branchText && branchText.trim()) {
+    steps[stepIdx].branches.push({ text: branchText.trim(), branches: [] });
     saveHistory();
     render();
   }
@@ -366,218 +853,111 @@ function updateBranch(stepIdx, branchIdx, value) {
   render();
 }
 
-// --- Rendering ---
-function renderSteps() {
-  const container = document.getElementById('stepsList');
-  container.innerHTML = '';
+// ============ TAGS ============
+function updateTags() {
+  const input = document.getElementById('tagsInput').value;
+  tags = input.split(',').map(t => t.trim()).filter(t => t);
+  renderTags();
+  if (currentSOPId) {
+    allSOPs[currentSOPId].tags = tags;
+    saveToStorage();
+  }
+}
+
+function renderTags() {
+  const container = document.getElementById('tagsList');
+  container.innerHTML = tags.map(tag => 
+    `<span class="tag">${escapeHtml(tag)}<span class="remove" onclick="removeTag('${escapeHtml(tag)}')">×</span></span>`
+  ).join('');
+}
+
+function removeTag(tag) {
+  tags = tags.filter(t => t !== tag);
+  document.getElementById('tagsInput').value = tags.join(', ');
+  updateTags();
+}
+
+// ============ COMMENTS ============
+function addComment() {
+  const author = document.getElementById('commentAuthorInput').value.trim() || 'Anonymous';
+  const text = document.getElementById('commentTextInput').value.trim();
   
-  steps.forEach((step, idx) => {
-    const div = document.createElement('div');
-    div.className = 'step-card';
-    div.draggable = true;
-    div.dataset.index = idx;
-    
-    div.addEventListener('dragstart', (e) => {
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('stepIndex', idx);
-      div.classList.add('dragging');
-    });
-    
-    div.addEventListener('dragend', () => {
-      div.classList.remove('dragging');
-    });
-    
-    div.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-    });
-    
-    div.addEventListener('drop', (e) => {
-      e.preventDefault();
-      const fromIdx = parseInt(e.dataTransfer.getData('stepIndex'));
-      if (fromIdx !== idx) {
-        moveStep(fromIdx, idx);
-      }
-    });
-    
-    let branchesHTML = '';
-    step.branches.forEach((branch, bIdx) => {
-      branchesHTML += `
-        <div class="branch">
-          <input class="step-input" value="${escapeHtml(branch.text)}" 
-                 onchange="updateBranch(${idx},${bIdx},this.value)"/>
-          <button class="tertiary" onclick="deleteBranch(${idx},${bIdx})" style="padding:2px 6px;font-size:11px;">Delete</button>
+  if (!text) return;
+  
+  comments.push({
+    author,
+    text,
+    timestamp: new Date().toISOString()
+  });
+  
+  document.getElementById('commentTextInput').value = '';
+  document.getElementById('commentAuthorInput').value = '';
+  renderComments();
+  if (currentSOPId) {
+    allSOPs[currentSOPId].comments = comments;
+    saveToStorage();
+  }
+}
+
+function renderComments() {
+  const container = document.getElementById('commentsList');
+  container.innerHTML = comments.length === 0
+    ? '<p style="color: #999; font-size: 12px;">No comments yet.</p>'
+    : comments.map(comment => {
+      const time = new Date(comment.timestamp).toLocaleString();
+      return `
+        <div class="comment">
+          <div>
+            <span class="comment-author">${escapeHtml(comment.author)}</span>
+            <span class="comment-time">${time}</span>
+          </div>
+          <div class="comment-text">${escapeHtml(comment.text)}</div>
         </div>
       `;
+    }).join('');
+}
+
+function openCommentModal() {
+  document.getElementById('commentModal').classList.add('active');
+  renderComments();
+}
+
+function closeCommentModal() {
+  document.getElementById('commentModal').classList.remove('active');
+}
+
+// ============ VERSIONING ============
+function saveHistory() {
+  const stateStr = JSON.stringify(steps);
+  history.push(stateStr);
+  redoStack = [];
+  
+  if (history.length > 50) history.shift();
+  
+  if (currentSOPId && history.length % 5 === 0) {
+    versions.unshift({
+      timestamp: new Date().toISOString(),
+      steps: JSON.parse(stateStr),
+      stepCount: steps.length
     });
-    
-    div.innerHTML = `
-      <input class="step-input" value="${escapeHtml(step.text)}" 
-             onchange="updateStep(${idx},this.value)"/>
-      <div class="step-controls">
-        <button onclick="addBranch(${idx})">+ Branch</button>
-        <button class="tertiary" onclick="deleteStep(${idx})">Delete</button>
-      </div>
-      ${branchesHTML}
-    `;
-    
-    container.appendChild(div);
-  });
-}
-
-function renderDiagram() {
-  const svg = document.getElementById('svgDiagram');
-  svg.innerHTML = '';
+    if (versions.length > 20) versions.pop();
+    allSOPs[currentSOPId].versions = versions;
+    saveToStorage();
+  }
   
-  const svgNS = "http://www.w3.org/2000/svg";
-  let y = 20;
-  const nodeHeight = 50;
-  const nodeWidth = 140;
-  const vGap = 70;
-  
-  const drawStep = (step, level = 0, parentX = null, parentY = null) => {
-    const x = 50 + level * 180;
-    
-    // Draw connector from parent
-    if (parentX !== null && parentY !== null) {
-      const line = document.createElementNS(svgNS, 'line');
-      line.setAttribute('x1', parentX + nodeWidth / 2);
-      line.setAttribute('y1', parentY + nodeHeight);
-      line.setAttribute('x2', x + nodeWidth / 2);
-      line.setAttribute('y2', y);
-      line.setAttribute('stroke', '#999');
-      line.setAttribute('stroke-width', '2');
-      svg.appendChild(line);
-    }
-    
-    // Draw step rectangle
-    const rect = document.createElementNS(svgNS, 'rect');
-    rect.setAttribute('x', x);
-    rect.setAttribute('y', y);
-    rect.setAttribute('width', nodeWidth);
-    rect.setAttribute('height', nodeHeight);
-    rect.setAttribute('fill', level === 0 ? '#4CAF50' : '#2196F3');
-    rect.setAttribute('rx', '4');
-    rect.setAttribute('stroke', '#333');
-    rect.setAttribute('stroke-width', '1');
-    svg.appendChild(rect);
-    
-    // Draw text
-    const text = document.createElementNS(svgNS, 'text');
-    text.setAttribute('x', x + nodeWidth / 2);
-    text.setAttribute('y', y + nodeHeight / 2);
-    text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('dominant-baseline', 'middle');
-    text.setAttribute('fill', '#fff');
-    text.setAttribute('font-size', '12');
-    text.setAttribute('font-weight', '500');
-    text.textContent = step.text;
-    svg.appendChild(text);
-    
-    let currentY = y;
-    y += vGap;
-    
-    // Draw branches
-    step.branches.forEach(b => {
-      drawStep(b, level + 1, x, currentY);
-    });
-  };
-  
-  steps.forEach(s => drawStep(s));
+  updateHistoryButtons();
 }
 
-function render() {
-  renderSteps();
-  renderDiagram();
-}
-
-// --- Export ---
-function exportPDF() {
-  // Simple PDF export using basic text rendering
-  const docContent = steps.map((s, i) => {
-    let text = `${i + 1}. ${s.text}`;
-    if (s.branches.length) {
-      s.branches.forEach(b => {
-        text += `\n   └─ ${b.text}`;
-      });
-    }
-    return text;
-  }).join('\n\n');
-  
-  // Create a simple HTML for printing
-  const printWindow = window.open('', '', 'width=800,height=600');
-  printWindow.document.write(`
-    <html>
-      <head><title>SOP - ${currentSopId}</title></head>
-      <body style="font-family:sans-serif; padding:20px;">
-        <h1>Standard Operating Procedure</h1>
-        <pre style="white-space:pre-wrap;">${escapeHtml(docContent)}</pre>
-      </body>
-    </html>
-  `);
-  printWindow.document.close();
-  printWindow.print();
-}
-
-// --- Share ---
-function openShareModal() {
-  const shareData = btoa(JSON.stringify(steps));
-  const shareLink = `${window.location.href}?sop=${shareData}`;
-  document.getElementById('shareLink').textContent = shareLink;
-  document.getElementById('shareModal').classList.add('active');
-}
-
-function closeShareModal() {
-  document.getElementById('shareModal').classList.remove('active');
-}
-
-function copyToClipboard() {
-  const link = document.getElementById('shareLink');
-  link.select();
-  document.execCommand('copy');
-  alert('Link copied!');
-}
-
-// --- Templates ---
-function loadTemplate(name) {
-  if (confirm('Replace current SOP with template?')) {
-    steps = JSON.parse(JSON.stringify(templates[name]));
-    history = [JSON.stringify(steps)];
-    redoStack = [];
+function undo() {
+  if (history.length > 1) {
+    redoStack.push(history.pop());
+    steps = JSON.parse(history[history.length - 1]);
     render();
     updateHistoryButtons();
   }
 }
 
-// --- Utilities ---
-function escapeHtml(text) {
-  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-  return text.replace(/[&<>"']/g, m => map[m]);
-}
-
-// --- Load from URL if shared ---
-function loadFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.has('sop')) {
-    try {
-      steps = JSON.parse(atob(params.get('sop')));
-      history = [JSON.stringify(steps)];
-      render();
-    } catch (e) {
-      console.error('Failed to load SOP from URL', e);
-      addStep();
-    }
-  } else {
-    addStep();
-  }
-}
-
-// --- Init ---
-window.addEventListener('load', () => {
-  loadFromUrl();
-  updateHistoryButtons();
-});
-</script>
-
-</body>
-</html>
+function redo() {
+  if (redoStack.length) {
+    steps = JSON.parse(redoStack.pop());
+    history.push(JSON.stringify(steps
