@@ -3,194 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Workflow Prototype</title>
+<title>SOP Prototype</title>
 <style>
-  body {
-    margin: 0; font-family: sans-serif; background: #f4f4f4; overflow: hidden;
-  }
-  #toolbar {
-    position: fixed; top: 0; left: 0; width: 100%; padding: 10px;
-    background: #fff; border-bottom: 1px solid #ccc; z-index: 1000;
-  }
-  #canvas {
-    position: relative; width: 100vw; height: 100vh; overflow: auto;
-  }
-  .step-card {
-    position: absolute; width: 180px; background: #fff; border: 1px solid #ccc;
-    border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    cursor: grab;
-  }
-  .step-card h3 { margin: 0 0 10px 0; font-size: 16px; }
-  .branches { margin-top: 5px; }
-  .branch {
-    display: flex; align-items: center; margin: 5px 0;
-  }
-  .branch input { flex: 1; font-size: 14px; padding: 3px; }
-  .branch select { margin-left: 5px; font-size: 14px; }
-  button { margin-left: 5px; }
-  svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-  line { stroke: #888; stroke-width: 2; }
+  body { font-family: sans-serif; display: flex; margin: 0; height: 100vh; }
+  #editor { width: 40%; padding: 10px; overflow-y: auto; border-right: 1px solid #ccc; }
+  #diagram { width: 60%; padding: 10px; overflow: auto; background: #f7f7f7; }
+  .step-card { background: #fff; margin: 5px 0; padding: 8px; border: 1px solid #ddd; cursor: grab; }
+  .branch { margin-left: 20px; padding-left: 10px; border-left: 2px dashed #aaa; }
+  button { margin: 5px; }
 </style>
 </head>
 <body>
 
-<div id="toolbar">
+<div id="editor">
+  <h2>Steps</h2>
+  <button onclick="addStep()">Add Step</button>
   <button onclick="undo()">Undo</button>
   <button onclick="redo()">Redo</button>
+  <div id="steps"></div>
+  <h3>Templates</h3>
+  <button onclick="loadTemplate('onboarding')">Client Onboarding</button>
 </div>
 
-<div id="canvas">
-  <svg id="connections"></svg>
-
-  <div class="step-card" id="step1" style="left: 50px; top: 50px;">
-    <h3>Start</h3>
-    <div class="branches">
-      <div class="branch">
-        <input value="Approve" class="branch-label">
-        <select class="branch-target">
-          <option value="step2">Step 2</option>
-          <option value="step3">Step 3</option>
-        </select>
-      </div>
-      <div class="branch">
-        <input value="Reject" class="branch-label">
-        <select class="branch-target">
-          <option value="step2">Step 2</option>
-          <option value="step3">Step 3</option>
-        </select>
-      </div>
-    </div>
-  </div>
-
-  <div class="step-card" id="step2" style="left: 300px; top: 50px;">
-    <h3>Step 2</h3>
-    <div class="branches"></div>
-  </div>
-
-  <div class="step-card" id="step3" style="left: 300px; top: 200px;">
-    <h3>Step 3</h3>
-    <div class="branches"></div>
-  </div>
-
+<div id="diagram">
+  <h2>Diagram</h2>
+  <svg id="svgDiagram" width="100%" height="100%"></svg>
 </div>
 
 <script>
-const canvas = document.getElementById('canvas');
-const connections = document.getElementById('connections');
+// --- Data ---
+let steps = [];
+let history = [];
+let redoStack = [];
 
-let undoStack = [], redoStack = [];
+// --- Templates ---
+const templates = {
+  onboarding: [
+    { text: "Receive client info", branches: [] },
+    { text: "Setup project folder", branches: [] },
+    { text: "Send welcome email", branches: [] }
+  ]
+};
 
-function getWorkflowState() {
-  const steps = Array.from(document.querySelectorAll('.step-card')).map(card => ({
-    id: card.id,
-    left: parseFloat(card.style.left),
-    top: parseFloat(card.style.top),
-    branches: Array.from(card.querySelectorAll('.branch')).map(b => ({
-      label: b.querySelector('.branch-label').value,
-      target: b.querySelector('.branch-target').value
-    }))
-  }));
-  return { steps };
-}
-
-function loadWorkflowState(state) {
-  state.steps.forEach(s => {
-    const card = document.getElementById(s.id);
-    if (!card) return;
-    card.style.left = s.left + 'px';
-    card.style.top = s.top + 'px';
-    const branchElements = card.querySelectorAll('.branch');
-    s.branches.forEach((b, i) => {
-      if (branchElements[i]) {
-        branchElements[i].querySelector('.branch-label').value = b.label;
-        branchElements[i].querySelector('.branch-target').value = b.target;
-      }
-    });
-  });
-  drawConnections();
-}
-
-function saveState() {
-  undoStack.push(JSON.stringify(getWorkflowState()));
-  redoStack = [];
+// --- Functions ---
+function saveHistory() {
+  history.push(JSON.stringify(steps));
+  if(history.length>50) history.shift(); // limit stack size
 }
 
 function undo() {
-  if (!undoStack.length) return;
-  redoStack.push(JSON.stringify(getWorkflowState()));
-  const state = JSON.parse(undoStack.pop());
-  loadWorkflowState(state);
+  if(history.length>1) {
+    redoStack.push(history.pop());
+    steps = JSON.parse(history[history.length-1]);
+    renderSteps();
+    renderDiagram();
+  }
 }
 
 function redo() {
-  if (!redoStack.length) return;
-  undoStack.push(JSON.stringify(getWorkflowState()));
-  const state = JSON.parse(redoStack.pop());
-  loadWorkflowState(state);
-}
-
-function drawConnections() {
-  connections.innerHTML = '';
-  document.querySelectorAll('.step-card').forEach(card => {
-    const rect = card.getBoundingClientRect();
-    const cardX = rect.left + rect.width / 2 + window.scrollX;
-    const cardY = rect.top + rect.height / 2 + window.scrollY;
-
-    card.querySelectorAll('.branch').forEach(branch => {
-      const targetId = branch.querySelector('.branch-target').value;
-      const targetCard = document.getElementById(targetId);
-      if (!targetCard) return;
-      const targetRect = targetCard.getBoundingClientRect();
-      const targetX = targetRect.left + targetRect.width / 2 + window.scrollX;
-      const targetY = targetRect.top + targetRect.height / 2 + window.scrollY;
-
-      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-      line.setAttribute('x1', cardX);
-      line.setAttribute('y1', cardY);
-      line.setAttribute('x2', targetX);
-      line.setAttribute('y2', targetY);
-      connections.appendChild(line);
-    });
-  });
-}
-
-// Dragging
-let selectedCard = null;
-let offsetX = 0, offsetY = 0;
-
-canvas.addEventListener('mousedown', e => {
-  if (!e.target.closest('.step-card')) return;
-  selectedCard = e.target.closest('.step-card');
-  offsetX = e.clientX - selectedCard.getBoundingClientRect().left;
-  offsetY = e.clientY - selectedCard.getBoundingClientRect().top;
-  saveState();
-});
-
-canvas.addEventListener('mousemove', e => {
-  if (!selectedCard) return;
-  selectedCard.style.left = e.clientX - offsetX + 'px';
-  selectedCard.style.top = e.clientY - offsetY + 'px';
-  drawConnections();
-});
-
-canvas.addEventListener('mouseup', e => {
-  if (selectedCard) {
-    drawConnections();
-    selectedCard = null;
+  if(redoStack.length) {
+    steps = JSON.parse(redoStack.pop());
+    history.push(JSON.stringify(steps));
+    renderSteps();
+    renderDiagram();
   }
-});
+}
 
-// Branch updates
-document.querySelectorAll('.branch-label, .branch-target').forEach(input => {
-  input.addEventListener('input', () => {
-    saveState();
-    drawConnections();
+function addStep(text="New Step") {
+  steps.push({ text, branches: [] });
+  saveHistory();
+  renderSteps();
+  renderDiagram();
+}
+
+function addBranch(step) {
+  const branchText = prompt("Branch step text:");
+  if(branchText) step.branches.push({ text: branchText, branches: [] });
+  saveHistory();
+  renderSteps();
+  renderDiagram();
+}
+
+function renderSteps() {
+  const container = document.getElementById('steps');
+  container.innerHTML = '';
+  steps.forEach((step, idx) => {
+    const div = document.createElement('div');
+    div.className = 'step-card';
+    div.innerHTML = `<input value="${step.text}" onchange="updateStep(${idx}, this.value)"/>
+                     <button onclick="addBranch(steps[${idx}])">Add Branch</button>`;
+    if(step.branches.length) {
+      step.branches.forEach((b,i)=>{
+        const branchDiv = document.createElement('div');
+        branchDiv.className = 'step-card branch';
+        branchDiv.innerHTML = `<input value="${b.text}" onchange="updateBranch(${idx},${i},this.value)"/>`;
+        div.appendChild(branchDiv);
+      });
+    }
+    container.appendChild(div);
   });
-});
+}
 
-drawConnections();
-saveState();
+function updateStep(idx, value) { steps[idx].text = value; saveHistory(); renderDiagram(); }
+function updateBranch(idx, bIdx, value) { steps[idx].branches[bIdx].text = value; saveHistory(); renderDiagram(); }
+
+function loadTemplate(name) {
+  steps = JSON.parse(JSON.stringify(templates[name]));
+  saveHistory();
+  renderSteps();
+  renderDiagram();
+}
+
+// --- Diagram rendering ---
+function renderDiagram() {
+  const svg = document.getElementById('svgDiagram');
+  svg.innerHTML = '';
+  let y = 20;
+  const drawStep = (step, level=0, parentX=100, parentY=0) => {
+    const x = 50 + level*150;
+    svg.innerHTML += `<rect x="${x}" y="${y}" width="120" height="40" fill="#4CAF50" rx="5" ry="5"></rect>`;
+    svg.innerHTML += `<text x="${x+60}" y="${y+25}" text-anchor="middle" fill="#fff">${step.text}</text>`;
+    if(parentY) svg.innerHTML += `<line x1="${parentX+60}" y1="${parentY+40}" x2="${x+60}" y2="${y}" stroke="#000"/>`;
+    let currentY = y;
+    y += 60;
+    step.branches.forEach(b => drawStep(b, level+1, x, currentY));
+  };
+  steps.forEach(s => drawStep(s));
+}
+
+// --- Init ---
+addStep();
 </script>
-
 </body>
 </html>
