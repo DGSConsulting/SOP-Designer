@@ -3,136 +3,581 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOP Prototype</title>
+<title>SOP Manager - MVP</title>
 <style>
-  body { font-family: sans-serif; display: flex; margin: 0; height: 100vh; }
-  #editor { width: 40%; padding: 10px; overflow-y: auto; border-right: 1px solid #ccc; }
-  #diagram { width: 60%; padding: 10px; overflow: auto; background: #f7f7f7; }
-  .step-card { background: #fff; margin: 5px 0; padding: 8px; border: 1px solid #ddd; cursor: grab; }
-  .branch { margin-left: 20px; padding-left: 10px; border-left: 2px dashed #aaa; }
-  button { margin: 5px; }
+  * { box-sizing: border-box; }
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+    display: flex; 
+    margin: 0; 
+    height: 100vh;
+    background: #f5f5f5;
+  }
+  
+  #editor { 
+    width: 45%; 
+    padding: 16px; 
+    overflow-y: auto; 
+    border-right: 1px solid #ddd;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  #diagram { 
+    width: 55%; 
+    padding: 16px; 
+    overflow: auto; 
+    background: #f9f9f9;
+  }
+  
+  h1, h2, h3 { margin: 0 0 12px 0; }
+  h1 { font-size: 20px; color: #333; }
+  h2 { font-size: 16px; color: #555; margin-top: 16px; }
+  
+  .toolbar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  
+  button {
+    padding: 8px 12px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+  
+  button:hover { background: #45a049; }
+  button:disabled { background: #ccc; cursor: not-allowed; }
+  
+  .secondary {
+    background: #2196F3;
+  }
+  .secondary:hover { background: #0b7dda; }
+  
+  .tertiary {
+    background: #666;
+  }
+  .tertiary:hover { background: #555; }
+  
+  .steps-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 16px;
+  }
+  
+  .step-card {
+    background: #fff;
+    margin: 8px 0;
+    padding: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 4px;
+    cursor: move;
+    transition: all 0.2s;
+  }
+  
+  .step-card:hover {
+    border-color: #4CAF50;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .step-card.dragging {
+    opacity: 0.6;
+    background: #f0f0f0;
+  }
+  
+  .step-input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  
+  .step-controls {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  
+  .step-controls button {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .branch {
+    margin-left: 16px;
+    margin-top: 8px;
+    padding-left: 10px;
+    border-left: 3px solid #2196F3;
+    padding: 8px;
+    background: #f0f7ff;
+    border-radius: 3px;
+  }
+  
+  .templates-section {
+    margin-top: 16px;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 4px;
+  }
+  
+  .templates-section h3 { margin-top: 0; }
+  
+  .template-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  
+  .template-btn {
+    padding: 6px 8px;
+    font-size: 11px;
+    background: #FF9800;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .template-btn:hover { background: #e68900; }
+  
+  #svgDiagram {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .export-section {
+    margin-top: 16px;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 4px;
+  }
+  
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal.active { display: flex; }
+  
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  
+  .modal-content h2 { margin-top: 0; }
+  
+  .share-link {
+    padding: 8px;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+    word-break: break-all;
+    margin: 8px 0;
+    user-select: all;
+  }
+  
+  @media (max-width: 1024px) {
+    #editor { width: 50%; }
+    #diagram { width: 50%; }
+  }
+  
+  @media (max-width: 768px) {
+    body { flex-direction: column; }
+    #editor { width: 100%; height: 50%; border-right: none; border-bottom: 1px solid #ddd; }
+    #diagram { width: 100%; height: 50%; }
+  }
 </style>
 </head>
 <body>
 
 <div id="editor">
-  <h2>Steps</h2>
-  <button onclick="addStep()">Add Step</button>
-  <button onclick="undo()">Undo</button>
-  <button onclick="redo()">Redo</button>
-  <div id="steps"></div>
-  <h3>Templates</h3>
-  <button onclick="loadTemplate('onboarding')">Client Onboarding</button>
+  <h1>📋 SOP Manager</h1>
+  
+  <div class="toolbar">
+    <button onclick="addStep()">+ Add Step</button>
+    <button onclick="undo()" id="undoBtn" disabled>↶ Undo</button>
+    <button onclick="redo()" id="redoBtn" disabled>↷ Redo</button>
+    <button class="secondary" onclick="openShareModal()">🔗 Share</button>
+    <button class="secondary" onclick="exportPDF()">📄 Export PDF</button>
+  </div>
+  
+  <div class="steps-list" id="stepsList"></div>
+  
+  <div class="templates-section">
+    <h3>Templates</h3>
+    <div class="template-grid">
+      <button class="template-btn" onclick="loadTemplate('onboarding')">Client Onboarding</button>
+      <button class="template-btn" onclick="loadTemplate('invoicing')">Invoicing Process</button>
+      <button class="template-btn" onclick="loadTemplate('qa')">QA Checklist</button>
+    </div>
+  </div>
 </div>
 
 <div id="diagram">
   <h2>Diagram</h2>
-  <svg id="svgDiagram" width="100%" height="100%"></svg>
+  <svg id="svgDiagram" width="100%" height="600"></svg>
+</div>
+
+<!-- Share Modal -->
+<div id="shareModal" class="modal">
+  <div class="modal-content">
+    <h2>Share SOP</h2>
+    <p>Share this link with collaborators (read-only):</p>
+    <div class="share-link" id="shareLink"></div>
+    <button onclick="copyToClipboard()">📋 Copy Link</button>
+    <button class="tertiary" onclick="closeShareModal()">Close</button>
+  </div>
 </div>
 
 <script>
-// --- Data ---
+// --- State Management ---
 let steps = [];
 let history = [];
 let redoStack = [];
+let currentSopId = 'default-' + Date.now();
 
 // --- Templates ---
 const templates = {
   onboarding: [
-    { text: "Receive client info", branches: [] },
-    { text: "Setup project folder", branches: [] },
-    { text: "Send welcome email", branches: [] }
+    { text: "Receive client intake form", branches: [] },
+    { text: "Create client folder structure", branches: [] },
+    { text: "Send welcome email with login credentials", branches: [] },
+    { text: "Schedule onboarding call", branches: [] }
+  ],
+  invoicing: [
+    { text: "Collect hours/expenses from team", branches: [] },
+    { text: "Generate invoice from template", branches: [
+      { text: "Review invoice for accuracy", branches: [] }
+    ]},
+    { text: "Send invoice to client", branches: [] },
+    { text: "Log in accounting system", branches: [] }
+  ],
+  qa: [
+    { text: "Pull latest code from main branch", branches: [] },
+    { text: "Run automated tests", branches: [
+      { text: "If tests fail: fix bugs", branches: [] }
+    ]},
+    { text: "Manual smoke testing", branches: [] },
+    { text: "Approve for staging", branches: [] }
   ]
 };
 
-// --- Functions ---
+// --- History/Undo-Redo ---
 function saveHistory() {
   history.push(JSON.stringify(steps));
-  if(history.length>50) history.shift(); // limit stack size
+  redoStack = [];
+  if (history.length > 50) history.shift();
+  updateHistoryButtons();
 }
 
 function undo() {
-  if(history.length>1) {
+  if (history.length > 1) {
     redoStack.push(history.pop());
-    steps = JSON.parse(history[history.length-1]);
-    renderSteps();
-    renderDiagram();
+    steps = JSON.parse(history[history.length - 1]);
+    render();
+    updateHistoryButtons();
   }
 }
 
 function redo() {
-  if(redoStack.length) {
+  if (redoStack.length) {
     steps = JSON.parse(redoStack.pop());
     history.push(JSON.stringify(steps));
-    renderSteps();
-    renderDiagram();
+    render();
+    updateHistoryButtons();
   }
 }
 
-function addStep(text="New Step") {
+function updateHistoryButtons() {
+  document.getElementById('undoBtn').disabled = history.length <= 1;
+  document.getElementById('redoBtn').disabled = redoStack.length === 0;
+}
+
+// --- Step Management ---
+function addStep(text = "New Step") {
   steps.push({ text, branches: [] });
   saveHistory();
-  renderSteps();
-  renderDiagram();
+  render();
 }
 
-function addBranch(step) {
-  const branchText = prompt("Branch step text:");
-  if(branchText) step.branches.push({ text: branchText, branches: [] });
+function updateStep(idx, value) {
+  steps[idx].text = value;
   saveHistory();
-  renderSteps();
-  renderDiagram();
+  render();
 }
 
+function deleteStep(idx) {
+  steps.splice(idx, 1);
+  saveHistory();
+  render();
+}
+
+function moveStep(fromIdx, toIdx) {
+  const [step] = steps.splice(fromIdx, 1);
+  steps.splice(toIdx, 0, step);
+  saveHistory();
+  render();
+}
+
+function addBranch(stepIdx) {
+  const branchText = prompt("Branch step text:");
+  if (branchText) {
+    steps[stepIdx].branches.push({ text: branchText, branches: [] });
+    saveHistory();
+    render();
+  }
+}
+
+function deleteBranch(stepIdx, branchIdx) {
+  steps[stepIdx].branches.splice(branchIdx, 1);
+  saveHistory();
+  render();
+}
+
+function updateBranch(stepIdx, branchIdx, value) {
+  steps[stepIdx].branches[branchIdx].text = value;
+  saveHistory();
+  render();
+}
+
+// --- Rendering ---
 function renderSteps() {
-  const container = document.getElementById('steps');
+  const container = document.getElementById('stepsList');
   container.innerHTML = '';
+  
   steps.forEach((step, idx) => {
     const div = document.createElement('div');
     div.className = 'step-card';
-    div.innerHTML = `<input value="${step.text}" onchange="updateStep(${idx}, this.value)"/>
-                     <button onclick="addBranch(steps[${idx}])">Add Branch</button>`;
-    if(step.branches.length) {
-      step.branches.forEach((b,i)=>{
-        const branchDiv = document.createElement('div');
-        branchDiv.className = 'step-card branch';
-        branchDiv.innerHTML = `<input value="${b.text}" onchange="updateBranch(${idx},${i},this.value)"/>`;
-        div.appendChild(branchDiv);
-      });
-    }
+    div.draggable = true;
+    div.dataset.index = idx;
+    
+    div.addEventListener('dragstart', (e) => {
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('stepIndex', idx);
+      div.classList.add('dragging');
+    });
+    
+    div.addEventListener('dragend', () => {
+      div.classList.remove('dragging');
+    });
+    
+    div.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    });
+    
+    div.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const fromIdx = parseInt(e.dataTransfer.getData('stepIndex'));
+      if (fromIdx !== idx) {
+        moveStep(fromIdx, idx);
+      }
+    });
+    
+    let branchesHTML = '';
+    step.branches.forEach((branch, bIdx) => {
+      branchesHTML += `
+        <div class="branch">
+          <input class="step-input" value="${escapeHtml(branch.text)}" 
+                 onchange="updateBranch(${idx},${bIdx},this.value)"/>
+          <button class="tertiary" onclick="deleteBranch(${idx},${bIdx})" style="padding:2px 6px;font-size:11px;">Delete</button>
+        </div>
+      `;
+    });
+    
+    div.innerHTML = `
+      <input class="step-input" value="${escapeHtml(step.text)}" 
+             onchange="updateStep(${idx},this.value)"/>
+      <div class="step-controls">
+        <button onclick="addBranch(${idx})">+ Branch</button>
+        <button class="tertiary" onclick="deleteStep(${idx})">Delete</button>
+      </div>
+      ${branchesHTML}
+    `;
+    
     container.appendChild(div);
   });
 }
 
-function updateStep(idx, value) { steps[idx].text = value; saveHistory(); renderDiagram(); }
-function updateBranch(idx, bIdx, value) { steps[idx].branches[bIdx].text = value; saveHistory(); renderDiagram(); }
+function renderDiagram() {
+  const svg = document.getElementById('svgDiagram');
+  svg.innerHTML = '';
+  
+  const svgNS = "http://www.w3.org/2000/svg";
+  let y = 20;
+  const nodeHeight = 50;
+  const nodeWidth = 140;
+  const vGap = 70;
+  
+  const drawStep = (step, level = 0, parentX = null, parentY = null) => {
+    const x = 50 + level * 180;
+    
+    // Draw connector from parent
+    if (parentX !== null && parentY !== null) {
+      const line = document.createElementNS(svgNS, 'line');
+      line.setAttribute('x1', parentX + nodeWidth / 2);
+      line.setAttribute('y1', parentY + nodeHeight);
+      line.setAttribute('x2', x + nodeWidth / 2);
+      line.setAttribute('y2', y);
+      line.setAttribute('stroke', '#999');
+      line.setAttribute('stroke-width', '2');
+      svg.appendChild(line);
+    }
+    
+    // Draw step rectangle
+    const rect = document.createElementNS(svgNS, 'rect');
+    rect.setAttribute('x', x);
+    rect.setAttribute('y', y);
+    rect.setAttribute('width', nodeWidth);
+    rect.setAttribute('height', nodeHeight);
+    rect.setAttribute('fill', level === 0 ? '#4CAF50' : '#2196F3');
+    rect.setAttribute('rx', '4');
+    rect.setAttribute('stroke', '#333');
+    rect.setAttribute('stroke-width', '1');
+    svg.appendChild(rect);
+    
+    // Draw text
+    const text = document.createElementNS(svgNS, 'text');
+    text.setAttribute('x', x + nodeWidth / 2);
+    text.setAttribute('y', y + nodeHeight / 2);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dominant-baseline', 'middle');
+    text.setAttribute('fill', '#fff');
+    text.setAttribute('font-size', '12');
+    text.setAttribute('font-weight', '500');
+    text.textContent = step.text;
+    svg.appendChild(text);
+    
+    let currentY = y;
+    y += vGap;
+    
+    // Draw branches
+    step.branches.forEach(b => {
+      drawStep(b, level + 1, x, currentY);
+    });
+  };
+  
+  steps.forEach(s => drawStep(s));
+}
 
-function loadTemplate(name) {
-  steps = JSON.parse(JSON.stringify(templates[name]));
-  saveHistory();
+function render() {
   renderSteps();
   renderDiagram();
 }
 
-// --- Diagram rendering ---
-function renderDiagram() {
-  const svg = document.getElementById('svgDiagram');
-  svg.innerHTML = '';
-  let y = 20;
-  const drawStep = (step, level=0, parentX=100, parentY=0) => {
-    const x = 50 + level*150;
-    svg.innerHTML += `<rect x="${x}" y="${y}" width="120" height="40" fill="#4CAF50" rx="5" ry="5"></rect>`;
-    svg.innerHTML += `<text x="${x+60}" y="${y+25}" text-anchor="middle" fill="#fff">${step.text}</text>`;
-    if(parentY) svg.innerHTML += `<line x1="${parentX+60}" y1="${parentY+40}" x2="${x+60}" y2="${y}" stroke="#000"/>`;
-    let currentY = y;
-    y += 60;
-    step.branches.forEach(b => drawStep(b, level+1, x, currentY));
-  };
-  steps.forEach(s => drawStep(s));
+// --- Export ---
+function exportPDF() {
+  // Simple PDF export using basic text rendering
+  const docContent = steps.map((s, i) => {
+    let text = `${i + 1}. ${s.text}`;
+    if (s.branches.length) {
+      s.branches.forEach(b => {
+        text += `\n   └─ ${b.text}`;
+      });
+    }
+    return text;
+  }).join('\n\n');
+  
+  // Create a simple HTML for printing
+  const printWindow = window.open('', '', 'width=800,height=600');
+  printWindow.document.write(`
+    <html>
+      <head><title>SOP - ${currentSopId}</title></head>
+      <body style="font-family:sans-serif; padding:20px;">
+        <h1>Standard Operating Procedure</h1>
+        <pre style="white-space:pre-wrap;">${escapeHtml(docContent)}</pre>
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.print();
+}
+
+// --- Share ---
+function openShareModal() {
+  const shareData = btoa(JSON.stringify(steps));
+  const shareLink = `${window.location.href}?sop=${shareData}`;
+  document.getElementById('shareLink').textContent = shareLink;
+  document.getElementById('shareModal').classList.add('active');
+}
+
+function closeShareModal() {
+  document.getElementById('shareModal').classList.remove('active');
+}
+
+function copyToClipboard() {
+  const link = document.getElementById('shareLink');
+  link.select();
+  document.execCommand('copy');
+  alert('Link copied!');
+}
+
+// --- Templates ---
+function loadTemplate(name) {
+  if (confirm('Replace current SOP with template?')) {
+    steps = JSON.parse(JSON.stringify(templates[name]));
+    history = [JSON.stringify(steps)];
+    redoStack = [];
+    render();
+    updateHistoryButtons();
+  }
+}
+
+// --- Utilities ---
+function escapeHtml(text) {
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+// --- Load from URL if shared ---
+function loadFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('sop')) {
+    try {
+      steps = JSON.parse(atob(params.get('sop')));
+      history = [JSON.stringify(steps)];
+      render();
+    } catch (e) {
+      console.error('Failed to load SOP from URL', e);
+      addStep();
+    }
+  } else {
+    addStep();
+  }
 }
 
 // --- Init ---
-addStep();
+window.addEventListener('load', () => {
+  loadFromUrl();
+  updateHistoryButtons();
+});
 </script>
+
 </body>
 </html>
