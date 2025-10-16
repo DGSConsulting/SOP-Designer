@@ -3,227 +3,193 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flowchart Canvas Editor</title>
+<title>Workflow Prototype</title>
 <style>
-  body { font-family: sans-serif; margin: 0; background: #f4f4f4; overflow: hidden; }
-  #toolbar { padding: 10px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: fixed; width: 100%; z-index: 10; }
-  button { margin-right: 5px; padding: 5px 10px; }
-  #canvas { position: absolute; top: 50px; bottom: 0; left: 0; right: 0; overflow: auto; }
-  .step-card { position: absolute; width: 160px; background: #fff; padding: 10px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.15); cursor: grab; }
-  .branch-row { display: flex; gap: 5px; margin-top: 5px; align-items: center; }
-  input, select { padding: 4px; font-size: 0.9em; }
+  body {
+    margin: 0; font-family: sans-serif; background: #f4f4f4; overflow: hidden;
+  }
+  #toolbar {
+    position: fixed; top: 0; left: 0; width: 100%; padding: 10px;
+    background: #fff; border-bottom: 1px solid #ccc; z-index: 1000;
+  }
+  #canvas {
+    position: relative; width: 100vw; height: 100vh; overflow: auto;
+  }
+  .step-card {
+    position: absolute; width: 180px; background: #fff; border: 1px solid #ccc;
+    border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    cursor: grab;
+  }
+  .step-card h3 { margin: 0 0 10px 0; font-size: 16px; }
+  .branches { margin-top: 5px; }
+  .branch {
+    display: flex; align-items: center; margin: 5px 0;
+  }
+  .branch input { flex: 1; font-size: 14px; padding: 3px; }
+  .branch select { margin-left: 5px; font-size: 14px; }
+  button { margin-left: 5px; }
   svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+  line { stroke: #888; stroke-width: 2; }
 </style>
 </head>
 <body>
 
 <div id="toolbar">
-  <button onclick="addStep()">+ Add Step</button>
-  <button onclick="undo()">⎌ Undo</button>
-  <button onclick="redo()">⎌ Redo</button>
+  <button onclick="undo()">Undo</button>
+  <button onclick="redo()">Redo</button>
 </div>
 
-<div id="canvas"></div>
-<svg id="connections"></svg>
+<div id="canvas">
+  <svg id="connections"></svg>
+
+  <div class="step-card" id="step1" style="left: 50px; top: 50px;">
+    <h3>Start</h3>
+    <div class="branches">
+      <div class="branch">
+        <input value="Approve" class="branch-label">
+        <select class="branch-target">
+          <option value="step2">Step 2</option>
+          <option value="step3">Step 3</option>
+        </select>
+      </div>
+      <div class="branch">
+        <input value="Reject" class="branch-label">
+        <select class="branch-target">
+          <option value="step2">Step 2</option>
+          <option value="step3">Step 3</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" id="step2" style="left: 300px; top: 50px;">
+    <h3>Step 2</h3>
+    <div class="branches"></div>
+  </div>
+
+  <div class="step-card" id="step3" style="left: 300px; top: 200px;">
+    <h3>Step 3</h3>
+    <div class="branches"></div>
+  </div>
+
+</div>
 
 <script>
-let store = { steps: [] };
-const history = [];
-let historyPointer = -1;
-const MAX_HISTORY = 50;
+const canvas = document.getElementById('canvas');
+const connections = document.getElementById('connections');
 
-function pushHistory() {
-  history.splice(historyPointer + 1);
-  history.push(JSON.stringify(store));
-  if(history.length > MAX_HISTORY) history.shift();
-  historyPointer = history.length - 1;
+let undoStack = [], redoStack = [];
+
+function getWorkflowState() {
+  const steps = Array.from(document.querySelectorAll('.step-card')).map(card => ({
+    id: card.id,
+    left: parseFloat(card.style.left),
+    top: parseFloat(card.style.top),
+    branches: Array.from(card.querySelectorAll('.branch')).map(b => ({
+      label: b.querySelector('.branch-label').value,
+      target: b.querySelector('.branch-target').value
+    }))
+  }));
+  return { steps };
+}
+
+function loadWorkflowState(state) {
+  state.steps.forEach(s => {
+    const card = document.getElementById(s.id);
+    if (!card) return;
+    card.style.left = s.left + 'px';
+    card.style.top = s.top + 'px';
+    const branchElements = card.querySelectorAll('.branch');
+    s.branches.forEach((b, i) => {
+      if (branchElements[i]) {
+        branchElements[i].querySelector('.branch-label').value = b.label;
+        branchElements[i].querySelector('.branch-target').value = b.target;
+      }
+    });
+  });
+  drawConnections();
+}
+
+function saveState() {
+  undoStack.push(JSON.stringify(getWorkflowState()));
+  redoStack = [];
 }
 
 function undo() {
-  if(historyPointer <= 0) return;
-  historyPointer--;
-  store = JSON.parse(history[historyPointer]);
-  renderAll();
+  if (!undoStack.length) return;
+  redoStack.push(JSON.stringify(getWorkflowState()));
+  const state = JSON.parse(undoStack.pop());
+  loadWorkflowState(state);
 }
 
 function redo() {
-  if(historyPointer >= history.length - 1) return;
-  historyPointer++;
-  store = JSON.parse(history[historyPointer]);
-  renderAll();
+  if (!redoStack.length) return;
+  undoStack.push(JSON.stringify(getWorkflowState()));
+  const state = JSON.parse(redoStack.pop());
+  loadWorkflowState(state);
 }
 
-function addStep() {
-  pushHistory();
-  const newStep = { 
-    id: Date.now().toString(), 
-    title: "New Step", 
-    branches: [], 
-    x: 50 + Math.random() * 300, 
-    y: 50 + Math.random() * 200 
-  };
-  store.steps.push(newStep);
-  renderAll();
-}
+function drawConnections() {
+  connections.innerHTML = '';
+  document.querySelectorAll('.step-card').forEach(card => {
+    const rect = card.getBoundingClientRect();
+    const cardX = rect.left + rect.width / 2 + window.scrollX;
+    const cardY = rect.top + rect.height / 2 + window.scrollY;
 
-function deleteStep(stepId) {
-  pushHistory();
-  store.steps = store.steps.filter(s => s.id !== stepId);
-  store.steps.forEach(s => s.branches.forEach(b => { if(b.target === stepId) b.target = ""; }));
-  renderAll();
-}
+    card.querySelectorAll('.branch').forEach(branch => {
+      const targetId = branch.querySelector('.branch-target').value;
+      const targetCard = document.getElementById(targetId);
+      if (!targetCard) return;
+      const targetRect = targetCard.getBoundingClientRect();
+      const targetX = targetRect.left + targetRect.width / 2 + window.scrollX;
+      const targetY = targetRect.top + targetRect.height / 2 + window.scrollY;
 
-function addBranch(stepId) {
-  pushHistory();
-  const step = store.steps.find(s => s.id === stepId);
-  step.branches.push({ id: Date.now().toString(), condition: "", target: "" });
-  renderAll();
-}
-
-function deleteBranch(stepId, branchId) {
-  pushHistory();
-  const step = store.steps.find(s => s.id === stepId);
-  step.branches = step.branches.filter(b => b.id !== branchId);
-  renderAll();
-}
-
-function updateStepTitle(stepId, value) {
-  pushHistory();
-  const step = store.steps.find(s => s.id === stepId);
-  step.title = value;
-  renderConnections();
-}
-
-function updateBranch(stepId, branchId, field, value) {
-  pushHistory();
-  const step = store.steps.find(s => s.id === stepId);
-  const branch = step.branches.find(b => b.id === branchId);
-  branch[field] = value;
-  renderConnections();
-}
-
-function renderAll() {
-  const canvas = document.getElementById("canvas");
-  canvas.innerHTML = "";
-  
-  store.steps.forEach(step => {
-    const div = document.createElement("div");
-    div.className = "step-card";
-    div.style.left = step.x + "px";
-    div.style.top = step.y + "px";
-    div.dataset.id = step.id;
-
-    const titleInput = document.createElement("input");
-    titleInput.value = step.title;
-    titleInput.oninput = e => updateStepTitle(step.id, e.target.value);
-    div.appendChild(titleInput);
-
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "✕ Delete";
-    deleteBtn.onclick = () => deleteStep(step.id);
-    div.appendChild(deleteBtn);
-
-    const addBranchBtn = document.createElement("button");
-    addBranchBtn.textContent = "+ Branch";
-    addBranchBtn.onclick = () => addBranch(step.id);
-    div.appendChild(addBranchBtn);
-
-    step.branches.forEach(branch => {
-      const row = document.createElement("div");
-      row.className = "branch-row";
-
-      const condInput = document.createElement("input");
-      condInput.placeholder = "Condition";
-      condInput.value = branch.condition;
-      condInput.oninput = e => updateBranch(step.id, branch.id, 'condition', e.target.value);
-      row.appendChild(condInput);
-
-      const targetSelect = document.createElement("select");
-      const emptyOpt = document.createElement("option");
-      emptyOpt.value = "";
-      emptyOpt.textContent = "→ Next Step";
-      targetSelect.appendChild(emptyOpt);
-      store.steps.forEach(s => {
-        const opt = document.createElement("option");
-        opt.value = s.id;
-        opt.textContent = s.title;
-        if(s.id === branch.target) opt.selected = true;
-        targetSelect.appendChild(opt);
-      });
-      targetSelect.onchange = e => updateBranch(step.id, branch.id, 'target', e.target.value);
-      row.appendChild(targetSelect);
-
-      const delBranchBtn = document.createElement("button");
-      delBranchBtn.textContent = "✕";
-      delBranchBtn.onclick = () => deleteBranch(step.id, branch.id);
-      row.appendChild(delBranchBtn);
-
-      div.appendChild(row);
-    });
-
-    // Dragging
-    let offsetX, offsetY;
-    div.addEventListener('mousedown', e => {
-      offsetX = e.offsetX;
-      offsetY = e.offsetY;
-      function onMouseMove(ev) {
-        div.style.left = (ev.pageX - offsetX) + "px";
-        div.style.top = (ev.pageY - offsetY) + "px";
-        const s = store.steps.find(st => st.id === step.id);
-        s.x = ev.pageX - offsetX;
-        s.y = ev.pageY - offsetY;
-        renderConnections();
-      }
-      function onMouseUp() {
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-        pushHistory();
-      }
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
-    });
-
-    canvas.appendChild(div);
-  });
-
-  renderConnections();
-}
-
-// Draw curved connections
-function renderConnections() {
-  const svg = document.getElementById("connections");
-  svg.innerHTML = "";
-  store.steps.forEach(step => {
-    const fromDiv = document.querySelector(`.step-card[data-id='${step.id}']`);
-    if(!fromDiv) return;
-    const fromRect = fromDiv.getBoundingClientRect();
-    const fromX = fromRect.left + fromRect.width / 2 + window.scrollX;
-    const fromY = fromRect.top + fromRect.height / 2 + window.scrollY;
-
-    step.branches.forEach(branch => {
-      if(!branch.target) return;
-      const toDiv = document.querySelector(`.step-card[data-id='${branch.target}']`);
-      if(!toDiv) return;
-      const toRect = toDiv.getBoundingClientRect();
-      const toX = toRect.left + toRect.width / 2 + window.scrollX;
-      const toY = toRect.top + toRect.height / 2 + window.scrollY;
-
-      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      const dx = Math.abs(toX - fromX)/2;
-      const dy = Math.abs(toY - fromY)/2;
-      const curve = `M${fromX},${fromY} C${fromX+dx},${fromY} ${toX-dx},${toY} ${toX},${toY}`;
-      path.setAttribute("d", curve);
-      path.setAttribute("stroke","#007bff");
-      path.setAttribute("stroke-width","2");
-      path.setAttribute("fill","none");
-      svg.appendChild(path);
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1', cardX);
+      line.setAttribute('y1', cardY);
+      line.setAttribute('x2', targetX);
+      line.setAttribute('y2', targetY);
+      connections.appendChild(line);
     });
   });
 }
 
-renderAll();
-window.addEventListener('resize', renderConnections);
-window.addEventListener('scroll', renderConnections);
+// Dragging
+let selectedCard = null;
+let offsetX = 0, offsetY = 0;
+
+canvas.addEventListener('mousedown', e => {
+  if (!e.target.closest('.step-card')) return;
+  selectedCard = e.target.closest('.step-card');
+  offsetX = e.clientX - selectedCard.getBoundingClientRect().left;
+  offsetY = e.clientY - selectedCard.getBoundingClientRect().top;
+  saveState();
+});
+
+canvas.addEventListener('mousemove', e => {
+  if (!selectedCard) return;
+  selectedCard.style.left = e.clientX - offsetX + 'px';
+  selectedCard.style.top = e.clientY - offsetY + 'px';
+  drawConnections();
+});
+
+canvas.addEventListener('mouseup', e => {
+  if (selectedCard) {
+    drawConnections();
+    selectedCard = null;
+  }
+});
+
+// Branch updates
+document.querySelectorAll('.branch-label, .branch-target').forEach(input => {
+  input.addEventListener('input', () => {
+    saveState();
+    drawConnections();
+  });
+});
+
+drawConnections();
+saveState();
 </script>
 
 </body>
