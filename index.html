@@ -25,10 +25,11 @@ button:hover { background: var(--accent); }
 #clear-sop-btn { background: var(--danger); }
 #editor { background: #fff; padding: 1.5rem; border-radius: 8px; min-height: 300px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid var(--border); }
 #editor[contenteditable="true"]:empty:before { content: "Start typing your SOP here..."; color: #aaa; }
-.sop-step, .sop-task, .sop-checklist { margin: 1rem 0; padding: 1rem; border-left: 4px solid var(--primary); background: #fdfdfd; border-radius: 6px; position: relative; }
+.sop-step, .sop-task, .sop-checklist { margin: 1rem 0; padding: 1rem; border-left: 4px solid var(--primary); background: #fdfdfd; border-radius: 6px; position: relative; cursor: move; }
+.sop-step.dragging, .sop-task.dragging, .sop-checklist.dragging { opacity: 0.5; }
 .sop-step h3, .sop-task h4 { margin-top: 0; }
 .sop-checklist ul { margin: 0.5rem 0 0; padding-left: 1.5rem; }
-.sop-checklist li { margin: 0.25rem 0; }
+.sop-checklist li { margin: 0.25rem 0; cursor: default; }
 .add-item-btn, .remove-item-btn {
   background: var(--accent); color: #fff; font-size: 0.8rem; border: none; border-radius: 4px;
   padding: 0.25rem 0.5rem; cursor: pointer; margin-left: 0.5rem;
@@ -70,19 +71,16 @@ footer { background: #e5e5e5; text-align: center; padding: 1rem; margin-top: 2re
 const editor = document.getElementById('editor');
 const statusMsg = document.getElementById('status-msg');
 document.getElementById('year').textContent = new Date().getFullYear();
-const STORAGE_KEY = 'sop-designer-content-v5';
+const STORAGE_KEY = 'sop-designer-content-v6';
 
 function showStatus(message, timeout=2000){statusMsg.textContent=message;if(timeout)setTimeout(()=>statusMsg.textContent='',timeout);}
 function saveToLocal(){localStorage.setItem(STORAGE_KEY,editor.innerHTML);showStatus('✅ SOP saved');}
 function loadFromLocal(){const content=localStorage.getItem(STORAGE_KEY);content?(editor.innerHTML=content,showStatus('📂 SOP loaded')):showStatus('⚠️ No saved SOP found');}
 function clearWorkspace(){editor.innerHTML='';showStatus('🧹 Workspace cleared');}
 function newSOP(){editor.innerHTML='<p><strong>New SOP started.</strong> Add your steps here.</p>';showStatus('✨ New SOP created');}
-
 function insertHTML(html){editor.focus();const sel=window.getSelection();const range=sel.getRangeAt(0);const frag=range.createContextualFragment(html);range.insertNode(frag);range.collapse(false);}
-
 function insertStep(){insertHTML('<div class="sop-step" contenteditable="true"><h3>Step Title</h3><p>Describe the procedure for this step...</p></div>');}
 function insertTask(){insertHTML('<div class="sop-task" contenteditable="true"><h4>Task Title</h4><p>Outline the specific task details here.</p></div>');}
-
 function insertChecklist(){
   const html=`
   <div class="sop-checklist">
@@ -97,7 +95,7 @@ function insertChecklist(){
   insertHTML(html);
 }
 
-// --- EVENTS ---
+// EVENTS
 document.getElementById('new-sop-btn').addEventListener('click',newSOP);
 document.getElementById('load-sop-btn').addEventListener('click',loadFromLocal);
 document.getElementById('save-sop-btn').addEventListener('click',saveToLocal);
@@ -107,8 +105,8 @@ document.getElementById('insert-step-btn').addEventListener('click',insertStep);
 document.getElementById('insert-task-btn').addEventListener('click',insertTask);
 document.getElementById('insert-checklist-btn').addEventListener('click',insertChecklist);
 
-editor.addEventListener('input',()=>{clearTimeout(typingTimer);typingTimer=setTimeout(saveToLocal,1000);});
 let typingTimer;
+editor.addEventListener('input',()=>{clearTimeout(typingTimer);typingTimer=setTimeout(saveToLocal,1000);});
 
 // --- Dynamic Checklist Actions ---
 editor.addEventListener('click',(e)=>{
@@ -123,7 +121,27 @@ editor.addEventListener('click',(e)=>{
   }
 });
 
-// --- EXPORT WITH STYLED CHECKLISTS ---
+// --- DRAG & DROP ---
+let dragSrc = null;
+function handleDragStart(e){dragSrc=this;this.classList.add('dragging'); e.dataTransfer.effectAllowed='move';}
+function handleDragOver(e){if(e.preventDefault)e.preventDefault();return false;}
+function handleDragEnter(e){this.classList.add('over');}
+function handleDragLeave(e){this.classList.remove('over');}
+function handleDrop(e){if(e.stopPropagation)e.stopPropagation();if(dragSrc!=this){editor.insertBefore(dragSrc,this); } return false;}
+function handleDragEnd(e){this.classList.remove('dragging'); const items = editor.querySelectorAll('.sop-step,.sop-task,.sop-checklist'); items.forEach(it=>it.classList.remove('over'));}
+function makeDraggable(){ const items = editor.querySelectorAll('.sop-step,.sop-task,.sop-checklist'); items.forEach(it=>{
+    it.setAttribute('draggable','true');
+    it.addEventListener('dragstart',handleDragStart);
+    it.addEventListener('dragenter',handleDragEnter);
+    it.addEventListener('dragover',handleDragOver);
+    it.addEventListener('dragleave',handleDragLeave);
+    it.addEventListener('drop',handleDrop);
+    it.addEventListener('dragend',handleDragEnd);
+});}
+editor.addEventListener('input', makeDraggable);
+window.addEventListener('load', ()=>{loadFromLocal();makeDraggable();});
+
+// --- EXPORT ---
 function exportPDF(){
   if(!editor.innerHTML.trim()){showStatus('⚠️ Nothing to export');return;}
   const win=window.open('','', 'width=900,height=700');
