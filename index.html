@@ -1,146 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SOP Designer | DGS Consulting</title>
-  <base href="./">
-  <style>
-    :root {
-      --primary: #1d4e2d;
-      --accent: #2f7a4d;
-      --danger: #a00;
-      --bg: #f5f5f5;
-      --text: #222;
-      --border: #ddd;
-    }
-    * { box-sizing: border-box; }
-    body { font-family: "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
-    header { background: var(--primary); color: #fff; padding: 1.5rem; text-align: center; }
-    header h1 { margin: 0 0 0.5rem; font-size: 2rem; }
-    main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
-    #controls, #template-controls { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; }
-    button { background: var(--primary); color: #fff; padding: 0.65rem 1.25rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; }
-    button:hover { background: var(--accent); }
-    #clear-sop-btn { background: var(--danger); }
-    #editor { background: #fff; padding: 1.5rem; border-radius: 8px; min-height: 300px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid var(--border); }
-    #editor[contenteditable="true"]:empty:before { content: "Start typing your SOP here..."; color: #aaa; }
-    .sop-step, .sop-task, .sop-checklist { margin: 1rem 0; padding: 1rem; border-left: 4px solid var(--primary); background: #fdfdfd; border-radius: 6px; }
-    .sop-step h3, .sop-task h4 { margin-top: 0; }
-    .sop-checklist ul { margin: 0.5rem 0 0; padding-left: 1.5rem; }
-    .sop-checklist li { margin: 0.25rem 0; }
-    footer { background: #e5e5e5; text-align: center; padding: 1rem; margin-top: 2rem; font-size: 0.9rem; }
-    .status { font-size: 0.85rem; color: #555; margin-top: 0.5rem; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SOP Designer | DGS Consulting</title>
+<base href="./">
+<style>
+:root {
+  --primary: #1d4e2d;
+  --accent: #2f7a4d;
+  --danger: #a00;
+  --bg: #f5f5f5;
+  --text: #222;
+  --border: #ddd;
+}
+* { box-sizing: border-box; }
+body { font-family: "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+header { background: var(--primary); color: #fff; padding: 1.5rem; text-align: center; }
+header h1 { margin: 0 0 0.5rem; font-size: 2rem; }
+main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+#controls, #template-controls { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; }
+button { background: var(--primary); color: #fff; padding: 0.65rem 1.25rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; }
+button:hover { background: var(--accent); }
+#clear-sop-btn { background: var(--danger); }
+#editor { background: #fff; padding: 1.5rem; border-radius: 8px; min-height: 300px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid var(--border); }
+#editor[contenteditable="true"]:empty:before { content: "Start typing your SOP here..."; color: #aaa; }
+.sop-step, .sop-task, .sop-checklist { margin: 1rem 0; padding: 1rem; border-left: 4px solid var(--primary); background: #fdfdfd; border-radius: 6px; position: relative; }
+.sop-step h3, .sop-task h4 { margin-top: 0; }
+.sop-checklist ul { margin: 0.5rem 0 0; padding-left: 1.5rem; }
+.sop-checklist li { margin: 0.25rem 0; }
+.add-item-btn, .remove-item-btn {
+  background: var(--accent); color: #fff; font-size: 0.8rem; border: none; border-radius: 4px;
+  padding: 0.25rem 0.5rem; cursor: pointer; margin-left: 0.5rem;
+}
+.add-item-btn:hover, .remove-item-btn:hover { background: #166a36; }
+footer { background: #e5e5e5; text-align: center; padding: 1rem; margin-top: 2rem; font-size: 0.9rem; }
+.status { font-size: 0.85rem; color: #555; margin-top: 0.5rem; }
+</style>
 </head>
 <body>
-  <header>
-    <h1>SOP Designer</h1>
-    <p>Build and manage Standard Operating Procedures with ease.</p>
-  </header>
+<header>
+<h1>SOP Designer</h1>
+<p>Build and manage Standard Operating Procedures with ease.</p>
+</header>
+<main>
+<section id="controls">
+  <button id="new-sop-btn">➕ New SOP</button>
+  <button id="load-sop-btn">📂 Load</button>
+  <button id="save-sop-btn">💾 Save</button>
+  <button id="export-sop-btn">📤 Export PDF</button>
+  <button id="clear-sop-btn">🗑️ Clear</button>
+</section>
+<section id="template-controls">
+  <button id="insert-step-btn">🪜 Insert Step</button>
+  <button id="insert-task-btn">🧰 Insert Task</button>
+  <button id="insert-checklist-btn">☑️ Insert Checklist</button>
+</section>
+<section id="workspace">
+<h2>Workspace</h2>
+<div id="editor" contenteditable="true"></div>
+<div class="status" id="status-msg"></div>
+</section>
+</main>
+<footer>
+© <span id="year"></span> DGS Consulting — All Rights Reserved
+</footer>
 
-  <main>
-    <section id="controls">
-      <button id="new-sop-btn">➕ New SOP</button>
-      <button id="load-sop-btn">📂 Load</button>
-      <button id="save-sop-btn">💾 Save</button>
-      <button id="export-sop-btn">📤 Export PDF</button>
-      <button id="clear-sop-btn">🗑️ Clear</button>
-    </section>
+<script>
+const editor = document.getElementById('editor');
+const statusMsg = document.getElementById('status-msg');
+document.getElementById('year').textContent = new Date().getFullYear();
+const STORAGE_KEY = 'sop-designer-content-v5';
 
-    <section id="template-controls">
-      <button id="insert-step-btn">🪜 Insert Step</button>
-      <button id="insert-task-btn">🧰 Insert Task</button>
-      <button id="insert-checklist-btn">☑️ Insert Checklist</button>
-    </section>
+function showStatus(message, timeout=2000){statusMsg.textContent=message;if(timeout)setTimeout(()=>statusMsg.textContent='',timeout);}
+function saveToLocal(){localStorage.setItem(STORAGE_KEY,editor.innerHTML);showStatus('✅ SOP saved');}
+function loadFromLocal(){const content=localStorage.getItem(STORAGE_KEY);content?(editor.innerHTML=content,showStatus('📂 SOP loaded')):showStatus('⚠️ No saved SOP found');}
+function clearWorkspace(){editor.innerHTML='';showStatus('🧹 Workspace cleared');}
+function newSOP(){editor.innerHTML='<p><strong>New SOP started.</strong> Add your steps here.</p>';showStatus('✨ New SOP created');}
 
-    <section id="workspace">
-      <h2>Workspace</h2>
-      <div id="editor" contenteditable="true"></div>
-      <div class="status" id="status-msg"></div>
-    </section>
-  </main>
+function insertHTML(html){editor.focus();const sel=window.getSelection();const range=sel.getRangeAt(0);const frag=range.createContextualFragment(html);range.insertNode(frag);range.collapse(false);}
 
-  <footer>
-    © <span id="year"></span> DGS Consulting — All Rights Reserved
-  </footer>
+function insertStep(){insertHTML('<div class="sop-step" contenteditable="true"><h3>Step Title</h3><p>Describe the procedure for this step...</p></div>');}
+function insertTask(){insertHTML('<div class="sop-task" contenteditable="true"><h4>Task Title</h4><p>Outline the specific task details here.</p></div>');}
 
-  <script>
-    const editor = document.getElementById('editor');
-    const statusMsg = document.getElementById('status-msg');
-    document.getElementById('year').textContent = new Date().getFullYear();
-    const STORAGE_KEY = 'sop-designer-content-v4';
+function insertChecklist(){
+  const html=`
+  <div class="sop-checklist">
+    <strong>Checklist:</strong>
+    <ul>
+      <li><input type="checkbox"> Item 1 <button class="remove-item-btn">Remove</button></li>
+      <li><input type="checkbox"> Item 2 <button class="remove-item-btn">Remove</button></li>
+      <li><input type="checkbox"> Item 3 <button class="remove-item-btn">Remove</button></li>
+    </ul>
+    <button class="add-item-btn">+ Add Item</button>
+  </div>`;
+  insertHTML(html);
+}
 
-    function showStatus(message, timeout = 2000) {
-      statusMsg.textContent = message;
-      if (timeout) setTimeout(() => statusMsg.textContent = '', timeout);
-    }
+// --- EVENTS ---
+document.getElementById('new-sop-btn').addEventListener('click',newSOP);
+document.getElementById('load-sop-btn').addEventListener('click',loadFromLocal);
+document.getElementById('save-sop-btn').addEventListener('click',saveToLocal);
+document.getElementById('export-sop-btn').addEventListener('click',exportPDF);
+document.getElementById('clear-sop-btn').addEventListener('click',clearWorkspace);
+document.getElementById('insert-step-btn').addEventListener('click',insertStep);
+document.getElementById('insert-task-btn').addEventListener('click',insertTask);
+document.getElementById('insert-checklist-btn').addEventListener('click',insertChecklist);
 
-    function saveToLocal() { localStorage.setItem(STORAGE_KEY, editor.innerHTML); showStatus('✅ SOP saved'); }
-    function loadFromLocal() { const content = localStorage.getItem(STORAGE_KEY); content ? (editor.innerHTML = content, showStatus('📂 SOP loaded')) : showStatus('⚠️ No saved SOP found'); }
-    function clearWorkspace() { editor.innerHTML = ''; showStatus('🧹 Workspace cleared'); }
-    function newSOP() { editor.innerHTML = '<p><strong>New SOP started.</strong> Add your steps here.</p>'; showStatus('✨ New SOP created'); }
+editor.addEventListener('input',()=>{clearTimeout(typingTimer);typingTimer=setTimeout(saveToLocal,1000);});
+let typingTimer;
 
-    function insertHTML(html) {
-      editor.focus();
-      const sel = window.getSelection();
-      const range = sel.getRangeAt(0);
-      const frag = range.createContextualFragment(html);
-      range.insertNode(frag);
-      range.collapse(false);
-    }
+// --- Dynamic Checklist Actions ---
+editor.addEventListener('click',(e)=>{
+  if(e.target.classList.contains('add-item-btn')){
+    const ul=e.target.previousElementSibling;
+    const li=document.createElement('li');
+    li.innerHTML='<input type="checkbox"> New Item <button class="remove-item-btn">Remove</button>';
+    ul.appendChild(li);
+  }
+  if(e.target.classList.contains('remove-item-btn')){
+    e.target.parentElement.remove();
+  }
+});
 
-    function insertStep() { insertHTML('<div class="sop-step" contenteditable="true"><h3>Step Title</h3><p>Describe the procedure for this step...</p></div>'); }
-    function insertTask() { insertHTML('<div class="sop-task" contenteditable="true"><h4>Task Title</h4><p>Outline the specific task details here.</p></div>'); }
-    function insertChecklist() {
-      insertHTML(`
-        <div class="sop-checklist" contenteditable="false">
-          <strong>Checklist:</strong>
-          <ul>
-            <li><input type="checkbox"> Item 1</li>
-            <li><input type="checkbox"> Item 2</li>
-            <li><input type="checkbox"> Item 3</li>
-          </ul>
-        </div>
-      `);
-    }
-
-    // --- EXPORT WITH INTERACTIVE CHECKBOXES ---
-    function exportPDF() {
-      if (!editor.innerHTML.trim()) { showStatus('⚠️ Nothing to export'); return; }
-      const win = window.open('', '', 'width=900,height=700');
-      const styles = `
-        body { font-family: Arial, sans-serif; padding: 2rem; color: #222; }
-        h1,h2,h3,h4 { color: #1d4e2d; }
-        .sop-step { border-left: 4px solid #1d4e2d; margin: 1rem 0; padding: 1rem; background: #fdfdfd; border-radius:6px; }
-        .sop-task { border-left: 4px solid #2f7a4d; margin: 1rem 0; padding: 0.75rem 1rem; background:#f9f9f9; border-radius:6px; }
-        .sop-checklist { margin: 1rem 0; padding: 0.75rem 1rem; background:#f9f9f9; border-radius:6px; }
-        ul { padding-left:1.5rem; }
-        input[type="checkbox"] { transform: scale(1.2); margin-right: 0.5rem; }
-      `;
-      win.document.write(`<html><head><title>SOP Export</title><style>${styles}</style></head><body>`);
-      win.document.write('<h1>SOP Export</h1>');
-      win.document.write(editor.innerHTML);
-      win.document.write('</body></html>');
-      win.document.close();
-      win.focus();
-      win.print();
-      showStatus('📤 SOP ready to print/export');
-    }
-
-    // --- EVENTS ---
-    document.getElementById('new-sop-btn').addEventListener('click', newSOP);
-    document.getElementById('load-sop-btn').addEventListener('click', loadFromLocal);
-    document.getElementById('save-sop-btn').addEventListener('click', saveToLocal);
-    document.getElementById('export-sop-btn').addEventListener('click', exportPDF);
-    document.getElementById('clear-sop-btn').addEventListener('click', clearWorkspace);
-    document.getElementById('insert-step-btn').addEventListener('click', insertStep);
-    document.getElementById('insert-task-btn').addEventListener('click', insertTask);
-    document.getElementById('insert-checklist-btn').addEventListener('click', insertChecklist);
-
-    let typingTimer;
-    editor.addEventListener('input', () => { clearTimeout(typingTimer); typingTimer = setTimeout(saveToLocal, 1000); });
-    window.addEventListener('load', loadFromLocal);
-  </script>
+// --- EXPORT WITH STYLED CHECKLISTS ---
+function exportPDF(){
+  if(!editor.innerHTML.trim()){showStatus('⚠️ Nothing to export');return;}
+  const win=window.open('','', 'width=900,height=700');
+  const styles=`
+    body{font-family:Arial,sans-serif;padding:2rem;color:#222;}
+    h1,h2,h3,h4{color:#1d4e2d;}
+    .sop-step{border-left:4px solid #1d4e2d;margin:1rem 0;padding:1rem;background:#fdfdfd;border-radius:6px;}
+    .sop-task{border-left:4px solid #2f7a4d;margin:1rem 0;padding:0.75rem 1rem;background:#f9f9f9;border-radius:6px;}
+    .sop-checklist{margin:1rem 0;padding:0.75rem 1rem;background:#f9f9f9;border-radius:6px;}
+    ul{padding-left:1.5rem;}
+    input[type="checkbox"]{transform:scale(1.2);margin-right:0.5rem;}
+    .add-item-btn,.remove-item-btn{display:none;}
+  `;
+  win.document.write(`<html><head><title>SOP Export</title><style>${styles}</style></head><body>`);
+  win.document.write('<h1>SOP Export</h1>');
+  win.document.write(editor.innerHTML);
+  win.document.write('</body></html>');
+  win.document.close();
+  win.focus();
+  win.print();
+  showStatus('📤 SOP ready to print/export');
+}
+</script>
 </body>
 </html>
