@@ -565,29 +565,23 @@
 </head>
 <body>
 
-<!-- Header -->
 <div id="header">
   <h1>SOP Manager</h1>
   <div class="subtitle">DGS Consulting Solutions</div>
 </div>
 
-<!-- Main Content -->
 <div id="main">
-  <!-- Top Toolbar -->
   <div class="top-toolbar">
-    <button onclick="showView('sops')">📋 All SOPs</button>
-    <button onclick="showView('editor')" class="secondary">✏️ Editor</button>
+    <button onclick="showView('sops')">All SOPs</button>
+    <button onclick="showView('editor')" class="secondary">Editor</button>
     <button onclick="createNewSOP()" class="secondary">+ New SOP</button>
   </div>
   
-  <!-- Search -->
   <div class="search-container" id="searchContainer" style="display: none;">
     <input type="text" id="searchBox" placeholder="Search SOPs..." onkeyup="searchSOPs()">
   </div>
   
-  <!-- Content Area -->
   <div id="content">
-    <!-- SOP List View -->
     <div id="sopListView" style="display: none;">
       <div class="section">
         <h2>Your SOPs</h2>
@@ -597,20 +591,18 @@
       <div class="section">
         <h3>Actions</h3>
         <div class="button-row">
-          <button onclick="exportAllSOPs()">💾 Backup All</button>
-          <button onclick="importSOPs()" class="secondary">📥 Restore</button>
+          <button onclick="exportAllSOPs()">Backup All</button>
+          <button onclick="importSOPs()" class="secondary">Restore</button>
         </div>
-        <button onclick="viewTrash()" class="danger" style="width: 100%;">🗑️ View Trash</button>
+        <button onclick="viewTrash()" class="danger" style="width: 100%;">View Trash</button>
       </div>
     </div>
     
-    <!-- Editor View -->
     <div id="editorView" style="display: none;">
       <div class="warning-banner" id="warningBanner">
         You have unsaved changes. They will auto-save when you switch SOPs.
       </div>
       
-      <!-- SOP Header -->
       <div class="sop-header">
         <div class="sop-title-section">
           <h1 id="sopTitle">Select or Create an SOP</h1>
@@ -619,24 +611,21 @@
         <input type="text" id="sopNameInput" class="sop-name-input" placeholder="Enter SOP Name" onchange="updateSOPName()">
       </div>
       
-      <!-- Steps Section -->
       <div class="section">
         <h2>Steps</h2>
         <div class="button-row">
           <button onclick="addStep()">+ Add Step</button>
-          <button onclick="undo()" id="undoBtn" disabled class="tertiary">↶ Undo</button>
-          <button onclick="redo()" id="redoBtn" disabled class="tertiary">↷ Redo</button>
+          <button onclick="undo()" id="undoBtn" disabled class="tertiary">Undo</button>
+          <button onclick="redo()" id="redoBtn" disabled class="tertiary">Redo</button>
         </div>
         <div class="steps-list" id="stepsList"></div>
       </div>
       
-      <!-- Diagram -->
       <div class="diagram-section">
         <h2>Flow Diagram</h2>
         <svg id="svgDiagram"></svg>
       </div>
       
-      <!-- Metadata -->
       <div class="section">
         <h2>Details</h2>
         
@@ -648,7 +637,7 @@
         </div>
         
         <h3 style="margin-top: 16px;">Review Status</h3>
-        <button onclick="markReviewedNow()" style="width: 100%; margin-bottom: 8px;">✓ Mark Reviewed Today</button>
+        <button onclick="markReviewedNow()" style="width: 100%; margin-bottom: 8px;">Mark Reviewed Today</button>
         <div class="info-row">
           <span class="info-label">Last Reviewed:</span>
           <span class="info-value" id="reviewDisplay">Never</span>
@@ -690,28 +679,26 @@
         <div class="tags-list" id="tagsList"></div>
       </div>
       
-      <!-- Actions -->
       <div class="section">
         <h2>Actions</h2>
         <div class="button-row">
-          <button onclick="openShareModal()" class="secondary">🔗 Share</button>
-          <button onclick="exportOptions()" class="secondary">📤 Export</button>
+          <button onclick="openShareModal()" class="secondary">Share</button>
+          <button onclick="exportOptions()" class="secondary">Export</button>
         </div>
         <div class="button-row">
-          <button onclick="openVersionsModal()" class="tertiary">📜 Versions</button>
-          <button onclick="openCommentModal()" class="tertiary">💬 Comments</button>
+          <button onclick="openVersionsModal()" class="tertiary">Versions</button>
+          <button onclick="openCommentModal()" class="tertiary">Comments</button>
         </div>
         <div class="button-row">
-          <button onclick="viewChangeLog()" class="tertiary">📝 Changes</button>
-          <button onclick="viewAuditTrail()" class="tertiary">📊 Activity</button>
+          <button onclick="viewChangeLog()" class="tertiary">Changes</button>
+          <button onclick="viewAuditTrail()" class="tertiary">Activity</button>
         </div>
         <div class="button-row">
-          <button onclick="viewSOPAnalytics()" style="background: #FF9800;">📈 Stats</button>
-          <button onclick="viewDashboard()" style="background: #9C27B0;">📋 Dashboard</button>
+          <button onclick="viewSOPAnalytics()" style="background: #FF9800;">Stats</button>
+          <button onclick="viewDashboard()" style="background: #9C27B0;">Dashboard</button>
         </div>
       </div>
       
-      <!-- Templates -->
       <div class="section">
         <h2>Load Template</h2>
         <div class="template-grid">
@@ -726,17 +713,16 @@
   </div>
 </div>
 
-<!-- Modals -->
 <div id="exportModal" class="modal">
   <div class="modal-content">
     <h2>Export SOP</h2>
     <div class="button-row">
-      <button onclick="exportPDF()" class="secondary">📄 PDF</button>
-      <button onclick="exportHTML()" class="secondary">🌐 HTML</button>
+      <button onclick="exportPDF()" class="secondary">PDF</button>
+      <button onclick="exportHTML()" class="secondary">HTML</button>
     </div>
     <div class="button-row">
-      <button onclick="exportCSV()" class="secondary">📊 CSV</button>
-      <button onclick="exportDiagramImage()" class="secondary">🖼️ Diagram</button>
+      <button onclick="exportCSV()" class="secondary">CSV</button>
+      <button onclick="exportDiagramImage()" class="secondary">Diagram</button>
     </div>
     <button class="tertiary" onclick="closeExportModal()" style="margin-top: 12px; width: 100%;">Close</button>
   </div>
@@ -748,7 +734,7 @@
     <p style="font-size: 13px;">Read-only link:</p>
     <div class="share-link" id="shareLink"></div>
     <div class="button-row" style="margin-top: 12px;">
-      <button onclick="copyToClipboard()" class="secondary">📋 Copy Link</button>
+      <button onclick="copyToClipboard()" class="secondary">Copy Link</button>
       <button class="tertiary" onclick="closeShareModal()">Close</button>
     </div>
   </div>
@@ -817,7 +803,6 @@
   </div>
 </div>
 
-<!-- Footer -->
 <footer class="footer">
   <div class="footer-content">
     <div class="footer-branding">
@@ -833,7 +818,6 @@
 </footer>
 
 <script>
-// ============ STATE ============
 let allSOPs = {};
 let trash = {};
 let currentSOPId = null;
@@ -845,7 +829,6 @@ let comments = [];
 let tags = [];
 let hasUnsavedChanges = false;
 let currentView = 'sops';
-
 let sopStatus = 'DRAFT';
 let sopCategory = 'General';
 let totalTimeEstimate = 0;
@@ -854,149 +837,34 @@ let changeLog = [];
 let auditTrail = [];
 let usageStats = {};
 
-// ============ TEMPLATES ============
 const templates = {
   onboarding: [
     { text: "Receive client intake form", branches: [], duration: 10 },
     { text: "Review requirements and scope", branches: [], duration: 15 },
-    { text: "Create client folder in shared drive", branches: [], duration: 5 },
-    { text: "Set up email account/distribution list", branches: [], duration: 10 },
-    { text: "Create client in CRM system", branches: [], duration: 10 },
-    { text: "Prepare welcome packet", branches: [], duration: 15 },
-    { text: "Send welcome email with credentials", branches: [], duration: 5 },
-    { text: "Schedule kickoff meeting", branches: [
-      { text: "Coordinate calendar availability", branches: [], duration: 10 },
-      { text: "Send meeting invite with agenda", branches: [], duration: 5 }
-    ], duration: 10 },
-    { text: "Conduct kickoff call", branches: [
-      { text: "Introduce team members", branches: [], duration: 5 },
-      { text: "Review project timeline", branches: [], duration: 10 },
-      { text: "Confirm communication preferences", branches: [], duration: 5 }
-    ], duration: 20 },
-    { text: "Add to project management tool", branches: [], duration: 10 },
-    { text: "Send kickoff summary and next steps", branches: [], duration: 10 }
+    { text: "Create client folder in shared drive", branches: [], duration: 5 }
   ],
   invoicing: [
-    { text: "Gather time tracking data from team", branches: [
-      { text: "Send timesheet reminder", branches: [], duration: 5 },
-      { text: "Collect individual timesheets", branches: [], duration: 20 },
-      { text: "Verify all hours are logged", branches: [], duration: 10 }
-    ], duration: 20 },
-    { text: "Compile expense reports", branches: [
-      { text: "Collect receipts from team", branches: [], duration: 15 },
-      { text: "Verify all expenses are approved", branches: [], duration: 15 },
-      { text: "Reconcile with accounting system", branches: [], duration: 10 }
-    ], duration: 30 },
+    { text: "Gather time tracking data from team", branches: [], duration: 20 },
     { text: "Calculate billable hours by project", branches: [], duration: 15 },
-    { text: "Apply rate structure and discounts", branches: [
-      { text: "Check contract pricing", branches: [], duration: 10 },
-      { text: "Apply any agreed discounts", branches: [], duration: 5 }
-    ], duration: 15 },
-    { text: "Generate invoice from template", branches: [], duration: 10 },
-    { text: "Add invoice to invoice tracking sheet", branches: [], duration: 5 },
-    { text: "Review invoice for accuracy and completeness", branches: [
-      { text: "Check all line items", branches: [], duration: 5 },
-      { text: "Verify totals and taxes", branches: [], duration: 5 },
-      { text: "Confirm client billing address", branches: [], duration: 3 }
-    ], duration: 15 },
-    { text: "Get manager approval if needed", branches: [], duration: 10 },
-    { text: "Send invoice to client", branches: [], duration: 5 },
-    { text: "Log invoice in accounting system", branches: [], duration: 10 },
-    { text: "Set follow-up reminder for payment", branches: [], duration: 5 }
+    { text: "Generate invoice from template", branches: [], duration: 10 }
   ],
   qa: [
     { text: "Pull latest code from main branch", branches: [], duration: 5 },
-    { text: "Review code changes and release notes", branches: [], duration: 15 },
-    { text: "Set up fresh test environment", branches: [], duration: 10 },
-    { text: "Run full automated test suite", branches: [
-      { text: "Run unit tests", branches: [], duration: 15 },
-      { text: "Run integration tests", branches: [], duration: 20 },
-      { text: "If tests fail: log bugs and notify developers", branches: [], duration: 30 }
-    ], duration: 30 },
-    { text: "Manual smoke testing on staging", branches: [
-      { text: "Test critical user flows", branches: [], duration: 20 },
-      { text: "Test authentication and permissions", branches: [], duration: 15 },
-      { text: "Check UI/UX consistency", branches: [], duration: 10 },
-      { text: "Log any issues found", branches: [], duration: 10 }
-    ], duration: 40 },
-    { text: "Performance baseline check", branches: [
-      { text: "Run load testing", branches: [], duration: 15 },
-      { text: "Compare to previous baseline", branches: [], duration: 10 },
-      { text: "Flag regressions if found", branches: [], duration: 10 }
-    ], duration: 20 },
-    { text: "Security testing", branches: [
-      { text: "Run security scan tools", branches: [], duration: 15 },
-      { text: "Test for common vulnerabilities", branches: [], duration: 20 }
-    ], duration: 25 },
-    { text: "Create QA sign-off report", branches: [], duration: 15 },
-    { text: "If all tests pass: approve deployment", branches: [], duration: 5 },
-    { text: "If issues found: notify developers and schedule re-test", branches: [], duration: 10 }
+    { text: "Run full automated test suite", branches: [], duration: 30 },
+    { text: "Create QA sign-off report", branches: [], duration: 15 }
   ],
   projectHandoff: [
     { text: "Prepare project completion summary", branches: [], duration: 20 },
-    { text: "Compile all project deliverables", branches: [
-      { text: "Gather documents and assets", branches: [], duration: 15 },
-      { text: "Organize in shared folder", branches: [], duration: 10 },
-      { text: "Create index/guide", branches: [], duration: 10 }
-    ], duration: 25 },
-    { text: "Document system access and credentials", branches: [
-      { text: "List all tools and platforms used", branches: [], duration: 10 },
-      { text: "Document login procedures", branches: [], duration: 10 },
-      { text: "Securely transfer credentials to client", branches: [], duration: 5 }
-    ], duration: 20 },
-    { text: "Prepare training materials", branches: [
-      { text: "Create documentation", branches: [], duration: 30 },
-      { text: "Record video tutorials if needed", branches: [], duration: 45 },
-      { text: "Prepare FAQ document", branches: [], duration: 20 }
-    ], duration: 60 },
-    { text: "Conduct training session with client team", branches: [
-      { text: "Walk through system/deliverables", branches: [], duration: 45 },
-      { text: "Answer questions", branches: [], duration: 30 },
-      { text: "Record session for reference", branches: [], duration: 10 }
-    ], duration: 60 },
-    { text: "Create ongoing support plan", branches: [
-      { text: "Define support hours", branches: [], duration: 10 },
-      { text: "List escalation procedures", branches: [], duration: 10 },
-      { text: "Document SLA if applicable", branches: [], duration: 10 }
-    ], duration: 20 },
-    { text: "Conduct final project review meeting", branches: [
-      { text: "Review accomplishments vs. goals", branches: [], duration: 15 },
-      { text: "Discuss lessons learned", branches: [], duration: 15 },
-      { text: "Gather feedback from client", branches: [], duration: 15 }
-    ], duration: 30 },
-    { text: "Close out project in tracking system", branches: [], duration: 10 },
-    { text: "Archive project files", branches: [], duration: 15 },
-    { text: "Send project completion report to client", branches: [], duration: 10 }
+    { text: "Compile all project deliverables", branches: [], duration: 25 },
+    { text: "Conduct final project review meeting", branches: [], duration: 30 }
   ],
   meetingPrep: [
     { text: "Review meeting objective and agenda", branches: [], duration: 10 },
-    { text: "Prepare presentation materials", branches: [
-      { text: "Create slides if needed", branches: [], duration: 45 },
-      { text: "Gather data and reports", branches: [], duration: 20 },
-      { text: "Prepare talking points", branches: [], duration: 15 }
-    ], duration: 45 },
-    { text: "Review attendee list and background", branches: [], duration: 15 },
-    { text: "Send meeting invite with agenda and materials", branches: [], duration: 10 },
-    { text: "Prepare meeting space or Zoom link", branches: [
-      { text: "Test video/audio", branches: [], duration: 10 },
-      { text: "Prepare screen sharing", branches: [], duration: 5 }
-    ], duration: 10 },
-    { text: "Arrive 10 minutes early", branches: [], duration: 0 },
-    { text: "Conduct meeting", branches: [
-      { text: "Review agenda", branches: [], duration: 5 },
-      { text: "Present materials", branches: [], duration: 45 },
-      { text: "Allow Q&A time", branches: [], duration: 20 }
-    ], duration: 60 },
-    { text: "Document action items and decisions", branches: [], duration: 10 },
-    { text: "Send follow-up email with minutes", branches: [
-      { text: "List decisions made", branches: [], duration: 10 },
-      { text: "List action items with owners", branches: [], duration: 10 },
-      { text: "Schedule next meeting if needed", branches: [], duration: 5 }
-    ], duration: 15 }
+    { text: "Prepare presentation materials", branches: [], duration: 45 },
+    { text: "Send meeting invite with agenda", branches: [], duration: 10 }
   ]
 };
 
-// ============ VIEW MANAGEMENT ============
 function showView(view) {
   currentView = view;
   document.getElementById('sopListView').style.display = 'none';
@@ -1018,7 +886,6 @@ function showView(view) {
   }
 }
 
-// ============ KEYBOARD SHORTCUTS ============
 document.addEventListener('keydown', (e) => {
   if (e.ctrlKey || e.metaKey) {
     if (e.key === 'z' && !e.shiftKey) {
@@ -1034,7 +901,6 @@ document.addEventListener('keydown', (e) => {
   }
 }, false);
 
-// ============ UNSAVED CHANGES ============
 function markUnsaved() {
   hasUnsavedChanges = true;
   document.getElementById('warningBanner').classList.add('show');
@@ -1058,7 +924,6 @@ window.addEventListener('beforeunload', (e) => {
   }
 });
 
-// ============ SOP MANAGEMENT ============
 function createNewSOP() {
   const name = prompt("Enter SOP name:", "My New SOP");
   if (!name || !name.trim()) return;
@@ -1106,12 +971,40 @@ function loadSOP(id) {
   comments = JSON.parse(JSON.stringify(sop.comments || []));
   tags = [...(sop.tags || [])];
   versions = [...(sop.versions || [])];
+  changeLog = [...(sop.changeLog || [])];
+  auditTrail = [...(sop.auditTrail || [])];
   
   sopStatus = sop.status || 'DRAFT';
   sopCategory = sop.category || 'General';
   totalTimeEstimate = sop.totalTime || 0;
   sopOwner = sop.owner || '';
-  changeLog = allSOPs[sopId].changeLog;
+  
+  history = [JSON.stringify(steps)];
+  redoStack = [];
+  
+  document.getElementById('sopNameInput').value = sop.name;
+  document.getElementById('sopTitle').textContent = sop.name;
+  document.getElementById('tagsInput').value = tags.join(', ');
+  document.getElementById('statusSelect').value = sopStatus;
+  document.getElementById('categorySelect').value = sopCategory;
+  document.getElementById('totalTimeInput').value = totalTimeEstimate;
+  document.getElementById('ownerInput').value = sopOwner;
+  
+  trackSOPView(id);
+  
+  renderSOPList();
+  renderSteps();
+  renderDiagram();
+  renderTags();
+  renderStepTimes();
+  updateTimeDisplay();
+  updateHistoryButtons();
+  renderOwnerDisplay();
+  renderReviewDisplay();
+  renderCreatedDisplay();
+  markSaved();
+  
+  showView('editor');
 }
 
 function logAuditTrail(sopId, action, details) {
@@ -1130,8 +1023,32 @@ function logAuditTrail(sopId, action, details) {
   if (allSOPs[sopId].auditTrail.length > 200) {
     allSOPs[sopId].auditTrail.pop();
   }
+}
+
+function logChangeLog(sopId, action) {
+  if (!allSOPs[sopId]) return;
+  if (!allSOPs[sopId].changeLog) {
+    allSOPs[sopId].changeLog = [];
+  }
   
-  auditTrail = allSOPs[sopId].auditTrail;
+  allSOPs[sopId].changeLog.unshift({
+    timestamp: new Date().toISOString(),
+    action: action,
+    user: localStorage.getItem('currentUser') || 'System'
+  });
+  
+  if (allSOPs[sopId].changeLog.length > 100) {
+    allSOPs[sopId].changeLog.pop();
+  }
+}
+
+function trackSOPView(sopId) {
+  if (!usageStats[sopId]) {
+    usageStats[sopId] = { views: 0, lastViewed: null };
+  }
+  usageStats[sopId].views++;
+  usageStats[sopId].lastViewed = new Date().toISOString();
+  saveToStorage();
 }
 
 function viewChangeLog() {
@@ -1190,26 +1107,13 @@ function viewAuditTrail() {
   if (auditTrail.length === 0) {
     container.innerHTML = '<div class="empty-state" style="padding: 20px;">No activity recorded</div>';
   } else {
-    const actionLabels = {
-      'created': '🆕 Created',
-      'status_changed': '📊 Status Changed',
-      'category_changed': '📁 Category Changed',
-      'owner_changed': '👤 Owner Changed',
-      'reviewed': '✅ Reviewed',
-      'edited': '✏️ Edited'
-    };
-    
     container.innerHTML = auditTrail.slice(0, 100).map(entry => {
       const time = new Date(entry.timestamp).toLocaleString();
-      const label = actionLabels[entry.action] || entry.action;
-      const details = entry.details ? JSON.stringify(entry.details).substring(0, 60) : '';
-      
       return `
         <div class="version-item">
-          <div style="font-weight: 600; margin-bottom: 4px;">${label}</div>
+          <div style="font-weight: 600; margin-bottom: 4px;">${entry.action}</div>
           <div style="font-size: 11px; color: #666;">By: ${escapeHtml(entry.user)}</div>
           <div style="font-size: 11px; color: #999; margin-top: 2px;">${time}</div>
-          ${details ? `<div style="font-size: 10px; color: #999; margin-top: 4px;">${escapeHtml(details)}</div>` : ''}
         </div>
       `;
     }).join('');
@@ -1231,26 +1135,13 @@ function filterAuditTrail() {
     return;
   }
   
-  const actionLabels = {
-    'created': '🆕 Created',
-    'status_changed': '📊 Status Changed',
-    'category_changed': '📁 Category Changed',
-    'owner_changed': '👤 Owner Changed',
-    'reviewed': '✅ Reviewed',
-    'edited': '✏️ Edited'
-  };
-  
   container.innerHTML = filtered.slice(0, 100).map(entry => {
     const time = new Date(entry.timestamp).toLocaleString();
-    const label = actionLabels[entry.action] || entry.action;
-    const details = entry.details ? JSON.stringify(entry.details).substring(0, 60) : '';
-    
     return `
       <div class="version-item">
-        <div style="font-weight: 600; margin-bottom: 4px;">${label}</div>
+        <div style="font-weight: 600; margin-bottom: 4px;">${entry.action}</div>
         <div style="font-size: 11px; color: #666;">By: ${escapeHtml(entry.user)}</div>
         <div style="font-size: 11px; color: #999; margin-top: 2px;">${time}</div>
-        ${details ? `<div style="font-size: 10px; color: #999; margin-top: 4px;">${escapeHtml(details)}</div>` : ''}
       </div>
     `;
   }).join('');
@@ -1258,22 +1149,6 @@ function filterAuditTrail() {
 
 function closeAuditModal() {
   document.getElementById('auditModal').classList.remove('active');
-}
-
-// ============ ANALYTICS ============
-function trackSOPView(sopId) {
-  if (!usageStats[sopId]) {
-    usageStats[sopId] = {
-      views: 0,
-      lastViewed: null,
-      totalTimeSpent: 0
-    };
-  }
-  
-  usageStats[sopId].views++;
-  usageStats[sopId].lastViewed = new Date().toISOString();
-  
-  saveToStorage();
 }
 
 function viewSOPAnalytics() {
@@ -1292,13 +1167,13 @@ function viewSOPAnalytics() {
   if (sop.lastReviewedDate) {
     const daysSinceReview = Math.floor((Date.now() - new Date(sop.lastReviewedDate)) / (1000 * 60 * 60 * 24));
     if (daysSinceReview > 365) {
-      reviewStatus = `Overdue - ${daysSinceReview} days since review`;
+      reviewStatus = `Overdue - ${daysSinceReview} days`;
       reviewColor = '#ffcccc';
     } else if (daysSinceReview > 180) {
-      reviewStatus = `Due soon - ${daysSinceReview} days since review`;
+      reviewStatus = `Due soon - ${daysSinceReview} days`;
       reviewColor = '#fff3cd';
     } else {
-      reviewStatus = `Current - reviewed ${daysSinceReview} days ago`;
+      reviewStatus = `Current - ${daysSinceReview} days ago`;
       reviewColor = '#ccffcc';
     }
   }
@@ -1348,70 +1223,27 @@ function viewDashboard() {
   const container = document.getElementById('dashboardContent');
   
   const now = Date.now();
-  
   let stats = {
     total: Object.keys(allSOPs).length,
     byStatus: { ACTIVE: 0, DRAFT: 0, REVIEW: 0, ARCHIVED: 0 },
     overdueReviews: [],
-    upToDate: [],
     neverReviewed: [],
-    noOwner: [],
-    inactive: [],
-    recentlyCreated: []
+    noOwner: []
   };
   
   Object.entries(allSOPs).forEach(([id, sop]) => {
-    stats.byStatus[sop.status]++;
+    stats.byStatus[sop.status] = (stats.byStatus[sop.status] || 0) + 1;
     
-    const usage = usageStats[id];
-    const views = usage ? usage.views : 0;
+    if (!sop.owner) stats.noOwner.push(sop.name);
     
-    if (sop.lastReviewedDate) {
-      const daysSinceReview = Math.floor((now - new Date(sop.lastReviewedDate)) / (1000 * 60 * 60 * 24));
-      if (daysSinceReview > 365) {
-        stats.overdueReviews.push({
-          name: sop.name,
-          daysAgo: daysSinceReview,
-          owner: sop.owner || 'Unassigned'
-        });
-      } else if (daysSinceReview < 90) {
-        stats.upToDate.push({
-          name: sop.name,
-          daysAgo: daysSinceReview,
-          owner: sop.owner || 'N/A'
-        });
-      }
+    if (!sop.lastReviewedDate) {
+      const daysOld = Math.floor((now - new Date(sop.createdAt)) / (1000 * 60 * 60 * 24));
+      stats.neverReviewed.push({ name: sop.name, daysOld });
     } else {
-      stats.neverReviewed.push({
-        name: sop.name,
-        owner: sop.owner || 'Unassigned',
-        createdDaysAgo: Math.floor((now - new Date(sop.createdAt)) / (1000 * 60 * 60 * 24))
-      });
-    }
-    
-    if (!sop.owner) {
-      stats.noOwner.push(sop.name);
-    }
-    
-    const daysSinceUpdate = Math.floor((now - new Date(sop.updatedAt)) / (1000 * 60 * 60 * 24));
-    const lastViewTime = usage && usage.lastViewed ? new Date(usage.lastViewed).getTime() : 0;
-    const daysSinceView = lastViewTime ? Math.floor((now - lastViewTime) / (1000 * 60 * 60 * 24)) : 999;
-    
-    if (daysSinceUpdate > 90 && daysSinceView > 30) {
-      stats.inactive.push({
-        name: sop.name,
-        daysSinceUpdate: daysSinceUpdate,
-        views: views
-      });
-    }
-    
-    const daysOld = Math.floor((now - new Date(sop.createdAt)) / (1000 * 60 * 60 * 24));
-    if (daysOld < 30) {
-      stats.recentlyCreated.push({
-        name: sop.name,
-        daysOld: daysOld,
-        status: sop.status
-      });
+      const daysSince = Math.floor((now - new Date(sop.lastReviewedDate)) / (1000 * 60 * 60 * 24));
+      if (daysSince > 365) {
+        stats.overdueReviews.push({ name: sop.name, daysAgo: daysSince });
+      }
     }
   });
   
@@ -1424,57 +1256,25 @@ function viewDashboard() {
       <div style="padding: 12px; background: #e8f5e9; border-left: 4px solid #4CAF50; border-radius: 6px; margin: 10px 0;">
         <strong style="font-size: 14px;">Organization Summary</strong><br>
         Total SOPs: ${stats.total}<br>
-        Active: ${stats.byStatus.ACTIVE} | Draft: ${stats.byStatus.DRAFT} | Review: ${stats.byStatus.REVIEW} | Archived: ${stats.byStatus.ARCHIVED}
+        Active: ${stats.byStatus.ACTIVE} | Draft: ${stats.byStatus.DRAFT} | Review: ${stats.byStatus.REVIEW}
       </div>
       
       <div style="padding: 12px; background: #e3f2fd; border-left: 4px solid #2196F3; border-radius: 6px; margin: 10px 0;">
         <strong style="font-size: 14px;">Compliance Metrics</strong><br>
-        Active: ${activePercent}%<br>
-        Reviewed: ${reviewedPercent}%<br>
-        Owned: ${ownedPercent}%
+        Active: ${activePercent}% | Reviewed: ${reviewedPercent}% | Owned: ${ownedPercent}%
       </div>
   `;
   
   if (stats.overdueReviews.length > 0) {
     html += `
       <div style="padding: 12px; background: #ffcccc; border-left: 4px solid #f44336; border-radius: 6px; margin: 10px 0;">
-        <strong style="font-size: 14px;">⚠️ Overdue Reviews (>365 days)</strong><br>
-        ${stats.overdueReviews.slice(0, 3).map(s => `• ${escapeHtml(s.name)} (${s.daysAgo} days)`).join('<br>')}
-        ${stats.overdueReviews.length > 3 ? `<br>... and ${stats.overdueReviews.length - 3} more` : ''}
-      </div>
-    `;
-  }
-  
-  if (stats.neverReviewed.length > 0) {
-    html += `
-      <div style="padding: 12px; background: #fff3cd; border-left: 4px solid #FF9800; border-radius: 6px; margin: 10px 0;">
-        <strong style="font-size: 14px;">⚠️ Never Reviewed (${stats.neverReviewed.length})</strong><br>
-        ${stats.neverReviewed.slice(0, 3).map(s => `• ${escapeHtml(s.name)} (Created ${s.createdDaysAgo} days ago)`).join('<br>')}
-        ${stats.neverReviewed.length > 3 ? `<br>... and ${stats.neverReviewed.length - 3} more` : ''}
-      </div>
-    `;
-  }
-  
-  if (stats.noOwner.length > 0) {
-    html += `
-      <div style="padding: 12px; background: #ffebee; border-left: 4px solid #f44336; border-radius: 6px; margin: 10px 0;">
-        <strong style="font-size: 14px;">⚠️ Missing Owners (${stats.noOwner.length})</strong><br>
-        ${stats.noOwner.slice(0, 3).map(n => escapeHtml(n)).join(', ')}${stats.noOwner.length > 3 ? ', ...' : ''}
-      </div>
-    `;
-  }
-  
-  if (stats.upToDate.length > 0) {
-    html += `
-      <div style="padding: 12px; background: #ccffcc; border-left: 4px solid #4CAF50; border-radius: 6px; margin: 10px 0;">
-        <strong style="font-size: 14px;">✓ Current & Reviewed (${stats.upToDate.length})</strong><br>
-        Recent review compliance is good!
+        <strong>Overdue Reviews</strong><br>
+        ${stats.overdueReviews.slice(0, 3).map(s => `• ${escapeHtml(s.name)}`).join('<br>')}
       </div>
     `;
   }
   
   html += '</div>';
-  
   container.innerHTML = html;
   document.getElementById('dashboardModal').classList.add('active');
 }
@@ -1483,7 +1283,6 @@ function closeDashboardModal() {
   document.getElementById('dashboardModal').classList.remove('active');
 }
 
-// ============ RENDERING ============
 function renderSOPList(query = '') {
   const container = document.getElementById('sopList');
   const sopIds = Object.keys(allSOPs);
@@ -1511,8 +1310,8 @@ function renderSOPList(query = '') {
           ${sop.steps.length} steps • ${sop.status} • Updated ${time}
         </div>
         <div class="sop-card-actions">
-          <button onclick="openCommentModal(); event.stopPropagation();" class="secondary">💬</button>
-          <button onclick="deleteSOP('${id}', event)" class="danger">🗑️</button>
+          <button onclick="openCommentModal(); event.stopPropagation();" class="secondary">Comments</button>
+          <button onclick="deleteSOP('${id}', event)" class="danger">Delete</button>
         </div>
       </div>
     `;
@@ -1704,7 +1503,6 @@ function render() {
   }
 }
 
-// ============ EXPORT ============
 function exportOptions() {
   document.getElementById('exportModal').classList.add('active');
 }
@@ -1737,30 +1535,10 @@ function exportPDF() {
 <head>
   <title>${escapeHtml(sopName)}</title>
   <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      padding: 40px; 
-      max-width: 800px; 
-      margin: 0 auto; 
-    }
-    h1 { 
-      border-bottom: 3px solid #4CAF50; 
-      padding-bottom: 12px; 
-      color: #333; 
-    }
-    .meta { 
-      color: #666; 
-      margin: 20px 0; 
-    }
-    pre { 
-      white-space: pre-wrap; 
-      line-height: 1.6; 
-      font-size: 14px; 
-      font-family: inherit;
-    }
-    @media print {
-      body { padding: 20px; }
-    }
+    body { font-family: Arial; padding: 40px; max-width: 800px; margin: 0 auto; }
+    h1 { border-bottom: 3px solid #4CAF50; padding-bottom: 12px; color: #333; }
+    .meta { color: #666; margin: 20px 0; }
+    pre { white-space: pre-wrap; line-height: 1.6; font-size: 14px; font-family: inherit; }
   </style>
 </head>
 <body>
@@ -1928,7 +1706,6 @@ function downloadFile(content, filename, type) {
   URL.revokeObjectURL(url);
 }
 
-// ============ SHARE ============
 function openShareModal() {
   if (!currentSOPId) return;
   const shareData = btoa(JSON.stringify({ steps, name: allSOPs[currentSOPId]?.name || 'SOP' }));
@@ -1952,7 +1729,6 @@ function copyToClipboard() {
   alert('Link copied to clipboard!');
 }
 
-// ============ TEMPLATES ============
 function loadTemplate(name) {
   if (!templates[name]) return;
   if (!confirm('Replace current SOP with this template?')) return;
@@ -1978,7 +1754,6 @@ function loadTemplate(name) {
   }
 }
 
-// ============ STORAGE ============
 function saveToStorage() {
   try {
     localStorage.setItem('allSOPs', JSON.stringify(allSOPs));
@@ -2014,41 +1789,6 @@ function loadFromStorage() {
   }
 }
 
-function loadFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  
-  if (!params.has('sop')) return;
-  
-  try {
-    const data = JSON.parse(atob(params.get('sop')));
-    steps = data.steps || [];
-    
-    document.getElementById('sopTitle').textContent = data.name || 'Shared SOP';
-    document.getElementById('sopNameInput').value = data.name || 'Shared SOP';
-    document.getElementById('sopNameInput').disabled = true;
-    
-    history = [JSON.stringify(steps)];
-    renderSteps();
-    renderDiagram();
-    showView('editor');
-    
-    // Disable editing for shared SOPs
-    document.querySelectorAll('.top-toolbar button').forEach(btn => {
-      if (!btn.textContent.includes('Editor')) {
-        btn.disabled = true;
-      }
-    });
-    
-    document.querySelectorAll('#editorView button').forEach(btn => {
-      btn.disabled = true;
-    });
-  } catch (e) {
-    console.error('Failed to load shared SOP:', e);
-    alert('Error loading shared SOP. The link may be invalid or corrupted.');
-  }
-}
-
-// ============ UTILITIES ============
 function escapeHtml(text) {
   const map = {
     '&': '&amp;',
@@ -2060,29 +1800,18 @@ function escapeHtml(text) {
   return String(text).replace(/[&<>"']/g, m => map[m]);
 }
 
-// ============ INITIALIZATION ============
 window.addEventListener('load', () => {
   loadFromStorage();
   
-  const params = new URLSearchParams(window.location.search);
+  const firstSOP = Object.keys(allSOPs)[0];
   
-  if (params.has('sop')) {
-    // Loading a shared SOP
-    loadFromUrl();
+  if (firstSOP) {
+    showView('sops');
   } else {
-    // Normal mode
-    const firstSOP = Object.keys(allSOPs)[0];
-    
-    if (firstSOP) {
-      showView('sops');
-    } else {
-      // No SOPs exist, create first one
-      createNewSOP();
-      showView('editor');
-    }
+    createNewSOP();
+    showView('editor');
   }
   
-  // Auto-save every 30 seconds
   setInterval(() => {
     if (currentSOPId && steps.length > 0) {
       allSOPs[currentSOPId].steps = steps;
@@ -2093,39 +1822,6 @@ window.addEventListener('load', () => {
     }
   }, 30000);
 });
-
-</script>
-</body>
-</html> [...(sop.changeLog || [])];
-  auditTrail = [...(sop.auditTrail || [])];
-  
-  history = [JSON.stringify(steps)];
-  redoStack = [];
-  
-  document.getElementById('sopNameInput').value = sop.name;
-  document.getElementById('sopTitle').textContent = sop.name;
-  document.getElementById('tagsInput').value = tags.join(', ');
-  document.getElementById('statusSelect').value = sopStatus;
-  document.getElementById('categorySelect').value = sopCategory;
-  document.getElementById('totalTimeInput').value = totalTimeEstimate;
-  document.getElementById('ownerInput').value = sopOwner;
-  
-  trackSOPView(id);
-  
-  renderSOPList();
-  renderSteps();
-  renderDiagram();
-  renderTags();
-  renderStepTimes();
-  updateTimeDisplay();
-  updateHistoryButtons();
-  renderOwnerDisplay();
-  renderReviewDisplay();
-  renderCreatedDisplay();
-  markSaved();
-  
-  showView('editor');
-}
 
 function updateSOPName() {
   if (!currentSOPId) return;
@@ -2216,7 +1912,6 @@ function searchSOPs() {
   renderSOPList(query);
 }
 
-// ============ STEPS ============
 function addStep(text = "New Step") {
   steps.push({ text, branches: [], duration: 0 });
   saveHistory();
@@ -2297,7 +1992,6 @@ function updateStepDuration(idx, duration) {
   }
 }
 
-// ============ TAGS ============
 function updateTags() {
   const input = document.getElementById('tagsInput').value;
   tags = input.split(',').map(t => t.trim()).filter(t => t);
@@ -2325,7 +2019,6 @@ function removeTag(tag) {
   updateTags();
 }
 
-// ============ COMMENTS ============
 function addComment() {
   const author = document.getElementById('commentAuthorInput').value.trim() || 'Anonymous';
   const text = document.getElementById('commentTextInput').value.trim();
@@ -2371,7 +2064,6 @@ function closeCommentModal() {
   document.getElementById('commentModal').classList.remove('active');
 }
 
-// ============ VERSIONING ============
 function saveHistory() {
   const stateStr = JSON.stringify(steps);
   history.push(stateStr);
@@ -2461,7 +2153,6 @@ function viewVersion(idx) {
   alert('Version from ' + new Date(versions[idx].timestamp).toLocaleString() + '\n\n' + stepTexts);
 }
 
-// ============ METADATA ============
 function updateSOPStatus(newStatus) {
   if (!currentSOPId) return;
   const oldStatus = sopStatus;
@@ -2582,22 +2273,3 @@ function renderCreatedDisplay() {
     container.textContent = 'Unknown';
   }
 }
-
-// ============ CHANGE LOG & AUDIT ============
-function logChangeLog(sopId, action) {
-  if (!allSOPs[sopId]) return;
-  if (!allSOPs[sopId].changeLog) {
-    allSOPs[sopId].changeLog = [];
-  }
-  
-  allSOPs[sopId].changeLog.unshift({
-    timestamp: new Date().toISOString(),
-    action: action,
-    user: localStorage.getItem('currentUser') || 'System'
-  });
-  
-  if (allSOPs[sopId].changeLog.length > 100) {
-    allSOPs[sopId].changeLog.pop();
-  }
-  
-  changeLog =
