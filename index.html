@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SOP Designer | Numbered Export</title>
+<title>SOP Designer | Live Numbering + PDF Export</title>
 <style>
 :root {
   --primary:#1d4e2d; --accent:#2f7a4d; --danger:#a00;
@@ -34,34 +34,44 @@ button:hover{background:var(--accent);}
 <section>
   <button id="insert-step-btn">➕ Add Step</button>
   <button id="save-sop-btn">💾 Save</button>
-  <button id="export-sop-btn">📤 Export</button>
+  <button id="export-sop-btn">📄 Export PDF</button>
   <button id="clear-sop-btn" style="background:var(--danger)">🗑️ Clear</button>
 </section>
 <div id="editor"></div>
 </main>
 
+<!-- 📌 Libraries for PDF export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNa5HZ5CqglXrwI9KuOyLMH9dnA+6Vht7EpnpipwmfHgZghvDCa43NKBHOrcNpxHx5lKf0vZ9RZzOJy6Wv6t1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-bT0F8Hsy4KAcbaQbiBGM8ME4js5VUtAZmqxrP5P6MZ3+ZBNINo7EoPw+eXzI4Q1W3iA+0lYoeUXsoC1Bp4ekWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <script>
 const editor=document.getElementById('editor');
-const STORAGE_KEY='sop-designer-numbered-v1';
+const STORAGE_KEY='sop-designer-live-numbering-pdf';
 
 function save(){localStorage.setItem(STORAGE_KEY,editor.innerHTML);}
 function load(){const content=localStorage.getItem(STORAGE_KEY);if(content)editor.innerHTML=content;}
 function clearAll(){editor.innerHTML='';localStorage.removeItem(STORAGE_KEY);}
-window.addEventListener('load',()=>{load();makeDraggable();});
+window.addEventListener('load',()=>{load();makeDraggable();generateNumbering();});
 
 // Insert Elements
-function insertStep(){insertHTML('<div class="sop-step" draggable="true"><strong>Step:</strong> Describe step <button class="add-task-btn">+ Task</button></div>');makeDraggable();}
-function insertTask(parent){insertHTML('<div class="sop-task" draggable="true"><strong>Task:</strong> Describe task <button class="add-subtask-btn">+ Sub-task</button></div>',parent);makeDraggable();}
-function insertSubTask(parent){insertHTML('<div class="sop-subtask" draggable="true"><strong>Sub-task:</strong> Describe sub-task <button class="add-checklist-btn">+ Checklist</button></div>',parent);makeDraggable();}
+function insertStep(){insertHTML('<div class="sop-step" draggable="true"><strong></strong> Describe step <button class="add-task-btn">+ Task</button></div>');}
+function insertTask(parent){insertHTML('<div class="sop-task" draggable="true"><strong></strong> Describe task <button class="add-subtask-btn">+ Sub-task</button></div>',parent);}
+function insertSubTask(parent){insertHTML('<div class="sop-subtask" draggable="true"><strong></strong> Describe sub-task <button class="add-checklist-btn">+ Checklist</button></div>',parent);}
 function insertChecklist(parent){
   const html=`
   <div class="sop-checklist" draggable="true">
     <div><input type="checkbox"> Checklist item <button class="remove-item-btn">Remove</button></div>
     <button class="add-item-btn">+ Item</button>
   </div>`;
-  insertHTML(html,parent);makeDraggable();
+  insertHTML(html,parent);
 }
-function insertHTML(html,parent=editor){const frag=document.createRange().createContextualFragment(html);parent.appendChild(frag);save();}
+function insertHTML(html,parent=editor){
+  const frag=document.createRange().createContextualFragment(html);
+  parent.appendChild(frag);
+  makeDraggable();
+  generateNumbering();
+  save();
+}
 
 // Button actions
 document.getElementById('insert-step-btn').addEventListener('click',insertStep);
@@ -78,6 +88,7 @@ editor.addEventListener('click',e=>{
     e.target.parentElement.insertBefore(div,e.target);
   }
   if(e.target.classList.contains('remove-item-btn'))e.target.parentElement.remove();
+  generateNumbering();
   save();
 });
 
@@ -85,7 +96,15 @@ editor.addEventListener('click',e=>{
 let dragSrc=null;
 function handleDragStart(e){dragSrc=this;this.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
 function handleDragOver(e){e.preventDefault();return false;}
-function handleDrop(e){e.stopPropagation();if(dragSrc!=this){editor.insertBefore(dragSrc,this);}return false;}
+function handleDrop(e){
+  e.stopPropagation();
+  if(dragSrc!=this){
+    this.parentNode.insertBefore(dragSrc,this);
+    generateNumbering();
+    save();
+  }
+  return false;
+}
 function handleDragEnd(){this.classList.remove('dragging');}
 function makeDraggable(){
   const items=editor.querySelectorAll('.sop-step,.sop-task,.sop-subtask,.sop-checklist');
@@ -98,9 +117,8 @@ function makeDraggable(){
     it.addEventListener('dragend',handleDragEnd);
   });
 }
-editor.addEventListener('input',makeDraggable);
 
-// Numbering logic
+// Numbering logic (LIVE)
 function generateNumbering(){
   const steps=[...editor.querySelectorAll('.sop-step')];
   steps.forEach((step,i)=>{
@@ -116,26 +134,48 @@ function generateNumbering(){
   });
 }
 
-// Export PDF
-function exportPDF(){
+// Keep numbering updated
+const observer=new MutationObserver(()=>generateNumbering());
+observer.observe(editor,{childList:true,subtree:true});
+
+// PDF Export
+async function exportPDF(){
   generateNumbering();
-  const win=window.open('','', 'width=900,height=700');
-  const styles=`
-    body{font-family:Arial,sans-serif;padding:2rem;color:#222;}
-    .sop-step{border-left:4px solid #1d4e2d;margin:1rem 0;padding:1rem;}
-    .sop-task{margin-left:20px;border-left:4px solid #2f7a4d;padding:1rem;}
-    .sop-subtask{margin-left:40px;border-left:4px solid #4a9f5c;padding:1rem;}
-    .sop-checklist{margin-left:60px;padding:0.5rem;}
-    input[type="checkbox"]{transform:scale(1.2);margin-right:0.5rem;}
-    button{display:none;}
-  `;
-  win.document.write(`<html><head><title>SOP Export</title><style>${styles}</style></head><body>`);
-  win.document.write('<h1>Standard Operating Procedure</h1>');
-  win.document.write(editor.innerHTML);
-  win.document.write('</body></html>');
-  win.document.close();
-  win.focus();
-  win.print();
+  const clone=editor.cloneNode(true);
+  // hide buttons in export
+  clone.querySelectorAll('button').forEach(btn=>btn.style.display='none');
+  
+  // make container
+  const container=document.createElement('div');
+  container.style.padding='20px';
+  container.innerHTML=`<h1 style="font-family:Arial;">Standard Operating Procedure</h1>`;
+  container.appendChild(clone);
+  document.body.appendChild(container);
+  container.style.position='absolute';
+  container.style.left='-9999px';
+
+  const canvas=await html2canvas(container,{scale:2});
+  const imgData=canvas.toDataURL('image/png');
+  const pdf=new jspdf.jsPDF('p','pt','a4');
+
+  const imgWidth=595.28;
+  const pageHeight=841.89;
+  const imgHeight=canvas.height * imgWidth / canvas.width;
+  let heightLeft=imgHeight;
+  let position=0;
+
+  pdf.addImage(imgData,'PNG',0,position,imgWidth,imgHeight);
+  heightLeft-=pageHeight;
+
+  while(heightLeft>0){
+    position=heightLeft - imgHeight;
+    pdf.addPage();
+    pdf.addImage(imgData,'PNG',0,position,imgWidth,imgHeight);
+    heightLeft-=pageHeight;
+  }
+
+  pdf.save('SOP_Export.pdf');
+  document.body.removeChild(container);
 }
 </script>
 </body>
