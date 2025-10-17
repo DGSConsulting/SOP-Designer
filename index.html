@@ -731,6 +731,28 @@
       
       <div class="steps-list" id="stepsList"></div>
       
+      <!-- Ownership -->
+      <div class="section">
+        <h3>Ownership</h3>
+        <input type="text" id="ownerInput" placeholder="Owner name" onchange="updateSOPOwner(this.value)">
+        <div style="font-size: 10px; color: #666; margin-top: 4px;" id="ownerDisplay"></div>
+      </div>
+
+      <!-- Last Reviewed -->
+      <div class="section">
+        <h3>Review</h3>
+        <button onclick="markReviewedNow()" style="width: 100%; background: #4CAF50; margin-bottom: 6px; padding: 8px;">Mark Reviewed Today</button>
+        <div style="font-size: 10px; color: #666; line-height: 1.4;" id="reviewDisplay">Never reviewed</div>
+      </div>
+
+      <!-- Created Info -->
+      <div class="section">
+        <h3>Created</h3>
+        <div style="font-size: 10px; color: #666; line-height: 1.4;">
+          <div id="createdDisplay"></div>
+        </div>
+      </div>
+      
       <!-- Status -->
       <div class="section">
         <h3>Status</h3>
@@ -769,6 +791,13 @@
         <h3>Tags</h3>
         <input type="text" class="tags-input" id="tagsInput" placeholder="comma-separated" onchange="updateTags()">
         <div class="tags-list" id="tagsList"></div>
+      </div>
+
+      <!-- Activity & History -->
+      <div class="section">
+        <h3>History</h3>
+        <button onclick="viewChangeLog()" style="width: 100%; margin-bottom: 6px;">View Changes</button>
+        <button onclick="viewAuditTrail()" style="width: 100%; background: #2196F3;">View Activity</button>
       </div>
       
       <!-- Templates -->
@@ -841,11 +870,19 @@
   </div>
 </div>
 
-<div id="trashModal" class="modal">
+<div id="auditModal" class="modal">
   <div class="modal-content">
-    <h2>Trash</h2>
-    <div id="trashList" style="max-height: 350px; overflow-y: auto;"></div>
-    <button class="tertiary" onclick="closeTrashModal()" style="margin-top: 10px; width: 100%;">Close</button>
+    <h2>Activity Log</h2>
+    <div id="auditTrailList" style="max-height: 350px; overflow-y: auto;"></div>
+    <button class="tertiary" onclick="closeAuditModal()" style="margin-top: 10px; width: 100%;">Close</button>
+  </div>
+</div>
+
+<div id="changeLogModal" class="modal">
+  <div class="modal-content">
+    <h2>Change Log</h2>
+    <div id="changeLogList" style="max-height: 350px; overflow-y: auto;"></div>
+    <button class="tertiary" onclick="closeChangeLogModal()" style="margin-top: 10px; width: 100%;">Close</button>
   </div>
 </div>
 
@@ -1522,6 +1559,8 @@ function updateSOPStatus(newStatus) {
   sopStatus = newStatus;
   allSOPs[currentSOPId].status = newStatus;
   document.getElementById('sopStatus').textContent = newStatus;
+  logAuditTrail(currentSOPId, 'status_changed', { from: sopStatus, to: newStatus });
+  logChangeLog(currentSOPId, 'Status changed to ' + newStatus);
   renderSOPList();
   saveToStorage();
 }
@@ -1530,6 +1569,7 @@ function updateSOPCategory(newCategory) {
   if (!currentSOPId) return;
   sopCategory = newCategory;
   allSOPs[currentSOPId].category = newCategory;
+  logAuditTrail(currentSOPId, 'category_changed', { category: newCategory });
   renderSOPList();
   saveToStorage();
 }
@@ -1587,6 +1627,124 @@ function renderStepTimes() {
   } else {
     container.innerHTML = stepTimes.join(' • ');
   }
+}
+
+// ============ PHASE 2 FEATURES - Collaboration ============
+
+function updateSOPOwner(ownerName) {
+  if (!currentSOPId) return;
+  const oldOwner = sopOwner;
+  sopOwner = ownerName;
+  allSOPs[currentSOPId].owner = ownerName;
+  logAuditTrail(currentSOPId, 'owner_changed', { from: oldOwner || 'Unassigned', to: ownerName || 'Unassigned' });
+  logChangeLog(currentSOPId, 'Owner changed to ' + (ownerName || 'Unassigned'));
+  renderOwnerDisplay();
+  saveToStorage();
+}
+
+function renderOwnerDisplay() {
+  const container = document.getElementById('ownerDisplay');
+  if (sopOwner) {
+    container.textContent = 'Owner: ' + sopOwner;
+  } else {
+    container.textContent = 'No owner assigned';
+  }
+}
+
+function markReviewedNow() {
+  if (!currentSOPId) return;
+  const reviewer = sopOwner || localStorage.getItem('currentUser') || 'System';
+  const now = new Date().toISOString();
+  
+  allSOPs[currentSOPId].lastReviewedBy = reviewer;
+  allSOPs[currentSOPId].lastReviewedDate = now;
+  
+  logAuditTrail(currentSOPId, 'reviewed', { reviewedBy: reviewer });
+  logChangeLog(currentSOPId, 'Reviewed by ' + reviewer);
+  
+  renderReviewDisplay();
+  saveToStorage();
+}
+
+function renderReviewDisplay() {
+  const container = document.getElementById('reviewDisplay');
+  const sop = allSOPs[currentSOPId];
+  
+  if (sop && sop.lastReviewedDate) {
+    const date = new Date(sop.lastReviewedDate).toLocaleDateString();
+    container.textContent = `Last reviewed: ${date} by ${sop.lastReviewedBy || 'Unknown'}`;
+  } else {
+    container.textContent = 'Never reviewed';
+  }
+}
+
+function logChangeLog(sopId, action) {
+  if (!allSOPs[sopId]) return;
+  if (!allSOPs[sopId].changeLog) {
+    allSOPs[sopId].changeLog = [];
+  }
+  
+  allSOPs[sopId].changeLog.unshift({
+    timestamp: new Date().toISOString(),
+    action: action,
+    user: localStorage.getItem('currentUser') || 'System'
+  });
+  
+  if (allSOPs[sopId].changeLog.length > 100) {
+    allSOPs[sopId].changeLog.pop();
+  }
+  
+  changeLog = allSOPs[sopId].changeLog;
+}
+
+function logAuditTrail(sopId, action, details) {
+  if (!allSOPs[sopId]) return;
+  if (!allSOPs[sopId].auditTrail) {
+    allSOPs[sopId].auditTrail = [];
+  }
+  
+  allSOPs[sopId].auditTrail.unshift({
+    timestamp: new Date().toISOString(),
+    action: action,
+    details: details || {},
+    user: localStorage.getItem('currentUser') || 'System'
+  });
+  
+  if (allSOPs[sopId].auditTrail.length > 200) {
+    allSOPs[sopId].auditTrail.pop();
+  }
+  
+  auditTrail = allSOPs[sopId].auditTrail;
+}
+
+function viewAuditTrail() {
+  const container = document.getElementById('auditTrailList');
+  
+  if (auditTrail.length === 0) {
+    container.innerHTML = '<p style="color: #999;">No activity recorded.</p>';
+  } else {
+    container.innerHTML = auditTrail.slice(0, 50).map(entry => {
+      const time = new Date(entry.timestamp).toLocaleString();
+      const details = entry.details ? JSON.stringify(entry.details).substring(0, 50) : '';
+      return `
+        <div style="padding: 8px; background: #f5f5f5; border-radius: 3px; margin: 6px 0; font-size: 11px;">
+          <strong>${entry.action}</strong> by ${entry.user}<br>
+          <span style="color: #999;">${time}</span>
+          ${details ? '<br><span style="color: #666;">Details: ' + details + '...</span>' : ''}
+        </div>
+      `;
+    }).join('');
+  }
+  
+  document.getElementById('auditModal').classList.add('active');
+}
+
+function closeAuditModal() {
+  document.getElementById('auditModal').classList.remove('active');
+}
+
+function closeChangeLogModal() {
+  document.getElementById('changeLogModal').classList.remove('active');
 }
 
 // ============ EXPORT ============
