@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SOP Designer | Live Numbering + PDF Export</title>
+<title>SOP Designer | PDF Export with Center Footer</title>
 <style>
 :root {
   --primary:#1d4e2d; --accent:#2f7a4d; --danger:#a00;
@@ -17,13 +17,21 @@ main{max-width:1100px;margin:0 auto;padding:2rem;}
 button{background:var(--primary);color:#fff;padding:.5rem 1rem;border:none;border-radius:6px;cursor:pointer;margin:.25rem;font-size:.9rem;}
 button:hover{background:var(--accent);}
 #editor{background:#fff;padding:1.5rem;border-radius:8px;min-height:300px;border:1px solid var(--border);}
-.sop-step,.sop-task,.sop-subtask,.sop-checklist{border-left:4px solid var(--primary);margin:1rem 0;padding:1rem;border-radius:6px;background:#fdfdfd;cursor:move;}
+.sop-step,.sop-task,.sop-subtask,.sop-checklist{
+  border-left:4px solid var(--primary);
+  margin:1rem 0;
+  padding:1rem;
+  border-radius:6px;
+  background:#fdfdfd;
+  cursor:move;
+}
 .sop-task{border-color:#2f7a4d;margin-left:20px;}
 .sop-subtask{border-color:#4a9f5c;margin-left:40px;}
 .sop-checklist{margin-left:60px;}
 .sop-step.dragging,.sop-task.dragging,.sop-subtask.dragging,.sop-checklist.dragging{opacity:.5;}
 .add-item-btn,.remove-item-btn,.add-task-btn,.add-subtask-btn,.add-checklist-btn{
-  background:var(--accent);color:#fff;border:none;border-radius:4px;font-size:0.8rem;padding:.25rem .5rem;cursor:pointer;margin-left:.5rem;
+  background:var(--accent);color:#fff;border:none;border-radius:4px;
+  font-size:0.8rem;padding:.25rem .5rem;cursor:pointer;margin-left:.5rem;
 }
 .add-item-btn:hover,.remove-item-btn:hover{background:#166a36;}
 </style>
@@ -40,13 +48,15 @@ button:hover{background:var(--accent);}
 <div id="editor"></div>
 </main>
 
-<!-- 📌 Libraries for PDF export -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNa5HZ5CqglXrwI9KuOyLMH9dnA+6Vht7EpnpipwmfHgZghvDCa43NKBHOrcNpxHx5lKf0vZ9RZzOJy6Wv6t1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-bT0F8Hsy4KAcbaQbiBGM8ME4js5VUtAZmqxrP5P6MZ3+ZBNINo7EoPw+eXzI4Q1W3iA+0lYoeUXsoC1Bp4ekWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
 
 <script>
 const editor=document.getElementById('editor');
-const STORAGE_KEY='sop-designer-live-numbering-pdf';
+const STORAGE_KEY='sop-designer';
+const COMPANY_NAME = 'DGS Consulting';
+const COMPANY_URL = 'www.dgsconsulting.ca';
+const LOGO_URL = 'https://raw.githubusercontent.com/DGSConsulting/DGSConsulting/main/asset/clean-dashboard.png';
 
 function save(){localStorage.setItem(STORAGE_KEY,editor.innerHTML);}
 function load(){const content=localStorage.getItem(STORAGE_KEY);if(content)editor.innerHTML=content;}
@@ -73,11 +83,12 @@ function insertHTML(html,parent=editor){
   save();
 }
 
-// Button actions
+// UI Buttons
 document.getElementById('insert-step-btn').addEventListener('click',insertStep);
 document.getElementById('save-sop-btn').addEventListener('click',save);
 document.getElementById('export-sop-btn').addEventListener('click',exportPDF);
 document.getElementById('clear-sop-btn').addEventListener('click',clearAll);
+
 editor.addEventListener('click',e=>{
   if(e.target.classList.contains('add-task-btn'))insertTask(e.target.parentElement);
   if(e.target.classList.contains('add-subtask-btn'))insertSubTask(e.target.parentElement);
@@ -118,7 +129,7 @@ function makeDraggable(){
   });
 }
 
-// Numbering logic (LIVE)
+// Numbering
 function generateNumbering(){
   const steps=[...editor.querySelectorAll('.sop-step')];
   steps.forEach((step,i)=>{
@@ -133,22 +144,22 @@ function generateNumbering(){
     });
   });
 }
-
-// Keep numbering updated
 const observer=new MutationObserver(()=>generateNumbering());
 observer.observe(editor,{childList:true,subtree:true});
 
-// PDF Export
+// 🧾 PDF Export with Centered Footer
 async function exportPDF(){
   generateNumbering();
   const clone=editor.cloneNode(true);
-  // hide buttons in export
   clone.querySelectorAll('button').forEach(btn=>btn.style.display='none');
-  
-  // make container
+
   const container=document.createElement('div');
   container.style.padding='20px';
-  container.innerHTML=`<h1 style="font-family:Arial;">Standard Operating Procedure</h1>`;
+  container.innerHTML=`
+    <div style="display:flex;align-items:center;gap:15px;margin-bottom:20px;">
+      <img src="${LOGO_URL}" style="max-height:60px;">
+      <h1 style="font-family:Arial;margin:0;">Standard Operating Procedure</h1>
+    </div>`;
   container.appendChild(clone);
   document.body.appendChild(container);
   container.style.position='absolute';
@@ -163,14 +174,30 @@ async function exportPDF(){
   const imgHeight=canvas.height * imgWidth / canvas.width;
   let heightLeft=imgHeight;
   let position=0;
+  let page=1;
+  const pageCount=Math.ceil(imgHeight/pageHeight);
+  const dateStr=new Date().toLocaleDateString();
+
+  const addFooter=(p,pc)=>{
+    pdf.setFontSize(9);
+    pdf.setTextColor(100);
+    const footerText = `${COMPANY_NAME}  |  ${COMPANY_URL}  |  Exported: ${dateStr}`;
+    const textWidth = pdf.getTextWidth(footerText);
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    pdf.text(footerText,(pageWidth - textWidth)/2,pageHeight-30);
+    pdf.text(`Page ${p} of ${pc}`,pageWidth-80,pageHeight-30);
+  }
 
   pdf.addImage(imgData,'PNG',0,position,imgWidth,imgHeight);
+  addFooter(page,pageCount);
   heightLeft-=pageHeight;
 
   while(heightLeft>0){
     position=heightLeft - imgHeight;
     pdf.addPage();
+    page++;
     pdf.addImage(imgData,'PNG',0,position,imgWidth,imgHeight);
+    addFooter(page,pageCount);
     heightLeft-=pageHeight;
   }
 
