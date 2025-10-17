@@ -6,6 +6,7 @@
 <title>SOP Manager - DGS Consulting</title>
 <style>
   * { box-sizing: border-box; }
+  
   body { 
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
     margin: 0; 
@@ -22,8 +23,7 @@
     flex-direction: column;
     border-right: 1px solid #1a252f;
     overflow-y: auto;
-    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-    transition: transform 0.3s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     z-index: 100;
   }
   
@@ -34,7 +34,7 @@
   }
   
   .sidebar-header {
-    padding: 16px;
+    padding: 18px 16px;
     border-bottom: 1px solid #34495e;
     background: #1a252f;
     flex-shrink: 0;
@@ -44,6 +44,7 @@
     margin: 0;
     font-size: 18px;
     font-weight: 600;
+    color: #4CAF50;
   }
   
   .sidebar-content {
@@ -65,7 +66,8 @@
   }
   
   .sop-item:hover {
-    background: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.12);
+    border-color: #4CAF50;
   }
   
   .sop-item.active {
@@ -75,9 +77,9 @@
   
   .sop-item-name {
     font-weight: 500;
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
   
   .sop-item-meta {
@@ -87,7 +89,6 @@
   }
   
   .sop-item-actions {
-    font-size: 11px;
     margin-top: 6px;
     display: flex;
     gap: 4px;
@@ -105,7 +106,7 @@
   }
   
   .sop-item-actions button:hover {
-    background: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.25);
   }
   
   .sidebar-footer {
@@ -156,7 +157,6 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    font-size: 12px;
     flex-shrink: 0;
   }
   
@@ -214,7 +214,7 @@
     padding: 20px;
     overflow-y: auto;
     border-right: 1px solid #ddd;
-    background: #fff;
+    background: white;
     display: flex;
     flex-direction: column;
     min-height: 0;
@@ -230,17 +230,35 @@
     min-height: 0;
   }
   
-  h1, h2, h3 { margin: 0 0 12px 0; }
-  h1 { font-size: 22px; color: #333; font-weight: 600; }
-  h2 { font-size: 16px; color: #555; font-weight: 600; }
-  h3 { font-size: 13px; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  h1 { 
+    font-size: 24px; 
+    color: #333; 
+    margin: 0 0 12px 0;
+    font-weight: 600;
+  }
+  h2 { 
+    font-size: 16px; 
+    color: #555; 
+    margin: 0 0 12px 0;
+    font-weight: 600;
+  }
+  h3 { 
+    font-size: 12px; 
+    color: #666; 
+    margin: 0 0 8px 0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
   
   .sop-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 12px;
     gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
     flex-shrink: 0;
   }
   
@@ -251,21 +269,31 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     font-weight: 500;
-    margin-bottom: 12px;
+  }
+  
+  .sop-name-input:focus {
+    outline: none;
+    border-color: #4CAF50;
   }
   
   .rename-btn {
-    padding: 6px 8px;
+    padding: 6px 10px;
     font-size: 12px;
     background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
   }
   
-  .rename-btn:hover { background: #0b7dda; }
+  .rename-btn:hover {
+    background: #0b7dda;
+  }
   
   .toolbar {
     display: flex;
     gap: 6px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     flex-wrap: wrap;
     flex-shrink: 0;
   }
@@ -277,18 +305,14 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
-    transition: all 0.2s;
+    transition: background 0.2s;
   }
   
-  button:hover { 
-    background: #45a049;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  button:active { transform: translateY(0); }
-  button:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+  button:hover { background: #45a049; }
+  button:active { opacity: 0.8; }
+  button:disabled { background: #ccc; cursor: not-allowed; }
   
   .secondary {
     background: #2196F3;
@@ -308,7 +332,7 @@
   .steps-list {
     flex: 1;
     overflow-y: auto;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     padding-right: 8px;
     min-height: 0;
   }
@@ -319,56 +343,45 @@
   
   .steps-list::-webkit-scrollbar-track {
     background: #f1f1f1;
-    border-radius: 4px;
   }
   
   .steps-list::-webkit-scrollbar-thumb {
     background: #ddd;
-    border-radius: 4px;
-  }
-  
-  .steps-list::-webkit-scrollbar-thumb:hover {
-    background: #ccc;
+    border-radius: 3px;
   }
   
   .step-card {
-    background: #fff;
+    background: white;
     margin: 8px 0;
     padding: 12px;
-    border: 2px solid #e0e0e0;
+    border: 1px solid #ddd;
     border-radius: 4px;
     cursor: grab;
     transition: all 0.2s;
-    touch-action: none;
-  }
-  
-  .step-card:active {
-    cursor: grabbing;
   }
   
   .step-card:hover {
     border-color: #4CAF50;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   }
   
   .step-card.dragging {
     opacity: 0.5;
     background: #f0f0f0;
-    transform: scale(0.98);
   }
   
   .step-number {
     display: inline-block;
     background: #4CAF50;
     color: white;
-    width: 24px;
-    height: 24px;
-    line-height: 24px;
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
     text-align: center;
     border-radius: 50%;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
-    margin-right: 8px;
+    margin-right: 6px;
     flex-shrink: 0;
   }
   
@@ -377,9 +390,14 @@
     padding: 6px 8px;
     border: 1px solid #ddd;
     border-radius: 3px;
-    font-size: 13px;
+    font-size: 12px;
     font-family: inherit;
     margin: 6px 0;
+  }
+  
+  .step-input:focus {
+    outline: none;
+    border-color: #4CAF50;
   }
   
   .step-controls {
@@ -391,38 +409,46 @@
   
   .step-controls button {
     padding: 4px 8px;
-    font-size: 12px;
+    font-size: 11px;
   }
   
   .branch {
-    margin-left: 20px;
+    margin-left: 18px;
     margin-top: 8px;
     padding: 10px;
     background: #f0f7ff;
     border-left: 3px solid #2196F3;
     border-radius: 3px;
-    position: relative;
   }
   
   .branch::before {
     content: "↳";
     position: absolute;
-    left: -18px;
+    left: -16px;
     color: #2196F3;
-    font-weight: bold;
   }
   
   .section {
-    margin-top: 16px;
+    margin-top: 12px;
     padding: 12px;
     background: #f5f5f5;
     border-radius: 4px;
-    border-left: 4px solid #4CAF50;
+    border-left: 3px solid #4CAF50;
     flex-shrink: 0;
   }
   
-  .section h3 {
-    margin-top: 0;
+  select, input[type="number"] {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  
+  select:focus, input:focus {
+    outline: none;
+    border-color: #4CAF50;
   }
   
   .template-grid {
@@ -433,7 +459,7 @@
   
   .template-btn {
     padding: 8px;
-    font-size: 12px;
+    font-size: 11px;
     background: #FF9800;
     text-align: center;
   }
@@ -446,7 +472,7 @@
     border: 1px solid #ddd;
     border-radius: 3px;
     font-size: 12px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
   
   .tags-list {
@@ -460,19 +486,12 @@
     color: #1976d2;
     padding: 4px 10px;
     border-radius: 12px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
+    font-size: 11px;
     border: 1px solid #90caf9;
-  }
-  
-  .tag:hover {
-    background: #bbdefb;
   }
   
   .tag .remove {
     margin-left: 6px;
-    font-weight: bold;
     cursor: pointer;
   }
   
@@ -483,185 +502,9 @@
     flex: 1;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     min-height: 0;
-  }
-  
-  .tooltip {
-    position: relative;
-    display: inline-block;
-  }
-  
-  .tooltip .tooltiptext {
-    visibility: hidden;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 4px;
-    padding: 5px 10px;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -60px;
-    opacity: 0;
-    transition: opacity 0.3s;
-    font-size: 11px;
-    white-space: nowrap;
-    pointer-events: none;
-  }
-  
-  .tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-  }
-  
-  .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.6);
-    justify-content: center;
+    display: flex;
     align-items: center;
-    z-index: 1000;
-    animation: fadeIn 0.2s;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  .modal.active { display: flex; }
-  
-  .modal-content {
-    background: white;
-    padding: 24px;
-    border-radius: 8px;
-    max-width: 600px;
-    width: 90%;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-  
-  .modal-content h2 { margin-top: 0; font-size: 18px; }
-  
-  .share-link {
-    padding: 10px;
-    background: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 3px;
-    font-family: 'Courier New', monospace;
-    font-size: 11px;
-    word-break: break-all;
-    margin: 12px 0;
-    user-select: all;
-    max-height: 80px;
-    overflow-y: auto;
-  }
-  
-  .version-item {
-    padding: 12px;
-    background: #f5f5f5;
-    border: 1px solid #ddd;
-    border-radius: 3px;
-    margin: 8px 0;
-    font-size: 12px;
-  }
-  
-  .version-item-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-  }
-  
-  .version-time {
-    color: #666;
-    font-size: 11px;
-  }
-  
-  .version-actions {
-    display: flex;
-    gap: 6px;
-  }
-  
-  .version-actions button {
-    padding: 4px 8px;
-    font-size: 11px;
-  }
-  
-  .comment-section {
-    margin-top: 12px;
-    padding: 12px;
-    background: #fffbea;
-    border-radius: 4px;
-    border-left: 4px solid #FFC107;
-  }
-  
-  .comment-input-group {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-  }
-  
-  .comment-input-group input {
-    padding: 6px 8px;
-    border: 1px solid #ddd;
-    border-radius: 3px;
-    font-size: 12px;
-  }
-  
-  .comment-input-group input:first-child {
-    min-width: 100px;
-  }
-  
-  .comment-input-group input:nth-child(2) {
-    flex: 1;
-    min-width: 150px;
-  }
-  
-  .comment-input-group button {
-    padding: 6px 12px;
-  }
-  
-  .comments-list {
-    max-height: 200px;
-    overflow-y: auto;
-  }
-  
-  .comment {
-    padding: 10px;
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 3px;
-    margin: 6px 0;
-    font-size: 12px;
-  }
-  
-  .comment-author {
-    font-weight: 600;
-    color: #333;
-  }
-  
-  .comment-time {
-    color: #999;
-    font-size: 11px;
-    margin-left: 8px;
-  }
-  
-  .comment-text {
-    margin-top: 4px;
-    color: #555;
-    line-height: 1.4;
-  }
-  
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #999;
+    justify-content: center;
   }
   
   .status-badge {
@@ -670,17 +513,17 @@
     background: #e3f2fd;
     color: #1976d2;
     border-radius: 3px;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
   }
   
   .warning-banner {
-    padding: 12px;
+    padding: 10px 12px;
     background: #fff3cd;
     border: 1px solid #ffc107;
     border-radius: 4px;
     color: #856404;
-    font-size: 12px;
+    font-size: 11px;
     margin-bottom: 12px;
     display: none;
     flex-shrink: 0;
@@ -690,138 +533,107 @@
     display: block;
   }
   
-  .bulk-actions {
-    padding: 12px;
-    background: #f5f5f5;
-    border-radius: 4px;
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-  
-  .bulk-actions button {
-    padding: 6px 10px;
-    font-size: 12px;
-  }
-  
-  .tour-overlay {
+  .modal {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.7);
-    z-index: 2000;
-    display: none;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
   }
   
-  .tour-overlay.active {
-    display: block;
-  }
+  .modal.active { display: flex; }
   
-  .tour-highlight {
-    position: absolute;
-    border: 3px solid #4CAF50;
-    background: rgba(76, 175, 80, 0.1);
-    border-radius: 4px;
-    box-shadow: 0 0 0 9999px rgba(0,0,0,0.7);
-    z-index: 2001;
-  }
-  
-  .tour-tooltip {
-    position: fixed;
+  .modal-content {
     background: white;
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-    z-index: 2002;
-    max-width: 300px;
+    padding: 20px;
+    border-radius: 6px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    max-height: 80vh;
+    overflow-y: auto;
   }
   
-  .tour-tooltip h3 {
-    margin: 0 0 8px 0;
-    font-size: 14px;
+  .modal-content h2 { 
+    margin-top: 0; 
+    font-size: 16px;
+    margin-bottom: 12px;
   }
   
-  .tour-tooltip p {
-    margin: 0 0 12px 0;
-    font-size: 12px;
-    line-height: 1.4;
+  .share-link {
+    padding: 10px;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    word-break: break-all;
+    margin: 10px 0;
+    user-select: all;
+    max-height: 70px;
+    overflow-y: auto;
   }
   
-  .tour-tooltip-buttons {
-    display: flex;
-    gap: 6px;
-    justify-content: flex-end;
-  }
-  
-  .tour-tooltip-buttons button {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-  
-  .trash-section {
-    margin-top: 12px;
-    padding: 12px;
+  .version-item {
+    padding: 10px;
     background: #f5f5f5;
-    border-radius: 4px;
-    border-left: 4px solid #f44336;
-    flex-shrink: 0;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin: 6px 0;
+    font-size: 11px;
   }
   
-  @media (max-width: 1024px) {
-    #sidebar { width: 220px; }
-    .editor-left { width: 50%; }
-    .editor-right { width: 50%; }
+  .version-item-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  
+  .comment {
+    padding: 8px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin: 6px 0;
+    font-size: 11px;
   }
   
   .footer {
-    padding: 12px 16px;
+    padding: 10px 14px;
     background: #2c3e50;
     color: rgba(255,255,255,0.7);
-    font-size: 11px;
+    font-size: 10px;
     border-top: 1px solid #1a252f;
     flex-shrink: 0;
   }
   
   .footer-content {
-    max-width: 100%;
-    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
     flex-wrap: wrap;
-  }
-  
-  .footer-branding {
-    flex: 0 1 auto;
-    min-width: 200px;
   }
   
   .footer-branding strong {
     color: white;
-    font-size: 12px;
-  }
-  
-  .footer-info {
-    font-size: 10px;
-    margin-top: 2px;
+    font-size: 11px;
+    display: block;
   }
   
   .footer-contact {
     display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    justify-content: center;
-    flex: 1;
-    min-width: 150px;
+    gap: 12px;
   }
   
   .footer-link {
     color: rgba(255,255,255,0.7);
     text-decoration: none;
-    transition: color 0.2s;
     font-size: 10px;
   }
   
@@ -829,29 +641,24 @@
     color: white;
   }
   
-  .footer-settings {
-    display: flex;
-    gap: 8px;
+  .trash-section {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    border-left: 3px solid #f44336;
+    flex-shrink: 0;
   }
   
-  .footer-settings button {
-    padding: 4px 8px;
-    font-size: 10px;
-    background: rgba(255,255,255,0.1);
-    color: white;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: background 0.2s;
+  .empty-state {
+    text-align: center;
+    padding: 30px 20px;
+    color: #999;
   }
   
-  .footer-settings button:hover {
-    background: rgba(255,255,255,0.2);
-  }
-
   @media (max-width: 768px) {
     body { flex-direction: column; }
-    #sidebar { width: 100%; height: auto; flex-direction: row; max-height: 100%; position: static; transform: none !important; }
+    #sidebar { width: 100%; height: auto; flex-direction: row; position: static; }
     #sidebar.mobile-hidden { transform: translateX(-100%); }
     .top-bar { display: flex; }
     .sidebar-content { display: none; }
@@ -860,17 +667,12 @@
     .editor-left { width: 100%; height: 50%; border-right: none; border-bottom: 1px solid #ddd; }
     .editor-right { width: 100%; height: 50%; }
     .template-grid { grid-template-columns: 1fr; }
-    .comment-input-group { flex-direction: column; }
-    .comment-input-group input { width: 100% !important; }
-    .footer-content { flex-direction: column; justify-content: center; gap: 12px; }
-    .footer-branding { text-align: center; }
-    .footer-contact { justify-content: center; }
   }
 </style>
 </head>
 <body>
 
-<!-- Sidebar: SOP Library -->
+<!-- Sidebar -->
 <div id="sidebar">
   <div class="sidebar-header">
     <h1>SOP Manager</h1>
@@ -883,8 +685,8 @@
   <div class="sidebar-content" id="sopList"></div>
   
   <div class="sidebar-actions">
-    <button onclick="exportAllSOPs()" title="Export all SOPs as JSON">Backup All</button>
-    <button onclick="importSOPs()" title="Import SOPs from backup" class="secondary">Restore</button>
+    <button onclick="exportAllSOPs()">Backup All</button>
+    <button onclick="importSOPs()" class="secondary">Restore</button>
   </div>
   
   <div class="sidebar-footer">
@@ -898,12 +700,12 @@
   <span id="mobileTitle">SOP Manager</span>
 </div>
 
-<!-- Main Editor Area -->
+<!-- Main Editor -->
 <div id="main">
   <div id="editor">
-    <!-- Left: Steps Editor -->
+    <!-- Left Panel -->
     <div class="editor-left">
-      <div class="warning-banner" id="warningBanner" role="alert">
+      <div class="warning-banner" id="warningBanner">
         You have unsaved changes. They will auto-save when you switch SOPs.
       </div>
       
@@ -915,8 +717,8 @@
       </div>
       
       <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-shrink: 0;">
-        <input type="text" id="sopNameInput" class="sop-name-input" placeholder="Enter SOP Name" onchange="updateSOPName()" aria-label="SOP name">
-        <button class="rename-btn tooltip" onclick="renameSOPQuick()" title="Quick rename">Edit</button>
+        <input type="text" id="sopNameInput" class="sop-name-input" placeholder="Enter SOP Name" onchange="updateSOPName()">
+        <button class="rename-btn" onclick="renameSOPQuick()">Edit</button>
       </div>
       
       <div class="toolbar">
@@ -927,16 +729,49 @@
         <button class="secondary" onclick="exportOptions()">Export</button>
       </div>
       
-      <div class="steps-list" id="stepsList" role="region" aria-label="Steps list"></div>
+      <div class="steps-list" id="stepsList"></div>
       
-      <!-- Tags Section -->
+      <!-- Status -->
+      <div class="section">
+        <h3>Status</h3>
+        <select id="statusSelect" onchange="updateSOPStatus(this.value)">
+          <option value="DRAFT">Draft</option>
+          <option value="ACTIVE">Active</option>
+          <option value="REVIEW">Under Review</option>
+          <option value="ARCHIVED">Archived</option>
+        </select>
+      </div>
+
+      <!-- Category -->
+      <div class="section">
+        <h3>Category</h3>
+        <select id="categorySelect" onchange="updateSOPCategory(this.value)">
+          <option value="General">General</option>
+          <option value="Sales">Sales</option>
+          <option value="HR">HR</option>
+          <option value="Operations">Operations</option>
+          <option value="Support">Support</option>
+        </select>
+      </div>
+
+      <!-- Time Estimate -->
+      <div class="section">
+        <h3>Time Estimate</h3>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input type="number" id="totalTimeInput" min="0" placeholder="minutes" onchange="updateTotalTime(this.value)">
+          <span style="font-size: 11px; color: #666; white-space: nowrap;" id="timeDisplay">No estimate</span>
+        </div>
+        <div style="margin-top: 8px; font-size: 10px; color: #666;" id="stepTimesDisplay"></div>
+      </div>
+      
+      <!-- Tags -->
       <div class="section">
         <h3>Tags</h3>
-        <input type="text" class="tags-input" id="tagsInput" placeholder="Add tags (comma-separated)" onchange="updateTags()" aria-label="Add tags">
+        <input type="text" class="tags-input" id="tagsInput" placeholder="comma-separated" onchange="updateTags()">
         <div class="tags-list" id="tagsList"></div>
       </div>
       
-      <!-- Templates Section -->
+      <!-- Templates -->
       <div class="section">
         <h3>Templates</h3>
         <div class="template-grid">
@@ -946,128 +781,80 @@
         </div>
       </div>
 
-      <!-- Status Section -->
-      <div class="section">
-        <h3>Status</h3>
-        <select id="statusSelect" onchange="updateSOPStatus(this.value)" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 3px; font-size: 12px;">
-          <option value="DRAFT">Draft</option>
-          <option value="ACTIVE">Active</option>
-          <option value="REVIEW">Under Review</option>
-          <option value="ARCHIVED">Archived</option>
-        </select>
-      </div>
-
-      <!-- Category Section -->
-      <div class="section">
-        <h3>Category</h3>
-        <select id="categorySelect" onchange="updateSOPCategory(this.value)" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 3px; font-size: 12px;">
-          <option value="General">General</option>
-          <option value="Sales">Sales</option>
-          <option value="HR">HR</option>
-          <option value="Operations">Operations</option>
-          <option value="Support">Support</option>
-        </select>
-      </div>
-
-      <!-- Time Estimate Section -->
-      <div class="section">
-        <h3>Estimate</h3>
-        <div style="display: flex; gap: 6px; align-items: center;">
-          <input type="number" id="totalTimeInput" min="0" placeholder="Total minutes" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 3px; font-size: 12px;" onchange="updateTotalTime(this.value)">
-          <span style="font-size: 12px; color: #666;" id="timeDisplay"></span>
-        </div>
-        <div style="margin-top: 12px;">
-          <h4 style="margin: 0 0 8px 0; font-size: 11px; color: #999;">Step Breakdown</h4>
-          <div id="stepTimesDisplay" style="font-size: 11px; color: #666;"></div>
-        </div>
-      </div>
-
-      <!-- Trash Section -->
+      <!-- Trash -->
       <div class="trash-section">
         <h3>Trash</h3>
         <button onclick="viewTrash()" style="width: 100%; background: #f44336;">View Deleted</button>
       </div>
     </div>
     
-    <!-- Right: Diagram -->
+    <!-- Right Panel -->
     <div class="editor-right">
       <h2>Flow Diagram</h2>
-      <svg id="svgDiagram" width="100%" height="100%" role="img" aria-label="Process flow diagram"></svg>
+      <svg id="svgDiagram" width="100%" height="100%"></svg>
     </div>
   </div>
 </div>
 
-<!-- Export Options Modal -->
+<!-- Modals -->
 <div id="exportModal" class="modal">
   <div class="modal-content">
     <h2>Export SOP</h2>
-    <div class="bulk-actions">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
       <button onclick="exportPDF()" class="secondary">PDF</button>
       <button onclick="exportHTML()" class="secondary">HTML</button>
       <button onclick="exportCSV()" class="secondary">CSV</button>
       <button onclick="exportDiagramImage()" class="secondary">Diagram</button>
     </div>
-    <button class="tertiary" onclick="closeExportModal()" style="margin-top: 12px; width: 100%;">Close</button>
+    <button class="tertiary" onclick="closeExportModal()" style="margin-top: 10px; width: 100%;">Close</button>
   </div>
 </div>
 
-<!-- Share Modal -->
 <div id="shareModal" class="modal">
   <div class="modal-content">
     <h2>Share SOP</h2>
-    <p>Share this read-only link with collaborators:</p>
+    <p style="font-size: 12px;">Read-only link:</p>
     <div class="share-link" id="shareLink"></div>
     <button onclick="copyToClipboard()" class="secondary">Copy Link</button>
     <button class="tertiary" onclick="closeShareModal()">Close</button>
   </div>
 </div>
 
-<!-- Version History Modal -->
 <div id="versionsModal" class="modal">
   <div class="modal-content">
     <h2>Version History</h2>
-    <p>Click "Restore" to revert to a previous version.</p>
-    <div id="versionsList" style="max-height: 400px; overflow-y: auto;"></div>
-    <button class="tertiary" onclick="closeVersionsModal()" style="margin-top: 12px; width: 100%;">Close</button>
+    <div id="versionsList" style="max-height: 350px; overflow-y: auto;"></div>
+    <button class="tertiary" onclick="closeVersionsModal()" style="margin-top: 10px; width: 100%;">Close</button>
   </div>
 </div>
 
-<!-- Comments Modal -->
 <div id="commentModal" class="modal">
   <div class="modal-content">
-    <h2>Comments & Feedback</h2>
-    <div class="comment-section">
-      <div class="comment-input-group">
-        <input type="text" id="commentAuthorInput" placeholder="Your name" aria-label="Your name">
-        <input type="text" id="commentTextInput" placeholder="Add feedback..." onkeypress="if(event.key==='Enter') addComment()" aria-label="Comment text">
-        <button onclick="addComment()" class="secondary">Post</button>
-      </div>
-      <div class="comments-list" id="commentsList"></div>
+    <h2>Comments</h2>
+    <div style="margin-bottom: 12px;">
+      <input type="text" id="commentAuthorInput" placeholder="Your name" style="width: 100%; margin-bottom: 6px;">
+      <input type="text" id="commentTextInput" placeholder="Add comment..." style="width: 100%; margin-bottom: 6px;" onkeypress="if(event.key==='Enter') addComment()">
+      <button onclick="addComment()" class="secondary" style="width: 100%;">Post</button>
     </div>
-    <button class="tertiary" onclick="closeCommentModal()" style="margin-top: 12px; width: 100%;">Close</button>
+    <div id="commentsList" style="max-height: 250px; overflow-y: auto;"></div>
+    <button class="tertiary" onclick="closeCommentModal()" style="margin-top: 10px; width: 100%;">Close</button>
   </div>
 </div>
 
-<!-- Trash Modal -->
 <div id="trashModal" class="modal">
   <div class="modal-content">
-    <h2>Trash Bin</h2>
-    <p>Deleted SOPs are stored here for 30 days.</p>
-    <div id="trashList" style="max-height: 400px; overflow-y: auto;"></div>
-    <button class="tertiary" onclick="closeTrashModal()" style="margin-top: 12px; width: 100%;">Close</button>
+    <h2>Trash</h2>
+    <div id="trashList" style="max-height: 350px; overflow-y: auto;"></div>
+    <button class="tertiary" onclick="closeTrashModal()" style="margin-top: 10px; width: 100%;">Close</button>
   </div>
 </div>
-
-<!-- Tour Overlay -->
-<div id="tourOverlay" class="tour-overlay"></div>
-<div id="tourTooltip" class="tour-tooltip"></div>
 
 <!-- Footer -->
 <footer class="footer">
   <div class="footer-content">
     <div class="footer-branding">
       <strong>DGS Consulting Solutions</strong>
-      <div class="footer-info">DGSConsult@consultant.com • 1 (289) 222-0511</div>
+      <div>DGSConsult@consultant.com • 1 (289) 222-0511</div>
     </div>
     <div class="footer-contact">
       <a href="mailto:DGSConsult@consultant.com" class="footer-link">Email</a>
@@ -1076,39 +863,6 @@
     </div>
   </div>
 </footer>
-
-<!-- Footer Settings Modal -->
-<div id="footerSettingsModal" class="modal">
-  <div class="modal-content">
-    <h2>Company Information</h2>
-    <p>Customize the footer displayed on all SOPs.</p>
-    
-    <div style="margin-bottom: 16px;">
-      <label style="display: block; font-weight: 600; margin-bottom: 6px;">Company Name</label>
-      <input type="text" id="footerCompanyInput" placeholder="Your Company Name" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-    </div>
-    
-    <div style="margin-bottom: 16px;">
-      <label style="display: block; font-weight: 600; margin-bottom: 6px;">Email</label>
-      <input type="email" id="footerEmailInput" placeholder="hello@yourcompany.com" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-    </div>
-    
-    <div style="margin-bottom: 16px;">
-      <label style="display: block; font-weight: 600; margin-bottom: 6px;">Phone</label>
-      <input type="tel" id="footerPhoneInput" placeholder="(555) 123-4567" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-    </div>
-    
-    <div style="margin-bottom: 16px;">
-      <label style="display: block; font-weight: 600; margin-bottom: 6px;">Website</label>
-      <input type="url" id="footerWebsiteInput" placeholder="https://www.yourcompany.com" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-    </div>
-    
-    <div style="display: flex; gap: 8px;">
-      <button onclick="saveFooterSettings()" class="secondary" style="flex: 1;">Save</button>
-      <button onclick="closeFooterSettings()" class="tertiary" style="flex: 1;">Cancel</button>
-    </div>
-  </div>
-</div>
 
 <script>
 // ============ STATE ============
@@ -1123,37 +877,35 @@ let comments = [];
 let tags = [];
 let hasUnsavedChanges = false;
 let isMobile = window.innerWidth <= 768;
-let tourStep = 0;
-let tourActive = false;
-let debounceTimer = null;
+
+let sopStatus = 'DRAFT';
+let sopCategory = 'General';
+let totalTimeEstimate = 0;
+let currentCategoryFilter = 'General';
 
 // ============ TEMPLATES ============
 const templates = {
   onboarding: [
-    { text: "Receive client intake form", branches: [] },
-    { text: "Create client folder & email account", branches: [] },
-    { text: "Send welcome email with credentials", branches: [] },
-    { text: "Schedule kickoff call", branches: [] },
-    { text: "Add to project management tool", branches: [] }
+    { text: "Receive client intake form", branches: [], duration: 10 },
+    { text: "Create client folder & email account", branches: [], duration: 15 },
+    { text: "Send welcome email with credentials", branches: [], duration: 5 },
+    { text: "Schedule kickoff call", branches: [], duration: 10 },
+    { text: "Add to project management tool", branches: [], duration: 5 }
   ],
   invoicing: [
-    { text: "Collect timesheets from team", branches: [] },
-    { text: "Compile expenses & receipts", branches: [
-      { text: "Verify all expenses are approved", branches: [] }
-    ]},
-    { text: "Generate invoice from template", branches: [] },
-    { text: "Review invoice for accuracy", branches: [] },
-    { text: "Send invoice to client", branches: [] },
-    { text: "Log in accounting system", branches: [] }
+    { text: "Collect timesheets from team", branches: [], duration: 20 },
+    { text: "Compile expenses & receipts", branches: [{ text: "Verify all expenses are approved", branches: [], duration: 15 }], duration: 15 },
+    { text: "Generate invoice from template", branches: [], duration: 10 },
+    { text: "Review invoice for accuracy", branches: [], duration: 10 },
+    { text: "Send invoice to client", branches: [], duration: 5 },
+    { text: "Log in accounting system", branches: [], duration: 5 }
   ],
   qa: [
-    { text: "Pull latest code from main branch", branches: [] },
-    { text: "Run full automated test suite", branches: [
-      { text: "If tests fail: bug fix & re-test", branches: [] }
-    ]},
-    { text: "Manual smoke testing on staging", branches: [] },
-    { text: "Performance baseline check", branches: [] },
-    { text: "Approve & deploy to production", branches: [] }
+    { text: "Pull latest code from main branch", branches: [], duration: 5 },
+    { text: "Run full automated test suite", branches: [{ text: "If tests fail: bug fix & re-test", branches: [], duration: 30 }], duration: 20 },
+    { text: "Manual smoke testing on staging", branches: [], duration: 30 },
+    { text: "Performance baseline check", branches: [], duration: 15 },
+    { text: "Approve & deploy to production", branches: [], duration: 10 }
   ]
 };
 
@@ -1193,38 +945,15 @@ window.addEventListener('beforeunload', (e) => {
     allSOPs[currentSOPId].steps = steps;
     allSOPs[currentSOPId].tags = tags;
     allSOPs[currentSOPId].comments = comments;
-    allSOPs[currentSOPId].versions = versions;
     saveToStorage();
   }
 });
 
-// ============ ERROR HANDLING ============
-function safeStorageOperation(callback) {
-  try {
-    callback();
-  } catch (e) {
-    if (e.name === 'QuotaExceededError') {
-      alert('Storage full! Please export and backup your SOPs.');
-    } else {
-      console.error('Storage error:', e);
-    }
-  }
-}
-
-function validateStep(step) {
-  return step && step.text && step.text.trim().length > 0;
-}
-
-function validateSOPData(sop) {
-  return sop && sop.id && sop.name && Array.isArray(sop.steps);
-}
-
 // ============ MOBILE SUPPORT ============
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
-  const content = document.getElementById('sopList').parentElement;
   sidebar.classList.toggle('mobile-hidden');
-  content.classList.toggle('mobile-show');
+  document.getElementById('sopList').parentElement.classList.toggle('mobile-show');
 }
 
 window.addEventListener('resize', () => {
@@ -1240,10 +969,13 @@ function createNewSOP() {
   allSOPs[id] = {
     id,
     name: name.trim(),
-    steps: [{ text: "Step 1", branches: [] }],
+    steps: [{ text: "Step 1", branches: [], duration: 0 }],
     tags: [],
     comments: [],
     versions: [],
+    status: 'DRAFT',
+    category: 'General',
+    totalTime: 0,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
@@ -1269,13 +1001,19 @@ function loadSOP(id) {
   tags = [...(sop.tags || [])];
   versions = [...(sop.versions || [])];
   
+  sopStatus = sop.status || 'DRAFT';
+  sopCategory = sop.category || 'General';
+  totalTimeEstimate = sop.totalTime || 0;
+  
   history = [JSON.stringify(steps)];
   redoStack = [];
   
   document.getElementById('sopNameInput').value = sop.name;
   document.getElementById('sopTitle').textContent = sop.name;
-  document.getElementById('mobileTitle').textContent = sop.name;
   document.getElementById('tagsInput').value = tags.join(', ');
+  document.getElementById('statusSelect').value = sopStatus;
+  document.getElementById('categorySelect').value = sopCategory;
+  document.getElementById('totalTimeInput').value = totalTimeEstimate;
   
   if (isMobile) toggleSidebar();
   
@@ -1283,6 +1021,8 @@ function loadSOP(id) {
   renderSteps();
   renderDiagram();
   renderTags();
+  renderStepTimes();
+  updateTimeDisplay();
   updateHistoryButtons();
   markSaved();
 }
@@ -1295,7 +1035,6 @@ function renameSOPQuick() {
   allSOPs[currentSOPId].name = newName.trim();
   document.getElementById('sopTitle').textContent = newName.trim();
   document.getElementById('sopNameInput').value = newName.trim();
-  document.getElementById('mobileTitle').textContent = newName.trim();
   renderSOPList();
   saveToStorage();
 }
@@ -1306,7 +1045,6 @@ function updateSOPName() {
   if (newName) {
     allSOPs[currentSOPId].name = newName;
     document.getElementById('sopTitle').textContent = newName;
-    document.getElementById('mobileTitle').textContent = newName;
     renderSOPList();
     saveToStorage();
   }
@@ -1330,7 +1068,7 @@ function deleteSOP(id) {
 }
 
 function permanentlyDelete(id) {
-  if (!confirm('Permanently delete? This cannot be undone.')) return;
+  if (!confirm('Permanently delete? Cannot be undone.')) return;
   delete trash[id];
   saveToStorage();
   viewTrash();
@@ -1342,7 +1080,7 @@ function restoreFromTrash(id) {
     delete trash[id];
     saveToStorage();
     renderSOPList();
-    closeTrashModal();
+    document.getElementById('trashModal').classList.remove('active');
   }
 }
 
@@ -1357,12 +1095,12 @@ function viewTrash() {
       const sop = trash[id];
       const deletedTime = new Date(sop.deletedAt).toLocaleString();
       return `
-        <div style="padding: 12px; background: #f5f5f5; border-radius: 4px; margin: 8px 0;">
+        <div style="padding: 10px; background: #f5f5f5; border-radius: 4px; margin: 6px 0;">
           <strong>${escapeHtml(sop.name)}</strong>
-          <div style="font-size: 11px; color: #666; margin-top: 4px;">Deleted: ${deletedTime}</div>
-          <div style="display: flex; gap: 6px; margin-top: 8px;">
-            <button onclick="restoreFromTrash('${id}')" class="secondary" style="padding: 4px 8px; font-size: 11px;">Restore</button>
-            <button onclick="permanentlyDelete('${id}')" class="danger" style="padding: 4px 8px; font-size: 11px;">Delete Forever</button>
+          <div style="font-size: 10px; color: #666; margin-top: 3px;">Deleted: ${deletedTime}</div>
+          <div style="display: flex; gap: 4px; margin-top: 6px;">
+            <button onclick="restoreFromTrash('${id}')" class="secondary" style="padding: 3px 6px; font-size: 10px; flex: 1;">Restore</button>
+            <button onclick="permanentlyDelete('${id}')" class="danger" style="padding: 3px 6px; font-size: 10px; flex: 1;">Delete</button>
           </div>
         </div>
       `;
@@ -1372,10 +1110,6 @@ function viewTrash() {
   document.getElementById('trashModal').classList.add('active');
 }
 
-function closeTrashModal() {
-  document.getElementById('trashModal').classList.remove('active');
-}
-
 function searchSOPs() {
   const query = document.getElementById('searchBox').value.toLowerCase();
   renderSOPList(query);
@@ -1383,7 +1117,7 @@ function searchSOPs() {
 
 // ============ STEPS ============
 function addStep(text = "New Step") {
-  steps.push({ text, branches: [] });
+  steps.push({ text, branches: [], duration: 0 });
   saveHistory();
   markUnsaved();
   render();
@@ -1423,7 +1157,7 @@ function addBranch(stepIdx) {
   if (!branchText || !branchText.trim()) return;
   
   if (stepIdx >= 0 && stepIdx < steps.length) {
-    steps[stepIdx].branches.push({ text: branchText.trim(), branches: [] });
+    steps[stepIdx].branches.push({ text: branchText.trim(), branches: [], duration: 0 });
     saveHistory();
     markUnsaved();
     render();
@@ -1497,16 +1231,13 @@ function addComment() {
 function renderComments() {
   const container = document.getElementById('commentsList');
   container.innerHTML = comments.length === 0
-    ? '<p style="color: #999; font-size: 12px;">No comments yet.</p>'
+    ? '<p style="color: #999; font-size: 11px;">No comments yet.</p>'
     : comments.map(comment => {
       const time = new Date(comment.timestamp).toLocaleString();
       return `
         <div class="comment">
-          <div>
-            <span class="comment-author">${escapeHtml(comment.author)}</span>
-            <span class="comment-time">${time}</span>
-          </div>
-          <div class="comment-text">${escapeHtml(comment.text)}</div>
+          <strong>${escapeHtml(comment.author)}</strong> <span style="color: #999;">· ${time}</span>
+          <div style="margin-top: 4px; color: #555;">${escapeHtml(comment.text)}</div>
         </div>
       `;
     }).join('');
@@ -1528,8 +1259,7 @@ function saveHistory() {
   redoStack = [];
   
   if (history.length > 50) history.shift();
-  
-  if (currentSOPId && history.length % 5 === 0) {
+  if (history.length % 5 === 0 && currentSOPId) {
     versions.unshift({
       timestamp: new Date().toISOString(),
       steps: JSON.parse(stateStr),
@@ -1576,12 +1306,12 @@ function openVersionsModal() {
       return `
         <div class="version-item">
           <div class="version-item-header">
-            <span><strong>Version ${versions.length - idx}</strong> • ${v.stepCount} steps</span>
-            <span class="version-time">${time}</span>
+            <strong>Version ${versions.length - idx}</strong> • ${v.stepCount} steps
+            <span style="color: #999;">${time}</span>
           </div>
-          <div class="version-actions">
-            <button onclick="restoreVersion(${idx})">Restore</button>
-            <button class="tertiary" onclick="viewVersion(${idx})">Preview</button>
+          <div style="display: flex; gap: 4px; margin-top: 6px;">
+            <button onclick="restoreVersion(${idx})" style="padding: 3px 6px; font-size: 10px; flex: 1;">Restore</button>
+            <button onclick="viewVersion(${idx})" class="tertiary" style="padding: 3px 6px; font-size: 10px; flex: 1;">Preview</button>
           </div>
         </div>
       `;
@@ -1595,7 +1325,7 @@ function closeVersionsModal() {
 }
 
 function restoreVersion(idx) {
-  if (!confirm('Restore to this version? Current changes will be saved as a new version.')) return;
+  if (!confirm('Restore to this version?')) return;
   
   steps = JSON.parse(JSON.stringify(versions[idx].steps));
   history = [JSON.stringify(steps)];
@@ -1622,7 +1352,7 @@ function renderSOPList(query = '') {
   });
   
   if (filtered.length === 0) {
-    container.innerHTML = '<p style="color: #aaa; padding: 16px; text-align: center; font-size: 12px;">No SOPs found</p>';
+    container.innerHTML = '<p style="color: #aaa; padding: 12px; text-align: center; font-size: 11px;">No SOPs found</p>';
     return;
   }
   
@@ -1635,8 +1365,8 @@ function renderSOPList(query = '') {
         <div class="sop-item-name">${escapeHtml(sop.name)}</div>
         <div class="sop-item-meta">${sop.steps.length} steps • ${time}</div>
         <div class="sop-item-actions">
-          <button onclick="event.stopPropagation(); openCommentModal()" title="Comments" aria-label="Comments">💬</button>
-          <button onclick="event.stopPropagation(); deleteSOP('${id}')" title="Delete" class="danger" aria-label="Delete">🗑️</button>
+          <button onclick="event.stopPropagation(); openCommentModal()" title="Comments">💬</button>
+          <button onclick="event.stopPropagation(); deleteSOP('${id}')" title="Delete" class="danger">🗑️</button>
         </div>
       </div>
     `;
@@ -1648,7 +1378,7 @@ function renderSteps() {
   container.innerHTML = '';
   
   if (steps.length === 0) {
-    container.innerHTML = '<div class="empty-state">No steps yet.<br>Add one to get started.</div>';
+    container.innerHTML = '<div class="empty-state">No steps yet. Add one to get started.</div>';
     return;
   }
   
@@ -1687,16 +1417,20 @@ function renderSteps() {
         <div class="branch">
           <input class="step-input" value="${escapeHtml(branch.text)}" 
                  onchange="updateBranch(${idx},${bIdx},this.value)"/>
-          <button class="tertiary" onclick="deleteBranch(${idx},${bIdx})" style="padding:3px 6px;font-size:11px;">Delete</button>
+          <button class="tertiary" onclick="deleteBranch(${idx},${bIdx})" style="padding: 2px 4px; font-size: 10px;">Delete</button>
         </div>
       `;
     });
     
     div.innerHTML = `
-      <div style="display: flex; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 6px;">
         <span class="step-number">${idx + 1}</span>
         <input class="step-input" style="margin: 0; flex: 1;" value="${escapeHtml(step.text)}" 
                onchange="updateStep(${idx},this.value)"/>
+        <input type="number" min="0" value="${step.duration || 0}" 
+               style="width: 50px; padding: 4px 6px; border: 1px solid #ddd; border-radius: 3px; font-size: 11px;"
+               onchange="updateStepDuration(${idx}, this.value)" 
+               placeholder="min">
       </div>
       <div class="step-controls">
         <button onclick="addBranch(${idx})">+ Branch</button>
@@ -1714,25 +1448,18 @@ function renderDiagram() {
   svg.innerHTML = '';
   
   if (steps.length === 0) {
-    const text = document.createElementNS("http://www.w3.org/2000/svg", 'text');
-    text.setAttribute('x', '50%');
-    text.setAttribute('y', '50%');
-    text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('fill', '#ccc');
-    text.setAttribute('font-size', '14');
-    text.textContent = 'Add steps to see diagram';
-    svg.appendChild(text);
+    svg.innerHTML = `<div style="text-align: center; color: #ccc; font-size: 14px;">Add steps to see diagram</div>`;
     return;
   }
   
   const svgNS = "http://www.w3.org/2000/svg";
-  let y = 30;
-  const nodeHeight = 60;
-  const nodeWidth = 160;
-  const vGap = 90;
+  let y = 20;
+  const nodeHeight = 50;
+  const nodeWidth = 140;
+  const vGap = 80;
   
   const drawStep = (step, level = 0, parentX = null, parentY = null) => {
-    const x = 50 + level * 200;
+    const x = 40 + level * 180;
     
     if (parentX !== null && parentY !== null) {
       const line = document.createElementNS(svgNS, 'line');
@@ -1740,8 +1467,8 @@ function renderDiagram() {
       line.setAttribute('y1', parentY + nodeHeight);
       line.setAttribute('x2', x + nodeWidth / 2);
       line.setAttribute('y2', y);
-      line.setAttribute('stroke', '#bbb');
-      line.setAttribute('stroke-width', '2');
+      line.setAttribute('stroke', '#ccc');
+      line.setAttribute('stroke-width', '1');
       svg.appendChild(line);
     }
     
@@ -1751,38 +1478,21 @@ function renderDiagram() {
     rect.setAttribute('width', nodeWidth);
     rect.setAttribute('height', nodeHeight);
     rect.setAttribute('fill', level === 0 ? '#4CAF50' : '#2196F3');
-    rect.setAttribute('rx', '5');
+    rect.setAttribute('rx', '3');
     rect.setAttribute('stroke', '#333');
-    rect.setAttribute('stroke-width', '2');
+    rect.setAttribute('stroke-width', '1');
     svg.appendChild(rect);
     
-    const maxChars = 20;
-    let lines = [];
-    let currentLine = '';
-    
-    step.text.split(' ').forEach(word => {
-      if ((currentLine + word).length > maxChars) {
-        if (currentLine) lines.push(currentLine);
-        currentLine = word;
-      } else {
-        currentLine += (currentLine ? ' ' : '') + word;
-      }
-    });
-    if (currentLine) lines.push(currentLine);
-    
-    lines.forEach((line, lineIdx) => {
-      const text = document.createElementNS(svgNS, 'text');
-      text.setAttribute('x', x + nodeWidth / 2);
-      text.setAttribute('y', y + nodeHeight / 2 + (lineIdx - (lines.length - 1) / 2) * 14);
-      text.setAttribute('text-anchor', 'middle');
-      text.setAttribute('dominant-baseline', 'middle');
-      text.setAttribute('fill', '#fff');
-      text.setAttribute('font-size', '11');
-      text.setAttribute('font-weight', '600');
-      text.setAttribute('font-family', 'sans-serif');
-      text.textContent = line;
-      svg.appendChild(text);
-    });
+    const text = document.createElementNS(svgNS, 'text');
+    text.setAttribute('x', x + nodeWidth / 2);
+    text.setAttribute('y', y + nodeHeight / 2);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dominant-baseline', 'middle');
+    text.setAttribute('fill', '#fff');
+    text.setAttribute('font-size', '10');
+    text.setAttribute('font-weight', '600');
+    text.textContent = step.text.substring(0, 15) + (step.text.length > 15 ? '...' : '');
+    svg.appendChild(text);
     
     let currentY = y;
     y += vGap;
@@ -1806,6 +1516,79 @@ function render() {
   }
 }
 
+// ============ PHASE 1 FEATURES ============
+function updateSOPStatus(newStatus) {
+  if (!currentSOPId) return;
+  sopStatus = newStatus;
+  allSOPs[currentSOPId].status = newStatus;
+  document.getElementById('sopStatus').textContent = newStatus;
+  renderSOPList();
+  saveToStorage();
+}
+
+function updateSOPCategory(newCategory) {
+  if (!currentSOPId) return;
+  sopCategory = newCategory;
+  allSOPs[currentSOPId].category = newCategory;
+  renderSOPList();
+  saveToStorage();
+}
+
+function updateStepDuration(idx, duration) {
+  if (idx >= 0 && idx < steps.length) {
+    steps[idx].duration = parseInt(duration) || 0;
+    saveHistory();
+    markUnsaved();
+    updateTimeDisplay();
+    renderStepTimes();
+  }
+}
+
+function updateTotalTime(minutes) {
+  if (!currentSOPId) return;
+  totalTimeEstimate = parseInt(minutes) || 0;
+  allSOPs[currentSOPId].totalTime = totalTimeEstimate;
+  updateTimeDisplay();
+  saveToStorage();
+}
+
+function updateTimeDisplay() {
+  const total = totalTimeEstimate || calculateTotalStepTime();
+  const hours = Math.floor(total / 60);
+  const mins = total % 60;
+  
+  let displayText = '';
+  if (hours > 0) {
+    displayText = `${hours}h ${mins}m`;
+  } else if (total > 0) {
+    displayText = `${total}m`;
+  } else {
+    displayText = 'No estimate';
+  }
+  
+  document.getElementById('timeDisplay').textContent = displayText;
+}
+
+function calculateTotalStepTime() {
+  return steps.reduce((total, step) => total + (step.duration || 0), 0);
+}
+
+function renderStepTimes() {
+  const container = document.getElementById('stepTimesDisplay');
+  const stepTimes = steps
+    .map((step, idx) => {
+      const duration = step.duration || 0;
+      return duration > 0 ? `Step ${idx + 1}: ${duration}m` : null;
+    })
+    .filter(Boolean);
+  
+  if (stepTimes.length === 0) {
+    container.innerHTML = '';
+  } else {
+    container.innerHTML = stepTimes.join(' • ');
+  }
+}
+
 // ============ EXPORT ============
 function exportOptions() {
   document.getElementById('exportModal').classList.add('active');
@@ -1819,33 +1602,17 @@ function exportPDF() {
   const sopName = currentSOPId ? allSOPs[currentSOPId].name : 'SOP';
   const docContent = steps.map((s, i) => {
     let text = `${i + 1}. ${s.text}`;
+    if (s.duration) text += ` (${s.duration}m)`;
     if (s.branches && s.branches.length) {
       s.branches.forEach((b, idx) => {
-        text += `\n   ↳ ${String.fromCharCode(97 + idx)}. ${b.text}`;
+        text += `\n   ${String.fromCharCode(97 + idx)}. ${b.text}`;
+        if (b.duration) text += ` (${b.duration}m)`;
       });
     }
     return text;
   }).join('\n\n');
   
-  const html = `
-    <html>
-      <head>
-        <title>${escapeHtml(sopName)}</title>
-        <style>
-          body { font-family: Arial, sans-serif; padding: 40px; line-height: 1.8; color: #333; }
-          h1 { color: #2c3e50; border-bottom: 3px solid #4CAF50; padding-bottom: 10px; }
-          .meta { color: #666; font-size: 12px; margin-bottom: 20px; }
-          pre { white-space: pre-wrap; font-family: Arial, sans-serif; background: #f5f5f5; padding: 15px; border-radius: 4px; }
-        </style>
-      </head>
-      <body>
-        <h1>${escapeHtml(sopName)}</h1>
-        <div class="meta">Generated on ${new Date().toLocaleString()}</div>
-        <hr>
-        <pre>${escapeHtml(docContent)}</pre>
-      </body>
-    </html>
-  `;
+  const html = `<html><head><title>${escapeHtml(sopName)}</title><style>body{font-family:Arial;padding:40px}h1{border-bottom:2px solid #4CAF50;padding-bottom:10px}pre{white-space:pre-wrap}</style></head><body><h1>${escapeHtml(sopName)}</h1><p>${new Date().toLocaleString()}</p><pre>${escapeHtml(docContent)}</pre></body></html>`;
   
   const printWindow = window.open('', '', 'width=900,height=700');
   printWindow.document.write(html);
@@ -1857,7 +1624,8 @@ function exportPDF() {
 function exportHTML() {
   const sopName = currentSOPId ? allSOPs[currentSOPId].name : 'SOP';
   const stepsHTML = steps.map((s, i) => {
-    let html = `<li><strong>${escapeHtml(s.text)}</strong>`;
+    let html = `<li>${escapeHtml(s.text)}`;
+    if (s.duration) html += ` <span style="color:#666">(${s.duration}m)</span>`;
     if (s.branches && s.branches.length) {
       html += '<ul>' + s.branches.map(b => `<li>${escapeHtml(b.text)}</li>`).join('') + '</ul>';
     }
@@ -1865,27 +1633,7 @@ function exportHTML() {
     return html;
   }).join('');
   
-  const html = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="UTF-8">
-        <title>${escapeHtml(sopName)}</title>
-        <style>
-          body { font-family: Arial, sans-serif; padding: 40px; line-height: 1.8; color: #333; max-width: 800px; }
-          h1 { color: #2c3e50; }
-          .meta { color: #666; font-size: 12px; margin-bottom: 20px; }
-          ol { counter-reset: item; }
-          li { margin: 12px 0; }
-        </style>
-      </head>
-      <body>
-        <h1>${escapeHtml(sopName)}</h1>
-        <div class="meta">Generated on ${new Date().toLocaleString()}</div>
-        <ol>${stepsHTML}</ol>
-      </body>
-    </html>
-  `;
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${escapeHtml(sopName)}</title><style>body{font-family:Arial;padding:40px;max-width:800px}</style></head><body><h1>${escapeHtml(sopName)}</h1><p>${new Date().toLocaleString()}</p><ol>${stepsHTML}</ol></body></html>`;
   
   downloadFile(html, sopName + '.html', 'text/html');
   closeExportModal();
@@ -1893,13 +1641,13 @@ function exportHTML() {
 
 function exportCSV() {
   const sopName = currentSOPId ? allSOPs[currentSOPId].name : 'SOP';
-  let csv = 'Step #,Step Text,Branch Text\n';
+  let csv = 'Step,Text,Branch,Duration\n';
   
   steps.forEach((s, i) => {
-    csv += `${i + 1},"${s.text.replace(/"/g, '""')}",""\n`;
+    csv += `${i + 1},"${s.text.replace(/"/g, '""')}","",${s.duration || 0}\n`;
     if (s.branches && s.branches.length) {
       s.branches.forEach(b => {
-        csv += `${i + 1},"${s.text.replace(/"/g, '""')}","${b.text.replace(/"/g, '""')}"\n`;
+        csv += `${i + 1},"${s.text.replace(/"/g, '""')}","${b.text.replace(/"/g, '""')}",${b.duration || 0}\n`;
       });
     }
   });
@@ -1922,7 +1670,6 @@ function exportDiagramImage() {
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0);
-    
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
     link.download = (currentSOPId ? allSOPs[currentSOPId].name : 'diagram') + '.png';
@@ -1931,7 +1678,7 @@ function exportDiagramImage() {
   };
   
   img.onerror = () => {
-    alert('Could not export diagram as PNG.');
+    alert('Could not export diagram.');
     closeExportModal();
   };
   
@@ -1968,7 +1715,7 @@ function importSOPs() {
         
         let importedCount = 0;
         Object.keys(backup.data).forEach(id => {
-          if (validateSOPData(backup.data[id])) {
+          if (backup.data[id] && backup.data[id].id && backup.data[id].name && Array.isArray(backup.data[id].steps)) {
             allSOPs[id] = backup.data[id];
             importedCount++;
           }
@@ -1978,7 +1725,7 @@ function importSOPs() {
         saveToStorage();
         renderSOPList();
       } catch (e) {
-        alert('Error importing backup: ' + e.message);
+        alert('Error importing: ' + e.message);
       }
     };
     reader.readAsText(file);
@@ -2016,7 +1763,7 @@ function copyToClipboard() {
   sel.removeAllRanges();
   sel.addRange(range);
   document.execCommand('copy');
-  alert('Link copied to clipboard!');
+  alert('Link copied!');
 }
 
 // ============ TEMPLATES ============
@@ -2034,22 +1781,22 @@ function loadTemplate(name) {
 
 // ============ STORAGE ============
 function saveToStorage() {
-  safeStorageOperation(() => {
+  try {
     localStorage.setItem('allSOPs', JSON.stringify(allSOPs));
     localStorage.setItem('trash', JSON.stringify(trash));
-  });
+  } catch (e) {
+    console.error('Storage error:', e);
+    alert('Storage full! Export your SOPs as backup.');
+  }
 }
 
 function loadFromStorage() {
   try {
     const stored = localStorage.getItem('allSOPs');
-    if (stored) {
-      allSOPs = JSON.parse(stored);
-    }
+    if (stored) allSOPs = JSON.parse(stored);
+    
     const trashedStored = localStorage.getItem('trash');
-    if (trashedStored) {
-      trash = JSON.parse(trashedStored);
-    }
+    if (trashedStored) trash = JSON.parse(trashedStored);
   } catch (e) {
     console.error('Failed to load from storage', e);
     allSOPs = {};
@@ -2070,11 +1817,10 @@ function loadFromUrl() {
       renderSteps();
       renderDiagram();
       
-      const toolbarButtons = document.querySelectorAll('.toolbar button');
-      toolbarButtons.forEach(btn => btn.disabled = true);
+      document.querySelectorAll('.toolbar button').forEach(btn => btn.disabled = true);
     } catch (e) {
       console.error('Failed to load shared SOP', e);
-      alert('Error loading shared SOP. It may be corrupted.');
+      alert('Error loading shared SOP.');
     }
   }
 }
