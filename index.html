@@ -1,208 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SOP Designer | PDF Export with Center Footer</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOP Designer | MVP</title>
 <style>
 :root {
-  --primary:#1d4e2d; --accent:#2f7a4d; --danger:#a00;
-  --bg:#f5f5f5; --text:#222; --border:#ddd;
+  --primary: #1d4e2d;
+  --accent: #2f7a4d;
+  --danger: #a00;
+  --bg: #f5f5f5;
+  --border: #ddd;
 }
-*{box-sizing:border-box;}
-body{font-family:"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:0;}
-header{background:var(--primary);color:#fff;padding:1.5rem;text-align:center;}
-header h1{margin:0 0 .5rem;font-size:2rem;}
-main{max-width:1100px;margin:0 auto;padding:2rem;}
-button{background:var(--primary);color:#fff;padding:.5rem 1rem;border:none;border-radius:6px;cursor:pointer;margin:.25rem;font-size:.9rem;}
-button:hover{background:var(--accent);}
-#editor{background:#fff;padding:1.5rem;border-radius:8px;min-height:300px;border:1px solid var(--border);}
-.sop-step,.sop-task,.sop-subtask,.sop-checklist{
-  border-left:4px solid var(--primary);
-  margin:1rem 0;
-  padding:1rem;
-  border-radius:6px;
-  background:#fdfdfd;
-  cursor:move;
-}
-.sop-task{border-color:#2f7a4d;margin-left:20px;}
-.sop-subtask{border-color:#4a9f5c;margin-left:40px;}
-.sop-checklist{margin-left:60px;}
-.sop-step.dragging,.sop-task.dragging,.sop-subtask.dragging,.sop-checklist.dragging{opacity:.5;}
-.add-item-btn,.remove-item-btn,.add-task-btn,.add-subtask-btn,.add-checklist-btn{
-  background:var(--accent);color:#fff;border:none;border-radius:4px;
-  font-size:0.8rem;padding:.25rem .5rem;cursor:pointer;margin-left:.5rem;
-}
-.add-item-btn:hover,.remove-item-btn:hover{background:#166a36;}
+* { box-sizing: border-box; }
+body { font-family: "Segoe UI", Arial, sans-serif; background: var(--bg); color: #222; margin: 0; padding: 0; }
+header { background: var(--primary); color: white; padding: 1rem; text-align: center; }
+header h1 { margin: 0; }
+main { max-width: 1100px; margin: auto; padding: 1.5rem; }
+
+button { background: var(--primary); color: #fff; border: none; padding: .5rem 1rem; border-radius: 6px; cursor: pointer; margin: .25rem; }
+button:hover { background: var(--accent); }
+.btn-small { font-size: 0.8rem; padding: .25rem .5rem; }
+
+#editor { background: #fff; padding: 1rem; border-radius: 8px; min-height: 300px; border: 1px solid var(--border); margin-top: 1rem; }
+
+.sop-step, .sop-task, .sop-subtask, .sop-checklist { border-left: 4px solid var(--primary); margin: 0.75rem 0; padding: 0.5rem; background: #fafafa; border-radius: 6px; position: relative; }
+.sop-task { border-color: #2f7a4d; margin-left: 20px; }
+.sop-subtask { border-color: #4a9f5c; margin-left: 40px; }
+.sop-checklist { margin-left: 60px; }
+
+.dragging { opacity: 0.5; }
+.number-label { font-weight: bold; color: var(--primary); margin-right: 0.5rem; }
+.note { display: block; font-size: 0.9rem; color: #555; font-style: italic; margin-top: 0.3rem; white-space: pre-wrap; }
+
+.toggle-section { position: absolute; left: -1.5rem; top: 0.5rem; cursor: pointer; font-weight: bold; color: var(--primary); }
+.collapsed > *:not(.toggle-section):not(.number-label) { display: none; }
+
+.time-input { width: 60px; margin-left: 0.5rem; font-size: 0.8rem; }
+.total-time { font-weight: bold; margin-top: 1rem; }
+
+.progress-container { background: #ddd; border-radius: 5px; overflow: hidden; height: 15px; margin-top: 1rem; display:none; }
+.progress-bar { background: var(--accent); height: 100%; width: 0%; transition: width 0.3s; }
+
+.run-mode .add-task-btn,
+.run-mode .add-subtask-btn,
+.run-mode .add-checklist-btn,
+.run-mode .add-note-btn,
+.run-mode .remove-item-btn,
+.run-mode #insert-step-btn,
+.run-mode #save-sop-btn,
+.run-mode #export-sop-btn { display: none; }
+
+.run-mode .toggle-section { display: none; }
+
 </style>
 </head>
 <body>
-<header><h1>SOP Designer</h1></header>
+<header>
+  <h1>SOP Designer MVP</h1>
+</header>
 <main>
-<section>
-  <button id="insert-step-btn">➕ Add Step</button>
-  <button id="save-sop-btn">💾 Save</button>
-  <button id="export-sop-btn">📄 Export PDF</button>
-  <button id="clear-sop-btn" style="background:var(--danger)">🗑️ Clear</button>
-</section>
-<div id="editor"></div>
+  <section>
+    <button id="insert-step-btn">+ Add Step</button>
+    <button id="save-sop-btn">💾 Save</button>
+    <button id="export-sop-btn">📄 Export</button>
+    <button id="run-mode-toggle">▶ Run Mode</button>
+  </section>
+  <div id="editor"></div>
+  <div class="total-time">Total Estimated Time: <span id="total-time-value">0</span> min</div>
+  <div class="progress-container"><div class="progress-bar"></div></div>
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
-
 <script>
-const editor=document.getElementById('editor');
-const STORAGE_KEY='sop-designer';
-const COMPANY_NAME = 'DGS Consulting';
-const COMPANY_URL = 'www.dgsconsulting.ca';
-const LOGO_URL = 'https://raw.githubusercontent.com/DGSConsulting/DGSConsulting/main/asset/clean-dashboard.png';
+const editor = document.getElementById('editor');
+const STORAGE_KEY = 'sop-designer-mvp';
+const totalTimeValue = document.getElementById('total-time-value');
+const progressBar = document.querySelector('.progress-bar');
+const progressContainer = document.querySelector('.progress-container');
 
-function save(){localStorage.setItem(STORAGE_KEY,editor.innerHTML);}
-function load(){const content=localStorage.getItem(STORAGE_KEY);if(content)editor.innerHTML=content;}
-function clearAll(){editor.innerHTML='';localStorage.removeItem(STORAGE_KEY);}
-window.addEventListener('load',()=>{load();makeDraggable();generateNumbering();});
+function save() { localStorage.setItem(STORAGE_KEY, editor.innerHTML); alert('✅ Saved'); }
+function load() { const content = localStorage.getItem(STORAGE_KEY); if (content) editor.innerHTML = content; renumberSOP(); bindEvents(); calcTotalTime(); }
+window.addEventListener('load', load);
 
-// Insert Elements
-function insertStep(){insertHTML('<div class="sop-step" draggable="true"><strong></strong> Describe step <button class="add-task-btn">+ Task</button></div>');}
-function insertTask(parent){insertHTML('<div class="sop-task" draggable="true"><strong></strong> Describe task <button class="add-subtask-btn">+ Sub-task</button></div>',parent);}
-function insertSubTask(parent){insertHTML('<div class="sop-subtask" draggable="true"><strong></strong> Describe sub-task <button class="add-checklist-btn">+ Checklist</button></div>',parent);}
-function insertChecklist(parent){
-  const html=`
-  <div class="sop-checklist" draggable="true">
-    <div><input type="checkbox"> Checklist item <button class="remove-item-btn">Remove</button></div>
-    <button class="add-item-btn">+ Item</button>
-  </div>`;
-  insertHTML(html,parent);
-}
-function insertHTML(html,parent=editor){
-  const frag=document.createRange().createContextualFragment(html);
-  parent.appendChild(frag);
-  makeDraggable();
-  generateNumbering();
-  save();
-}
+document.getElementById('insert-step-btn').addEventListener('click', () => {
+  insertHTML('<div class="sop-step" draggable="true"><span class="toggle-section">▾</span><span class="number-label"></span>Step <button class="add-task-btn btn-small">+ Task</button> <button class="add-note-btn btn-small">📝 Note</button> <input type="number" class="time-input" placeholder="min"></div>');
+  renumberSOP(); bindEvents(); calcTotalTime();
+});
+document.getElementById('save-sop-btn').addEventListener('click', save);
+document.getElementById('run-mode-toggle').addEventListener('click', toggleRunMode);
 
-// UI Buttons
-document.getElementById('insert-step-btn').addEventListener('click',insertStep);
-document.getElementById('save-sop-btn').addEventListener('click',save);
-document.getElementById('export-sop-btn').addEventListener('click',exportPDF);
-document.getElementById('clear-sop-btn').addEventListener('click',clearAll);
-
-editor.addEventListener('click',e=>{
-  if(e.target.classList.contains('add-task-btn'))insertTask(e.target.parentElement);
-  if(e.target.classList.contains('add-subtask-btn'))insertSubTask(e.target.parentElement);
-  if(e.target.classList.contains('add-checklist-btn'))insertChecklist(e.target.parentElement);
-  if(e.target.classList.contains('add-item-btn')){
-    const div=document.createElement('div');
-    div.innerHTML='<input type="checkbox"> New item <button class="remove-item-btn">Remove</button>';
-    e.target.parentElement.insertBefore(div,e.target);
-  }
-  if(e.target.classList.contains('remove-item-btn'))e.target.parentElement.remove();
-  generateNumbering();
-  save();
+editor.addEventListener('click', e => {
+  if (e.target.classList.contains('add-task-btn')) insertTask(e.target.parentElement);
+  if (e.target.classList.contains('add-subtask-btn')) insertSubTask(e.target.parentElement);
+  if (e.target.classList.contains('add-checklist-btn')) insertChecklist(e.target.parentElement);
+  if (e.target.classList.contains('add-note-btn')) addNote(e.target.parentElement);
+  if (e.target.classList.contains('toggle-section')) toggleCollapse(e.target.parentElement);
+  if (e.target.classList.contains('remove-item-btn')) e.target.parentElement.remove();
+  calcTotalTime();
+  renumberSOP();
 });
 
-// Drag & drop
-let dragSrc=null;
-function handleDragStart(e){dragSrc=this;this.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
-function handleDragOver(e){e.preventDefault();return false;}
-function handleDrop(e){
-  e.stopPropagation();
-  if(dragSrc!=this){
-    this.parentNode.insertBefore(dragSrc,this);
-    generateNumbering();
-    save();
-  }
-  return false;
+editor.addEventListener('input', e => {
+  if (e.target.classList.contains('time-input')) calcTotalTime();
+});
+
+// Insert functions
+function insertTask(parent) {
+  insertHTML('<div class="sop-task" draggable="true"><span class="toggle-section">▾</span><span class="number-label"></span>Task <button class="add-subtask-btn btn-small">+ Sub-task</button> <button class="add-note-btn btn-small">📝 Note</button> <input type="number" class="time-input" placeholder="min"></div>', parent);
+  renumberSOP(); bindEvents(); calcTotalTime();
 }
-function handleDragEnd(){this.classList.remove('dragging');}
-function makeDraggable(){
-  const items=editor.querySelectorAll('.sop-step,.sop-task,.sop-subtask,.sop-checklist');
-  items.forEach(it=>{
-    it.setAttribute('draggable','true');
-    it.removeEventListener('dragstart',handleDragStart);
-    it.addEventListener('dragstart',handleDragStart);
-    it.addEventListener('dragover',handleDragOver);
-    it.addEventListener('drop',handleDrop);
-    it.addEventListener('dragend',handleDragEnd);
-  });
+function insertSubTask(parent) {
+  insertHTML('<div class="sop-subtask" draggable="true"><span class="toggle-section">▾</span><span class="number-label"></span>Sub-task <button class="add-checklist-btn btn-small">+ Checklist</button> <button class="add-note-btn btn-small">📝 Note</button> <input type="number" class="time-input" placeholder="min"></div>', parent);
+  renumberSOP(); bindEvents(); calcTotalTime();
+}
+function insertChecklist(parent) {
+  insertHTML('<div class="sop-checklist" draggable="true"><input type="checkbox"> Item <button class="remove-item-btn btn-small">✖</button></div>', parent);
+  renumberSOP(); bindEvents(); calcTotalTime();
+}
+function insertHTML(html, parent = editor) {
+  const frag = document.createRange().createContextualFragment(html);
+  parent.appendChild(frag);
 }
 
-// Numbering
-function generateNumbering(){
-  const steps=[...editor.querySelectorAll('.sop-step')];
-  steps.forEach((step,i)=>{
-    step.querySelector('strong').textContent=`Step ${i+1}:`;
-    const tasks=[...step.querySelectorAll(':scope > .sop-task')];
-    tasks.forEach((task,j)=>{
-      task.querySelector('strong').textContent=`${i+1}.${j+1} Task:`;
-      const subs=[...task.querySelectorAll(':scope > .sop-subtask')];
-      subs.forEach((sub,k)=>{
-        sub.querySelector('strong').textContent=`${i+1}.${j+1}.${k+1} Sub-task:`;
+// Notes
+function addNote(el) {
+  let note = el.querySelector('.note');
+  if (!note) {
+    note = document.createElement('div');
+    note.className = 'note';
+    note.contentEditable = "true";
+    note.textContent = 'Write note here...';
+    el.appendChild(note);
+  }
+}
+
+// Collapse/Expand
+function toggleCollapse(el) {
+  el.classList.toggle('collapsed');
+  el.querySelector('.toggle-section').textContent = el.classList.contains('collapsed') ? '▸' : '▾';
+}
+
+// Auto-numbering
+function renumberSOP() {
+  const steps = editor.querySelectorAll('.sop-step');
+  steps.forEach((step, i) => {
+    setNumber(step, `${i+1}`);
+    const tasks = step.querySelectorAll(':scope > .sop-task');
+    tasks.forEach((task, j) => {
+      setNumber(task, `${i+1}.${j+1}`);
+      const subs = task.querySelectorAll(':scope > .sop-subtask');
+      subs.forEach((sub, k) => {
+        setNumber(sub, `${i+1}.${j+1}.${k+1}`);
       });
     });
   });
 }
-const observer=new MutationObserver(()=>generateNumbering());
-observer.observe(editor,{childList:true,subtree:true});
-
-// 🧾 PDF Export with Centered Footer
-async function exportPDF(){
-  generateNumbering();
-  const clone=editor.cloneNode(true);
-  clone.querySelectorAll('button').forEach(btn=>btn.style.display='none');
-
-  const container=document.createElement('div');
-  container.style.padding='20px';
-  container.innerHTML=`
-    <div style="display:flex;align-items:center;gap:15px;margin-bottom:20px;">
-      <img src="${LOGO_URL}" style="max-height:60px;">
-      <h1 style="font-family:Arial;margin:0;">Standard Operating Procedure</h1>
-    </div>`;
-  container.appendChild(clone);
-  document.body.appendChild(container);
-  container.style.position='absolute';
-  container.style.left='-9999px';
-
-  const canvas=await html2canvas(container,{scale:2});
-  const imgData=canvas.toDataURL('image/png');
-  const pdf=new jspdf.jsPDF('p','pt','a4');
-
-  const imgWidth=595.28;
-  const pageHeight=841.89;
-  const imgHeight=canvas.height * imgWidth / canvas.width;
-  let heightLeft=imgHeight;
-  let position=0;
-  let page=1;
-  const pageCount=Math.ceil(imgHeight/pageHeight);
-  const dateStr=new Date().toLocaleDateString();
-
-  const addFooter=(p,pc)=>{
-    pdf.setFontSize(9);
-    pdf.setTextColor(100);
-    const footerText = `${COMPANY_NAME}  |  ${COMPANY_URL}  |  Exported: ${dateStr}`;
-    const textWidth = pdf.getTextWidth(footerText);
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    pdf.text(footerText,(pageWidth - textWidth)/2,pageHeight-30);
-    pdf.text(`Page ${p} of ${pc}`,pageWidth-80,pageHeight-30);
+function setNumber(el, number) {
+  let label = el.querySelector('.number-label');
+  if (!label) {
+    label = document.createElement('span');
+    label.className = 'number-label';
+    el.insertBefore(label, el.childNodes[1]);
   }
+  label.textContent = number + ' ';
+}
 
-  pdf.addImage(imgData,'PNG',0,position,imgWidth,imgHeight);
-  addFooter(page,pageCount);
-  heightLeft-=pageHeight;
+// Drag & Drop
+let dragSrc = null;
+function handleDragStart(e){dragSrc=this;this.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function handleDragOver(e){e.preventDefault();}
+function handleDrop(e){e.stopPropagation();if(dragSrc!==this){this.parentNode.insertBefore(dragSrc,this);}renumberSOP();}
+function handleDragEnd(e){this.classList.remove('dragging');}
+function bindEvents() {
+  editor.querySelectorAll('.sop-step,.sop-task,.sop-subtask,.sop-checklist').forEach(el=>{
+    el.draggable = true;
+    el.removeEventListener('dragstart', handleDragStart);
+    el.addEventListener('dragstart', handleDragStart);
+    el.removeEventListener('dragover', handleDragOver);
+    el.addEventListener('dragover', handleDragOver);
+    el.removeEventListener('drop', handleDrop);
+    el.addEventListener('drop', handleDrop);
+    el.removeEventListener('dragend', handleDragEnd);
+    el.addEventListener('dragend', handleDragEnd);
+  });
+}
+bindEvents();
 
-  while(heightLeft>0){
-    position=heightLeft - imgHeight;
-    pdf.addPage();
-    page++;
-    pdf.addImage(imgData,'PNG',0,position,imgWidth,imgHeight);
-    addFooter(page,pageCount);
-    heightLeft-=pageHeight;
-  }
+// Total time
+function calcTotalTime(){
+  let total = 0;
+  editor.querySelectorAll('.time-input').forEach(input=>{
+    const val = parseInt(input.value);
+    if(!isNaN(val)) total += val;
+  });
+  totalTimeValue.textContent = total;
+}
 
-  pdf.save('SOP_Export.pdf');
-  document.body.removeChild(container);
+// Run Mode
+let runMode = false;
+function toggleRunMode(){
+  runMode = !runMode;
+  document.body.classList.toggle('run-mode', runMode);
+  progressContainer.style.display = runMode ? 'block' : 'none';
+  if(runMode){updateProgress();editor.querySelectorAll('input[type="checkbox"]').forEach(cb=>cb.addEventListener('change',updateProgress));}
+}
+function updateProgress(){
+  const all = editor.querySelectorAll('input[type="checkbox"]');
+  const checked = editor.querySelectorAll('input[type="checkbox"]:checked');
+  const percent = all.length ? (checked.length / all.length)*100 : 0;
+  progressBar.style.width = percent + '%';
 }
 </script>
 </body>
