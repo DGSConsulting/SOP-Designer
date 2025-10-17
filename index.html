@@ -1,2275 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOP Manager - DGS Consulting</title>
-<style>
-  * { box-sizing: border-box; }
-  
-  body { 
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
-    margin: 0; 
-    min-height: 100vh;
-    background: #f5f5f5;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  #header {
-    background: #2c3e50;
-    color: white;
-    padding: 16px 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    flex-shrink: 0;
-  }
-  
-  #header h1 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
-    color: #4CAF50;
-  }
-  
-  #header .subtitle {
-    font-size: 11px;
-    color: rgba(255,255,255,0.7);
-    margin-top: 4px;
-  }
-  
-  #main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  
-  .top-toolbar {
-    background: white;
-    padding: 12px 20px;
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    align-items: center;
-    flex-shrink: 0;
-  }
-  
-  .top-toolbar button {
-    padding: 8px 14px;
-    font-size: 12px;
-  }
-  
-  .search-container {
-    background: white;
-    padding: 12px 20px;
-    border-bottom: 1px solid #ddd;
-    flex-shrink: 0;
-  }
-  
-  .search-container input {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 13px;
-  }
-  
-  .search-container input:focus {
-    outline: none;
-    border-color: #4CAF50;
-  }
-  
-  #content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    min-height: 0;
-  }
-  
-  .warning-banner {
-    padding: 12px 16px;
-    background: #fff3cd;
-    border: 1px solid #ffc107;
-    border-radius: 6px;
-    color: #856404;
-    font-size: 12px;
-    margin-bottom: 16px;
-    display: none;
-  }
-  
-  .warning-banner.show {
-    display: block;
-  }
-  
-  .sop-header {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    margin-bottom: 20px;
-  }
-  
-  .sop-title-section {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-  
-  h1 { 
-    font-size: 24px; 
-    color: #333; 
-    margin: 0;
-    font-weight: 600;
-    flex: 1;
-  }
-  
-  .status-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    background: #e3f2fd;
-    color: #1976d2;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-  
-  .sop-name-input {
-    width: 100%;
-    font-size: 15px;
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-weight: 500;
-    margin-bottom: 12px;
-  }
-  
-  .sop-name-input:focus {
-    outline: none;
-    border-color: #4CAF50;
-  }
-  
-  .section {
-    background: white;
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    margin-bottom: 16px;
-  }
-  
-  .section h2 { 
-    font-size: 16px; 
-    color: #333; 
-    margin: 0 0 12px 0;
-    font-weight: 600;
-  }
-  
-  .section h3 { 
-    font-size: 12px; 
-    color: #666; 
-    margin: 0 0 8px 0;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  
-  button {
-    padding: 10px 16px;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.2s;
-  }
-  
-  button:hover { background: #45a049; }
-  button:active { opacity: 0.8; }
-  button:disabled { background: #ccc; cursor: not-allowed; }
-  
-  .secondary {
-    background: #2196F3;
-  }
-  .secondary:hover { background: #0b7dda; }
-  
-  .tertiary {
-    background: #666;
-  }
-  .tertiary:hover { background: #555; }
-  
-  .danger {
-    background: #f44336;
-  }
-  .danger:hover { background: #da190b; }
-  
-  .steps-list {
-    margin-bottom: 12px;
-  }
-  
-  .step-card {
-    background: white;
-    margin: 10px 0;
-    padding: 16px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    cursor: grab;
-    transition: all 0.2s;
-  }
-  
-  .step-card:hover {
-    border-color: #4CAF50;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  }
-  
-  .step-card.dragging {
-    opacity: 0.5;
-    background: #f0f0f0;
-  }
-  
-  .step-number {
-    display: inline-block;
-    background: #4CAF50;
-    color: white;
-    width: 28px;
-    height: 28px;
-    line-height: 28px;
-    text-align: center;
-    border-radius: 50%;
-    font-size: 12px;
-    font-weight: 600;
-    margin-right: 10px;
-    flex-shrink: 0;
-  }
-  
-  .step-input {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 13px;
-    font-family: inherit;
-    margin: 8px 0;
-  }
-  
-  .step-input:focus {
-    outline: none;
-    border-color: #4CAF50;
-  }
-  
-  .step-controls {
-    display: flex;
-    gap: 6px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-  }
-  
-  .step-controls button {
-    padding: 6px 12px;
-    font-size: 11px;
-  }
-  
-  .branch {
-    margin-left: 24px;
-    margin-top: 12px;
-    padding: 12px;
-    background: #f0f7ff;
-    border-left: 3px solid #2196F3;
-    border-radius: 6px;
-  }
-  
-  select, input[type="number"], input[type="text"] {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 13px;
-    margin-bottom: 8px;
-  }
-  
-  select:focus, input:focus {
-    outline: none;
-    border-color: #4CAF50;
-  }
-  
-  .info-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 12px;
-  }
-  
-  .info-row:last-child {
-    border-bottom: none;
-  }
-  
-  .info-label {
-    color: #666;
-    font-weight: 500;
-  }
-  
-  .info-value {
-    color: #333;
-  }
-  
-  .tags-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 8px;
-  }
-  
-  .tag {
-    background: #e3f2fd;
-    color: #1976d2;
-    padding: 6px 12px;
-    border-radius: 16px;
-    font-size: 11px;
-    border: 1px solid #90caf9;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  
-  .tag .remove {
-    cursor: pointer;
-    font-weight: bold;
-  }
-  
-  .diagram-section {
-    background: white;
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    margin-bottom: 16px;
-  }
-  
-  #svgDiagram {
-    width: 100%;
-    min-height: 400px;
-    background: #fafafa;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    overflow: auto;
-  }
-  
-  .sop-list {
-    display: grid;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-  
-  .sop-card {
-    background: white;
-    padding: 16px;
-    border-radius: 8px;
-    border: 2px solid #e0e0e0;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .sop-card:hover {
-    border-color: #4CAF50;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  }
-  
-  .sop-card.active {
-    border-color: #4CAF50;
-    background: #f1f8f4;
-  }
-  
-  .sop-card-name {
-    font-weight: 600;
-    font-size: 15px;
-    margin-bottom: 8px;
-    color: #333;
-  }
-  
-  .sop-card-meta {
-    font-size: 11px;
-    color: #666;
-    margin-bottom: 10px;
-  }
-  
-  .sop-card-actions {
-    display: flex;
-    gap: 6px;
-  }
-  
-  .sop-card-actions button {
-    flex: 1;
-    padding: 6px;
-    font-size: 11px;
-  }
-  
-  .template-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  
-  .template-btn {
-    padding: 12px;
-    font-size: 12px;
-    background: #FF9800;
-  }
-  
-  .template-btn:hover { background: #e68900; }
-  
-  .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    padding: 20px;
-  }
-  
-  .modal.active { display: flex; }
-  
-  .modal-content {
-    background: white;
-    padding: 24px;
-    border-radius: 8px;
-    max-width: 600px;
-    width: 100%;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-    max-height: 85vh;
-    overflow-y: auto;
-  }
-  
-  .modal-content h2 { 
-    margin-top: 0; 
-    font-size: 18px;
-    margin-bottom: 16px;
-  }
-  
-  .share-link {
-    padding: 12px;
-    background: #f5f5f5;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-family: 'Courier New', monospace;
-    font-size: 11px;
-    word-break: break-all;
-    margin: 12px 0;
-    user-select: all;
-    max-height: 100px;
-    overflow-y: auto;
-  }
-  
-  .version-item {
-    padding: 12px;
-    background: #f9f9f9;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    margin: 8px 0;
-    font-size: 12px;
-  }
-  
-  .version-item-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    font-weight: 600;
-  }
-  
-  .comment {
-    padding: 12px;
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    margin: 8px 0;
-    font-size: 12px;
-  }
-  
-  .footer {
-    padding: 16px 20px;
-    background: #2c3e50;
-    color: rgba(255,255,255,0.7);
-    font-size: 11px;
-    border-top: 1px solid #1a252f;
-    flex-shrink: 0;
-  }
-  
-  .footer-content {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    text-align: center;
-  }
-  
-  .footer-branding strong {
-    color: white;
-    font-size: 12px;
-    display: block;
-    margin-bottom: 4px;
-  }
-  
-  .footer-contact {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  
-  .footer-link {
-    color: rgba(255,255,255,0.7);
-    text-decoration: none;
-    font-size: 11px;
-  }
-  
-  .footer-link:hover {
-    color: white;
-  }
-  
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #999;
-  }
-  
-  .button-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-  
-  .button-row button {
-    flex: 1;
-  }
-  
-  @media (max-width: 600px) {
-    .template-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .button-row {
-      flex-direction: column;
-    }
-    
-    .sop-card-actions {
-      flex-direction: column;
-    }
-  }
-</style>
-</head>
-<body>
-
-<div id="header">
-  <h1>SOP Manager</h1>
-  <div class="subtitle">DGS Consulting Solutions</div>
-</div>
-
-<div id="main">
-  <div class="top-toolbar">
-    <button onclick="showView('sops')">All SOPs</button>
-    <button onclick="showView('editor')" class="secondary">Editor</button>
-    <button onclick="createNewSOP()" class="secondary">+ New SOP</button>
-  </div>
-  
-  <div class="search-container" id="searchContainer" style="display: none;">
-    <input type="text" id="searchBox" placeholder="Search SOPs..." onkeyup="searchSOPs()">
-  </div>
-  
-  <div id="content">
-    <div id="sopListView" style="display: none;">
-      <div class="section">
-        <h2>Your SOPs</h2>
-        <div class="sop-list" id="sopList"></div>
-      </div>
-      
-      <div class="section">
-        <h3>Actions</h3>
-        <div class="button-row">
-          <button onclick="exportAllSOPs()">Backup All</button>
-          <button onclick="importSOPs()" class="secondary">Restore</button>
-        </div>
-        <button onclick="viewTrash()" class="danger" style="width: 100%;">View Trash</button>
-      </div>
-    </div>
-    
-    <div id="editorView" style="display: none;">
-      <div class="warning-banner" id="warningBanner">
-        You have unsaved changes. They will auto-save when you switch SOPs.
-      </div>
-      
-      <div class="sop-header">
-        <div class="sop-title-section">
-          <h1 id="sopTitle">Select or Create an SOP</h1>
-          <span class="status-badge" id="sopStatus">DRAFT</span>
-        </div>
-        <input type="text" id="sopNameInput" class="sop-name-input" placeholder="Enter SOP Name" onchange="updateSOPName()">
-      </div>
-      
-      <div class="section">
-        <h2>Steps</h2>
-        <div class="button-row">
-          <button onclick="addStep()">+ Add Step</button>
-          <button onclick="undo()" id="undoBtn" disabled class="tertiary">Undo</button>
-          <button onclick="redo()" id="redoBtn" disabled class="tertiary">Redo</button>
-        </div>
-        <div class="steps-list" id="stepsList"></div>
-      </div>
-      
-      <div class="diagram-section">
-        <h2>Flow Diagram</h2>
-        <svg id="svgDiagram"></svg>
-      </div>
-      
-      <div class="section">
-        <h2>Details</h2>
-        
-        <h3>Owner</h3>
-        <input type="text" id="ownerInput" placeholder="Owner name" onchange="updateSOPOwner(this.value)">
-        <div class="info-row">
-          <span class="info-label">Current Owner:</span>
-          <span class="info-value" id="ownerDisplay">Unassigned</span>
-        </div>
-        
-        <h3 style="margin-top: 16px;">Review Status</h3>
-        <button onclick="markReviewedNow()" style="width: 100%; margin-bottom: 8px;">Mark Reviewed Today</button>
-        <div class="info-row">
-          <span class="info-label">Last Reviewed:</span>
-          <span class="info-value" id="reviewDisplay">Never</span>
-        </div>
-        
-        <h3 style="margin-top: 16px;">Created</h3>
-        <div class="info-row">
-          <span class="info-label">Date:</span>
-          <span class="info-value" id="createdDisplay">-</span>
-        </div>
-        
-        <h3 style="margin-top: 16px;">Status</h3>
-        <select id="statusSelect" onchange="updateSOPStatus(this.value)">
-          <option value="DRAFT">Draft</option>
-          <option value="ACTIVE">Active</option>
-          <option value="REVIEW">Under Review</option>
-          <option value="ARCHIVED">Archived</option>
-        </select>
-        
-        <h3>Category</h3>
-        <select id="categorySelect" onchange="updateSOPCategory(this.value)">
-          <option value="General">General</option>
-          <option value="Sales">Sales</option>
-          <option value="HR">HR</option>
-          <option value="Operations">Operations</option>
-          <option value="Support">Support</option>
-        </select>
-        
-        <h3>Time Estimate (minutes)</h3>
-        <input type="number" id="totalTimeInput" min="0" placeholder="Total time in minutes" onchange="updateTotalTime(this.value)">
-        <div class="info-row">
-          <span class="info-label">Estimated Duration:</span>
-          <span class="info-value" id="timeDisplay">Not set</span>
-        </div>
-        <div id="stepTimesDisplay" style="font-size: 11px; color: #666; margin-top: 8px;"></div>
-        
-        <h3>Tags</h3>
-        <input type="text" id="tagsInput" placeholder="Comma-separated tags" onchange="updateTags()">
-        <div class="tags-list" id="tagsList"></div>
-      </div>
-      
-      <div class="section">
-        <h2>Actions</h2>
-        <div class="button-row">
-          <button onclick="openShareModal()" class="secondary">Share</button>
-          <button onclick="exportOptions()" class="secondary">Export</button>
-        </div>
-        <div class="button-row">
-          <button onclick="openVersionsModal()" class="tertiary">Versions</button>
-          <button onclick="openCommentModal()" class="tertiary">Comments</button>
-        </div>
-        <div class="button-row">
-          <button onclick="viewChangeLog()" class="tertiary">Changes</button>
-          <button onclick="viewAuditTrail()" class="tertiary">Activity</button>
-        </div>
-        <div class="button-row">
-          <button onclick="viewSOPAnalytics()" style="background: #FF9800;">Stats</button>
-          <button onclick="viewDashboard()" style="background: #9C27B0;">Dashboard</button>
-        </div>
-      </div>
-      
-      <div class="section">
-        <h2>Load Template</h2>
-        <div class="template-grid">
-          <button class="template-btn" onclick="loadTemplate('onboarding')">Onboarding</button>
-          <button class="template-btn" onclick="loadTemplate('invoicing')">Invoicing</button>
-          <button class="template-btn" onclick="loadTemplate('qa')">QA Testing</button>
-          <button class="template-btn" onclick="loadTemplate('projectHandoff')">Project Handoff</button>
-          <button class="template-btn" onclick="loadTemplate('meetingPrep')">Meeting Prep</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="exportModal" class="modal">
-  <div class="modal-content">
-    <h2>Export SOP</h2>
-    <div class="button-row">
-      <button onclick="exportPDF()" class="secondary">PDF</button>
-      <button onclick="exportHTML()" class="secondary">HTML</button>
-    </div>
-    <div class="button-row">
-      <button onclick="exportCSV()" class="secondary">CSV</button>
-      <button onclick="exportDiagramImage()" class="secondary">Diagram</button>
-    </div>
-    <button class="tertiary" onclick="closeExportModal()" style="margin-top: 12px; width: 100%;">Close</button>
-  </div>
-</div>
-
-<div id="shareModal" class="modal">
-  <div class="modal-content">
-    <h2>Share SOP</h2>
-    <p style="font-size: 13px;">Read-only link:</p>
-    <div class="share-link" id="shareLink"></div>
-    <div class="button-row" style="margin-top: 12px;">
-      <button onclick="copyToClipboard()" class="secondary">Copy Link</button>
-      <button class="tertiary" onclick="closeShareModal()">Close</button>
-    </div>
-  </div>
-</div>
-
-<div id="versionsModal" class="modal">
-  <div class="modal-content">
-    <h2>Version History</h2>
-    <div id="versionsList" style="max-height: 400px; overflow-y: auto;"></div>
-    <button class="tertiary" onclick="closeVersionsModal()" style="margin-top: 12px; width: 100%;">Close</button>
-  </div>
-</div>
-
-<div id="commentModal" class="modal">
-  <div class="modal-content">
-    <h2>Comments</h2>
-    <div style="margin-bottom: 16px;">
-      <input type="text" id="commentAuthorInput" placeholder="Your name" style="margin-bottom: 8px;">
-      <input type="text" id="commentTextInput" placeholder="Add comment..." style="margin-bottom: 8px;" onkeypress="if(event.key==='Enter') addComment()">
-      <button onclick="addComment()" class="secondary" style="width: 100%;">Post Comment</button>
-    </div>
-    <div id="commentsList" style="max-height: 300px; overflow-y: auto;"></div>
-    <button class="tertiary" onclick="closeCommentModal()" style="margin-top: 12px; width: 100%;">Close</button>
-  </div>
-</div>
-
-<div id="auditModal" class="modal">
-  <div class="modal-content">
-    <h2>Activity Log</h2>
-    <input type="text" id="auditFilterInput" placeholder="Filter by action..." onkeyup="filterAuditTrail()" style="margin-bottom: 12px;">
-    <div id="auditTrailList" style="max-height: 400px; overflow-y: auto;"></div>
-    <button class="tertiary" onclick="closeAuditModal()" style="margin-top: 12px; width: 100%;">Close</button>
-  </div>
-</div>
-
-<div id="changeLogModal" class="modal">
-  <div class="modal-content">
-    <h2>Change Log</h2>
-    <input type="text" id="changeFilterInput" placeholder="Filter changes..." onkeyup="filterChangeLog()" style="margin-bottom: 12px;">
-    <div id="changeLogList" style="max-height: 400px; overflow-y: auto;"></div>
-    <button class="tertiary" onclick="closeChangeLogModal()" style="margin-top: 12px; width: 100%;">Close</button>
-  </div>
-</div>
-
-<div id="analyticsModal" class="modal">
-  <div class="modal-content">
-    <h2>SOP Statistics</h2>
-    <div id="analyticsContent" style="max-height: 450px; overflow-y: auto;"></div>
-    <button class="tertiary" onclick="closeAnalyticsModal()" style="margin-top: 12px; width: 100%;">Close</button>
-  </div>
-</div>
-
-<div id="dashboardModal" class="modal">
-  <div class="modal-content">
-    <h2>Compliance Dashboard</h2>
-    <div id="dashboardContent" style="max-height: 450px; overflow-y: auto;"></div>
-    <button class="tertiary" onclick="closeDashboardModal()" style="margin-top: 12px; width: 100%;">Close</button>
-  </div>
-</div>
-
-<div id="trashModal" class="modal">
-  <div class="modal-content">
-    <h2>Trash</h2>
-    <div id="trashList" style="max-height: 400px; overflow-y: auto;"></div>
-    <button class="tertiary" onclick="closeTrashModal()" style="margin-top: 12px; width: 100%;">Close</button>
-  </div>
-</div>
-
-<footer class="footer">
-  <div class="footer-content">
-    <div class="footer-branding">
-      <strong>DGS Consulting Solutions</strong>
-      <div>Professional SOP Management</div>
-    </div>
-    <div class="footer-contact">
-      <a href="mailto:DGSConsult@consultant.com" class="footer-link">DGSConsult@consultant.com</a>
-      <a href="tel:+12892220511" class="footer-link">1 (289) 222-0511</a>
-      <a href="https://dgsconsulting.solutions/" class="footer-link" target="_blank">Website</a>
-    </div>
-  </div>
-</footer>
-
-<script>
-let allSOPs = {};
-let trash = {};
-let currentSOPId = null;
-let steps = [];
-let history = [];
-let redoStack = [];
-let versions = [];
-let comments = [];
-let tags = [];
-let hasUnsavedChanges = false;
-let currentView = 'sops';
-let sopStatus = 'DRAFT';
-let sopCategory = 'General';
-let totalTimeEstimate = 0;
-let sopOwner = '';
-let changeLog = [];
-let auditTrail = [];
-let usageStats = {};
-
-const templates = {
-  onboarding: [
-    { text: "Receive client intake form", branches: [], duration: 10 },
-    { text: "Review requirements and scope", branches: [], duration: 15 },
-    { text: "Create client folder in shared drive", branches: [], duration: 5 }
-  ],
-  invoicing: [
-    { text: "Gather time tracking data from team", branches: [], duration: 20 },
-    { text: "Calculate billable hours by project", branches: [], duration: 15 },
-    { text: "Generate invoice from template", branches: [], duration: 10 }
-  ],
-  qa: [
-    { text: "Pull latest code from main branch", branches: [], duration: 5 },
-    { text: "Run full automated test suite", branches: [], duration: 30 },
-    { text: "Create QA sign-off report", branches: [], duration: 15 }
-  ],
-  projectHandoff: [
-    { text: "Prepare project completion summary", branches: [], duration: 20 },
-    { text: "Compile all project deliverables", branches: [], duration: 25 },
-    { text: "Conduct final project review meeting", branches: [], duration: 30 }
-  ],
-  meetingPrep: [
-    { text: "Review meeting objective and agenda", branches: [], duration: 10 },
-    { text: "Prepare presentation materials", branches: [], duration: 45 },
-    { text: "Send meeting invite with agenda", branches: [], duration: 10 }
-  ]
-};
-
-function showView(view) {
-  currentView = view;
-  document.getElementById('sopListView').style.display = 'none';
-  document.getElementById('editorView').style.display = 'none';
-  document.getElementById('searchContainer').style.display = 'none';
-  
-  if (view === 'sops') {
-    document.getElementById('sopListView').style.display = 'block';
-    document.getElementById('searchContainer').style.display = 'block';
-    renderSOPList();
-  } else if (view === 'editor') {
-    document.getElementById('editorView').style.display = 'block';
-    if (!currentSOPId) {
-      const firstSOP = Object.keys(allSOPs)[0];
-      if (firstSOP) {
-        loadSOP(firstSOP);
-      }
-    }
-  }
-}
-
-document.addEventListener('keydown', (e) => {
-  if (e.ctrlKey || e.metaKey) {
-    if (e.key === 'z' && !e.shiftKey) {
-      e.preventDefault();
-      undo();
-    } else if (e.key === 'y' || (e.shiftKey && e.key === 'z')) {
-      e.preventDefault();
-      redo();
-    } else if (e.key === 'n') {
-      e.preventDefault();
-      addStep();
-    }
-  }
-}, false);
-
-function markUnsaved() {
-  hasUnsavedChanges = true;
-  document.getElementById('warningBanner').classList.add('show');
-}
-
-function markSaved() {
-  hasUnsavedChanges = false;
-  document.getElementById('warningBanner').classList.remove('show');
-}
-
-window.addEventListener('beforeunload', (e) => {
-  if (hasUnsavedChanges && currentSOPId && steps.length > 0) {
-    e.preventDefault();
-    e.returnValue = '';
-  }
-  if (currentSOPId && steps.length > 0) {
-    allSOPs[currentSOPId].steps = steps;
-    allSOPs[currentSOPId].tags = tags;
-    allSOPs[currentSOPId].comments = comments;
-    saveToStorage();
-  }
-});
-
-function createNewSOP() {
-  const name = prompt("Enter SOP name:", "My New SOP");
-  if (!name || !name.trim()) return;
-  
-  const id = 'sop-' + Date.now();
-  allSOPs[id] = {
-    id,
-    name: name.trim(),
-    steps: [{ text: "Step 1", branches: [], duration: 0 }],
-    tags: [],
-    comments: [],
-    versions: [],
-    status: 'DRAFT',
-    category: 'General',
-    totalTime: 0,
-    owner: '',
-    changeLog: [],
-    auditTrail: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-  
-  logAuditTrail(id, 'created', { name: name.trim() });
-  logChangeLog(id, 'Created SOP');
-  
-  loadSOP(id);
-  saveToStorage();
-  showView('editor');
-}
-
-function loadSOP(id) {
-  if (!allSOPs[id]) return;
-  
-  if (hasUnsavedChanges && currentSOPId) {
-    allSOPs[currentSOPId].steps = steps;
-    allSOPs[currentSOPId].tags = tags;
-    allSOPs[currentSOPId].comments = comments;
-    saveToStorage();
-  }
-  
-  currentSOPId = id;
-  const sop = allSOPs[id];
-  
-  steps = JSON.parse(JSON.stringify(sop.steps));
-  comments = JSON.parse(JSON.stringify(sop.comments || []));
-  tags = [...(sop.tags || [])];
-  versions = [...(sop.versions || [])];
-  changeLog = [...(sop.changeLog || [])];
-  auditTrail = [...(sop.auditTrail || [])];
-  
-  sopStatus = sop.status || 'DRAFT';
-  sopCategory = sop.category || 'General';
-  totalTimeEstimate = sop.totalTime || 0;
-  sopOwner = sop.owner || '';
-  
-  history = [JSON.stringify(steps)];
-  redoStack = [];
-  
-  document.getElementById('sopNameInput').value = sop.name;
-  document.getElementById('sopTitle').textContent = sop.name;
-  document.getElementById('tagsInput').value = tags.join(', ');
-  document.getElementById('statusSelect').value = sopStatus;
-  document.getElementById('categorySelect').value = sopCategory;
-  document.getElementById('totalTimeInput').value = totalTimeEstimate;
-  document.getElementById('ownerInput').value = sopOwner;
-  
-  trackSOPView(id);
-  
-  renderSOPList();
-  renderSteps();
-  renderDiagram();
-  renderTags();
-  renderStepTimes();
-  updateTimeDisplay();
-  updateHistoryButtons();
-  renderOwnerDisplay();
-  renderReviewDisplay();
-  renderCreatedDisplay();
-  markSaved();
-  
-  showView('editor');
-}
-
-function logAuditTrail(sopId, action, details) {
-  if (!allSOPs[sopId]) return;
-  if (!allSOPs[sopId].auditTrail) {
-    allSOPs[sopId].auditTrail = [];
-  }
-  
-  allSOPs[sopId].auditTrail.unshift({
-    timestamp: new Date().toISOString(),
-    action: action,
-    details: details || {},
-    user: localStorage.getItem('currentUser') || 'System'
-  });
-  
-  if (allSOPs[sopId].auditTrail.length > 200) {
-    allSOPs[sopId].auditTrail.pop();
-  }
-}
-
-function logChangeLog(sopId, action) {
-  if (!allSOPs[sopId]) return;
-  if (!allSOPs[sopId].changeLog) {
-    allSOPs[sopId].changeLog = [];
-  }
-  
-  allSOPs[sopId].changeLog.unshift({
-    timestamp: new Date().toISOString(),
-    action: action,
-    user: localStorage.getItem('currentUser') || 'System'
-  });
-  
-  if (allSOPs[sopId].changeLog.length > 100) {
-    allSOPs[sopId].changeLog.pop();
-  }
-}
-
-function trackSOPView(sopId) {
-  if (!usageStats[sopId]) {
-    usageStats[sopId] = { views: 0, lastViewed: null };
-  }
-  usageStats[sopId].views++;
-  usageStats[sopId].lastViewed = new Date().toISOString();
-  saveToStorage();
-}
-
-function viewChangeLog() {
-  const container = document.getElementById('changeLogList');
-  
-  if (changeLog.length === 0) {
-    container.innerHTML = '<div class="empty-state" style="padding: 20px;">No changes recorded</div>';
-  } else {
-    container.innerHTML = changeLog.slice(0, 100).map(entry => {
-      const time = new Date(entry.timestamp).toLocaleString();
-      return `
-        <div class="version-item">
-          <div style="font-weight: 600; margin-bottom: 4px;">${escapeHtml(entry.action)}</div>
-          <div style="font-size: 11px; color: #666;">By: ${escapeHtml(entry.user)}</div>
-          <div style="font-size: 11px; color: #999; margin-top: 2px;">${time}</div>
-        </div>
-      `;
-    }).join('');
-  }
-  
-  document.getElementById('changeLogModal').classList.add('active');
-}
-
-function filterChangeLog() {
-  const query = document.getElementById('changeFilterInput').value.toLowerCase();
-  const filtered = changeLog.filter(entry => 
-    entry.action.toLowerCase().includes(query) || 
-    entry.user.toLowerCase().includes(query)
-  );
-  
-  const container = document.getElementById('changeLogList');
-  if (filtered.length === 0) {
-    container.innerHTML = '<div class="empty-state" style="padding: 20px;">No matches found</div>';
-    return;
-  }
-  
-  container.innerHTML = filtered.slice(0, 100).map(entry => {
-    const time = new Date(entry.timestamp).toLocaleString();
-    return `
-      <div class="version-item">
-        <div style="font-weight: 600; margin-bottom: 4px;">${escapeHtml(entry.action)}</div>
-        <div style="font-size: 11px; color: #666;">By: ${escapeHtml(entry.user)}</div>
-        <div style="font-size: 11px; color: #999; margin-top: 2px;">${time}</div>
-      </div>
-    `;
-  }).join('');
-}
-
-function closeChangeLogModal() {
-  document.getElementById('changeLogModal').classList.remove('active');
-}
-
-function viewAuditTrail() {
-  const container = document.getElementById('auditTrailList');
-  
-  if (auditTrail.length === 0) {
-    container.innerHTML = '<div class="empty-state" style="padding: 20px;">No activity recorded</div>';
-  } else {
-    container.innerHTML = auditTrail.slice(0, 100).map(entry => {
-      const time = new Date(entry.timestamp).toLocaleString();
-      return `
-        <div class="version-item">
-          <div style="font-weight: 600; margin-bottom: 4px;">${entry.action}</div>
-          <div style="font-size: 11px; color: #666;">By: ${escapeHtml(entry.user)}</div>
-          <div style="font-size: 11px; color: #999; margin-top: 2px;">${time}</div>
-        </div>
-      `;
-    }).join('');
-  }
-  
-  document.getElementById('auditModal').classList.add('active');
-}
-
-function filterAuditTrail() {
-  const query = document.getElementById('auditFilterInput').value.toLowerCase();
-  const filtered = auditTrail.filter(entry => 
-    entry.action.toLowerCase().includes(query) || 
-    entry.user.toLowerCase().includes(query)
-  );
-  
-  const container = document.getElementById('auditTrailList');
-  if (filtered.length === 0) {
-    container.innerHTML = '<div class="empty-state" style="padding: 20px;">No matches found</div>';
-    return;
-  }
-  
-  container.innerHTML = filtered.slice(0, 100).map(entry => {
-    const time = new Date(entry.timestamp).toLocaleString();
-    return `
-      <div class="version-item">
-        <div style="font-weight: 600; margin-bottom: 4px;">${entry.action}</div>
-        <div style="font-size: 11px; color: #666;">By: ${escapeHtml(entry.user)}</div>
-        <div style="font-size: 11px; color: #999; margin-top: 2px;">${time}</div>
-      </div>
-    `;
-  }).join('');
-}
-
-function closeAuditModal() {
-  document.getElementById('auditModal').classList.remove('active');
-}
-
-function viewSOPAnalytics() {
-  if (!currentSOPId) return;
-  
-  const container = document.getElementById('analyticsContent');
-  const sop = allSOPs[currentSOPId];
-  const stats = usageStats[currentSOPId] || { views: 0, lastViewed: null };
-  
-  const lastViewed = stats.lastViewed ? new Date(stats.lastViewed).toLocaleDateString() : 'Never';
-  const daysOld = Math.floor((Date.now() - new Date(sop.createdAt)) / (1000 * 60 * 60 * 24));
-  const avgViewsPerDay = stats.views > 0 ? (stats.views / Math.max(daysOld, 1)).toFixed(1) : 0;
-  
-  let reviewStatus = 'Never reviewed';
-  let reviewColor = '#ffcccc';
-  if (sop.lastReviewedDate) {
-    const daysSinceReview = Math.floor((Date.now() - new Date(sop.lastReviewedDate)) / (1000 * 60 * 60 * 24));
-    if (daysSinceReview > 365) {
-      reviewStatus = `Overdue - ${daysSinceReview} days`;
-      reviewColor = '#ffcccc';
-    } else if (daysSinceReview > 180) {
-      reviewStatus = `Due soon - ${daysSinceReview} days`;
-      reviewColor = '#fff3cd';
-    } else {
-      reviewStatus = `Current - ${daysSinceReview} days ago`;
-      reviewColor = '#ccffcc';
-    }
-  }
-  
-  const stepCount = steps.length;
-  const completeness = Math.round(((sop.owner ? 1 : 0) + (sop.status === 'ACTIVE' ? 1 : 0) + (stepCount > 0 ? 1 : 0)) / 3 * 100);
-  const daysSinceUpdate = Math.floor((Date.now() - new Date(sop.updatedAt)) / (1000 * 60 * 60 * 24));
-  
-  container.innerHTML = `
-    <div style="line-height: 1.8; font-size: 13px;">
-      <div style="padding: 12px; background: #e3f2fd; border-left: 4px solid #2196F3; border-radius: 6px; margin: 10px 0;">
-        <strong>Usage Statistics</strong><br>
-        Total views: ${stats.views}<br>
-        Last viewed: ${lastViewed}<br>
-        Avg views/day: ${avgViewsPerDay}
-      </div>
-      
-      <div style="padding: 12px; background: ${reviewColor}; border-left: 4px solid #FF9800; border-radius: 6px; margin: 10px 0;">
-        <strong>Review Status</strong><br>
-        ${reviewStatus}
-      </div>
-      
-      <div style="padding: 12px; background: #e8f5e9; border-left: 4px solid #4CAF50; border-radius: 6px; margin: 10px 0;">
-        <strong>Completeness: ${completeness}%</strong><br>
-        Steps: ${stepCount} defined<br>
-        Owner: ${sop.owner || 'Not assigned'}<br>
-        Status: ${sop.status}
-      </div>
-      
-      <div style="padding: 12px; background: #f5f5f5; border-left: 4px solid #666; border-radius: 6px; margin: 10px 0;">
-        <strong>Timeline</strong><br>
-        Created: ${daysOld} days ago<br>
-        Updated: ${daysSinceUpdate} days ago<br>
-        Total changes: ${changeLog.length}
-      </div>
-    </div>
-  `;
-  
-  document.getElementById('analyticsModal').classList.add('active');
-}
-
-function closeAnalyticsModal() {
-  document.getElementById('analyticsModal').classList.remove('active');
-}
-
-function viewDashboard() {
-  const container = document.getElementById('dashboardContent');
-  
-  const now = Date.now();
-  let stats = {
-    total: Object.keys(allSOPs).length,
-    byStatus: { ACTIVE: 0, DRAFT: 0, REVIEW: 0, ARCHIVED: 0 },
-    overdueReviews: [],
-    neverReviewed: [],
-    noOwner: []
-  };
-  
-  Object.entries(allSOPs).forEach(([id, sop]) => {
-    stats.byStatus[sop.status] = (stats.byStatus[sop.status] || 0) + 1;
-    
-    if (!sop.owner) stats.noOwner.push(sop.name);
-    
-    if (!sop.lastReviewedDate) {
-      const daysOld = Math.floor((now - new Date(sop.createdAt)) / (1000 * 60 * 60 * 24));
-      stats.neverReviewed.push({ name: sop.name, daysOld });
-    } else {
-      const daysSince = Math.floor((now - new Date(sop.lastReviewedDate)) / (1000 * 60 * 60 * 24));
-      if (daysSince > 365) {
-        stats.overdueReviews.push({ name: sop.name, daysAgo: daysSince });
-      }
-    }
-  });
-  
-  const activePercent = stats.total > 0 ? Math.round((stats.byStatus.ACTIVE / stats.total) * 100) : 0;
-  const reviewedPercent = stats.total > 0 ? Math.round(((stats.total - stats.neverReviewed.length) / stats.total) * 100) : 0;
-  const ownedPercent = stats.total > 0 ? Math.round(((stats.total - stats.noOwner.length) / stats.total) * 100) : 0;
-  
-  let html = `
-    <div style="font-size: 13px; line-height: 1.8;">
-      <div style="padding: 12px; background: #e8f5e9; border-left: 4px solid #4CAF50; border-radius: 6px; margin: 10px 0;">
-        <strong style="font-size: 14px;">Organization Summary</strong><br>
-        Total SOPs: ${stats.total}<br>
-        Active: ${stats.byStatus.ACTIVE} | Draft: ${stats.byStatus.DRAFT} | Review: ${stats.byStatus.REVIEW}
-      </div>
-      
-      <div style="padding: 12px; background: #e3f2fd; border-left: 4px solid #2196F3; border-radius: 6px; margin: 10px 0;">
-        <strong style="font-size: 14px;">Compliance Metrics</strong><br>
-        Active: ${activePercent}% | Reviewed: ${reviewedPercent}% | Owned: ${ownedPercent}%
-      </div>
-  `;
-  
-  if (stats.overdueReviews.length > 0) {
-    html += `
-      <div style="padding: 12px; background: #ffcccc; border-left: 4px solid #f44336; border-radius: 6px; margin: 10px 0;">
-        <strong>Overdue Reviews</strong><br>
-        ${stats.overdueReviews.slice(0, 3).map(s => `• ${escapeHtml(s.name)}`).join('<br>')}
-      </div>
-    `;
-  }
-  
-  html += '</div>';
-  container.innerHTML = html;
-  document.getElementById('dashboardModal').classList.add('active');
-}
-
-function closeDashboardModal() {
-  document.getElementById('dashboardModal').classList.remove('active');
-}
-
-function renderSOPList(query = '') {
-  const container = document.getElementById('sopList');
-  const sopIds = Object.keys(allSOPs);
-  
-  const filtered = sopIds.filter(id => {
-    const sop = allSOPs[id];
-    return sop.name.toLowerCase().includes(query) || 
-           (sop.tags && sop.tags.some(t => t.toLowerCase().includes(query)));
-  });
-  
-  if (filtered.length === 0) {
-    container.innerHTML = '<div class="empty-state">No SOPs found. Create your first one!</div>';
-    return;
-  }
-  
-  container.innerHTML = filtered.map(id => {
-    const sop = allSOPs[id];
-    const isActive = currentSOPId === id;
-    const time = new Date(sop.updatedAt).toLocaleDateString();
-    
-    return `
-      <div class="sop-card ${isActive ? 'active' : ''}" onclick="loadSOP('${id}')">
-        <div class="sop-card-name">${escapeHtml(sop.name)}</div>
-        <div class="sop-card-meta">
-          ${sop.steps.length} steps • ${sop.status} • Updated ${time}
-        </div>
-        <div class="sop-card-actions">
-          <button onclick="openCommentModal(); event.stopPropagation();" class="secondary">Comments</button>
-          <button onclick="deleteSOP('${id}', event)" class="danger">Delete</button>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function renderSteps() {
-  const container = document.getElementById('stepsList');
-  container.innerHTML = '';
-  
-  if (steps.length === 0) {
-    container.innerHTML = '<div class="empty-state">No steps yet. Add one to get started.</div>';
-    return;
-  }
-  
-  steps.forEach((step, idx) => {
-    const div = document.createElement('div');
-    div.className = 'step-card';
-    div.draggable = true;
-    div.dataset.index = idx;
-    
-    div.addEventListener('dragstart', (e) => {
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('stepIndex', idx);
-      div.classList.add('dragging');
-    });
-    
-    div.addEventListener('dragend', () => {
-      div.classList.remove('dragging');
-    });
-    
-    div.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-    });
-    
-    div.addEventListener('drop', (e) => {
-      e.preventDefault();
-      const fromIdx = parseInt(e.dataTransfer.getData('stepIndex'));
-      if (fromIdx !== idx && !isNaN(fromIdx)) {
-        moveStep(fromIdx, idx);
-      }
-    });
-    
-    let branchesHTML = '';
-    if (step.branches && step.branches.length > 0) {
-      step.branches.forEach((branch, bIdx) => {
-        branchesHTML += `
-          <div class="branch">
-            <input class="step-input" value="${escapeHtml(branch.text)}" 
-                   onchange="updateBranch(${idx},${bIdx},this.value)"
-                   placeholder="Branch step text"/>
-            <div style="display: flex; gap: 6px; margin-top: 6px;">
-              <input type="number" min="0" value="${branch.duration || 0}" 
-                     style="width: 70px; padding: 6px;" placeholder="min"
-                     onchange="updateBranchDuration(${idx}, ${bIdx}, this.value)">
-              <button class="danger" onclick="deleteBranch(${idx},${bIdx})" style="padding: 6px 10px; font-size: 11px;">Delete</button>
-            </div>
-          </div>
-        `;
-      });
-    }
-    
-    div.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-        <span class="step-number">${idx + 1}</span>
-        <input class="step-input" style="margin: 0; flex: 1;" value="${escapeHtml(step.text)}" 
-               onchange="updateStep(${idx},this.value)" placeholder="Step description"/>
-        <input type="number" min="0" value="${step.duration || 0}" 
-               style="width: 70px; padding: 8px; margin: 0; border: 1px solid #ddd; border-radius: 6px; font-size: 12px;"
-               onchange="updateStepDuration(${idx}, this.value)" 
-               placeholder="min">
-      </div>
-      <div class="step-controls">
-        <button onclick="addBranch(${idx})" class="secondary">+ Branch</button>
-        <button class="danger" onclick="deleteStep(${idx})">Delete Step</button>
-      </div>
-      ${branchesHTML}
-    `;
-    
-    container.appendChild(div);
-  });
-}
-
-function updateBranchDuration(stepIdx, branchIdx, duration) {
-  if (stepIdx >= 0 && stepIdx < steps.length && 
-      branchIdx >= 0 && branchIdx < steps[stepIdx].branches.length) {
-    steps[stepIdx].branches[branchIdx].duration = parseInt(duration) || 0;
-    saveHistory();
-    markUnsaved();
-    updateTimeDisplay();
-    renderStepTimes();
-  }
-}
-
-function renderDiagram() {
-  const svg = document.getElementById('svgDiagram');
-  svg.innerHTML = '';
-  
-  if (steps.length === 0) {
-    svg.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#ccc" font-size="14">Add steps to see diagram</text>';
-    svg.setAttribute('viewBox', '0 0 400 300');
-    return;
-  }
-  
-  const svgNS = "http://www.w3.org/2000/svg";
-  let y = 30;
-  const nodeHeight = 60;
-  const nodeWidth = 180;
-  const vGap = 90;
-  const hGap = 220;
-  let maxX = nodeWidth + 80;
-  let maxY = 100;
-  
-  const drawStep = (step, level = 0, parentX = null, parentY = null) => {
-    const x = 40 + level * hGap;
-    
-    if (parentX !== null && parentY !== null) {
-      const line = document.createElementNS(svgNS, 'line');
-      line.setAttribute('x1', parentX + nodeWidth / 2);
-      line.setAttribute('y1', parentY + nodeHeight);
-      line.setAttribute('x2', x + nodeWidth / 2);
-      line.setAttribute('y2', y);
-      line.setAttribute('stroke', '#bbb');
-      line.setAttribute('stroke-width', '2');
-      svg.appendChild(line);
-    }
-    
-    const rect = document.createElementNS(svgNS, 'rect');
-    rect.setAttribute('x', x);
-    rect.setAttribute('y', y);
-    rect.setAttribute('width', nodeWidth);
-    rect.setAttribute('height', nodeHeight);
-    rect.setAttribute('fill', level === 0 ? '#4CAF50' : '#2196F3');
-    rect.setAttribute('rx', '6');
-    rect.setAttribute('stroke', '#333');
-    rect.setAttribute('stroke-width', '2');
-    svg.appendChild(rect);
-    
-    const text = document.createElementNS(svgNS, 'text');
-    text.setAttribute('x', x + nodeWidth / 2);
-    text.setAttribute('y', y + nodeHeight / 2);
-    text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('dominant-baseline', 'middle');
-    text.setAttribute('fill', '#fff');
-    text.setAttribute('font-size', '12');
-    text.setAttribute('font-weight', '600');
-    
-    const truncated = step.text.length > 20 ? step.text.substring(0, 20) + '...' : step.text;
-    text.textContent = truncated;
-    svg.appendChild(text);
-    
-    if (step.duration) {
-      const timeText = document.createElementNS(svgNS, 'text');
-      timeText.setAttribute('x', x + nodeWidth / 2);
-      timeText.setAttribute('y', y + nodeHeight - 12);
-      timeText.setAttribute('text-anchor', 'middle');
-      timeText.setAttribute('fill', '#fff');
-      timeText.setAttribute('font-size', '10');
-      timeText.textContent = `${step.duration}m`;
-      svg.appendChild(timeText);
-    }
-    
-    maxX = Math.max(maxX, x + nodeWidth + 40);
-    maxY = Math.max(maxY, y + nodeHeight + 40);
-    
-    let currentY = y;
-    y += vGap;
-    
-    if (step.branches && step.branches.length > 0) {
-      step.branches.forEach(b => {
-        drawStep(b, level + 1, x, currentY);
-      });
-    }
-  };
-  
-  steps.forEach(s => drawStep(s));
-  
-  svg.setAttribute('viewBox', `0 0 ${maxX} ${maxY}`);
-  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-}
-
-function render() {
-  renderSteps();
-  renderDiagram();
-  if (currentSOPId && steps.length > 0) {
-    allSOPs[currentSOPId].steps = steps;
-    allSOPs[currentSOPId].updatedAt = new Date().toISOString();
-  }
-}
-
-function exportOptions() {
-  document.getElementById('exportModal').classList.add('active');
-}
-
-function closeExportModal() {
-  document.getElementById('exportModal').classList.remove('active');
-}
-
-function exportPDF() {
-  if (!currentSOPId) return;
-  
-  const sopName = allSOPs[currentSOPId].name;
-  const sop = allSOPs[currentSOPId];
-  
-  const docContent = steps.map((s, i) => {
-    let text = `${i + 1}. ${s.text}`;
-    if (s.duration) text += ` (${s.duration}m)`;
-    
-    if (s.branches && s.branches.length) {
-      s.branches.forEach((b, idx) => {
-        text += `\n   ${String.fromCharCode(97 + idx)}. ${b.text}`;
-        if (b.duration) text += ` (${b.duration}m)`;
-      });
-    }
-    return text;
-  }).join('\n\n');
-  
-  const printHTML = `<!DOCTYPE html>
-<html>
-<head>
-  <title>${escapeHtml(sopName)}</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOP Designer | DGS Consulting</title>
+  <base href="./">
   <style>
-    body { font-family: Arial; padding: 40px; max-width: 800px; margin: 0 auto; }
-    h1 { border-bottom: 3px solid #4CAF50; padding-bottom: 12px; color: #333; }
-    .meta { color: #666; margin: 20px 0; }
-    pre { white-space: pre-wrap; line-height: 1.6; font-size: 14px; font-family: inherit; }
+    :root {
+      --primary: #1d4e2d;
+      --accent: #2f7a4d;
+      --danger: #a00;
+      --bg: #f5f5f5;
+      --text: #222;
+      --border: #ddd;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 0.5rem;
+      font-size: 2rem;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    #controls, #template-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    button {
+      background: var(--primary);
+      color: #fff;
+      padding: 0.65rem 1.25rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: var(--accent);
+    }
+
+    #clear-sop-btn {
+      background: var(--danger);
+    }
+
+    #editor {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      min-height: 300px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+    }
+
+    #editor[contenteditable="true"]:empty:before {
+      content: "Start typing your SOP here...";
+      color: #aaa;
+    }
+
+    .sop-step, .sop-task, .sop-checklist {
+      margin: 1rem 0;
+      padding: 1rem;
+      border-left: 4px solid var(--primary);
+      background: #fdfdfd;
+      border-radius: 6px;
+    }
+
+    .sop-step h3, .sop-task h4 {
+      margin-top: 0;
+    }
+
+    .sop-checklist ul {
+      margin: 0.5rem 0 0;
+      padding-left: 1.5rem;
+    }
+
+    footer {
+      background: #e5e5e5;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+    }
+
+    .status {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 0.5rem;
+    }
   </style>
 </head>
 <body>
-  <h1>${escapeHtml(sopName)}</h1>
-  <div class="meta">
-    <p><strong>Status:</strong> ${sop.status}</p>
-    <p><strong>Category:</strong> ${sop.category}</p>
-    <p><strong>Owner:</strong> ${sop.owner || 'Unassigned'}</p>
-    <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
-  </div>
-  <pre>${escapeHtml(docContent)}</pre>
-</body>
-</html>`;
-  
-  const printWindow = window.open('', '', 'width=900,height=700');
-  printWindow.document.write(printHTML);
-  printWindow.document.close();
-  setTimeout(() => printWindow.print(), 500);
-  closeExportModal();
-}
+  <header>
+    <h1>SOP Designer</h1>
+    <p>Build and manage Standard Operating Procedures with ease.</p>
+  </header>
 
-function exportHTML() {
-  const sopName = currentSOPId ? allSOPs[currentSOPId].name : 'SOP';
-  const stepsHTML = steps.map((s, i) => {
-    let html = `<li>${escapeHtml(s.text)}`;
-    if (s.duration) html += ` <span style="color:#666">(${s.duration}m)</span>`;
-    
-    if (s.branches && s.branches.length) {
-      html += '<ul>' + s.branches.map(b => {
-        let branchHTML = `<li>${escapeHtml(b.text)}`;
-        if (b.duration) branchHTML += ` <span style="color:#666">(${b.duration}m)</span>`;
-        branchHTML += '</li>';
-        return branchHTML;
-      }).join('') + '</ul>';
+  <main>
+    <!-- Main Controls -->
+    <section id="controls">
+      <button id="new-sop-btn">➕ New SOP</button>
+      <button id="load-sop-btn">📂 Load</button>
+      <button id="save-sop-btn">💾 Save</button>
+      <button id="export-sop-btn">📤 Export PDF</button>
+      <button id="clear-sop-btn">🗑️ Clear</button>
+    </section>
+
+    <!-- Template Insertion -->
+    <section id="template-controls">
+      <button id="insert-step-btn">🪜 Insert Step</button>
+      <button id="insert-task-btn">🧰 Insert Task</button>
+      <button id="insert-checklist-btn">☑️ Insert Checklist</button>
+    </section>
+
+    <!-- Editor -->
+    <section id="workspace">
+      <h2>Workspace</h2>
+      <div id="editor" contenteditable="true"></div>
+      <div class="status" id="status-msg"></div>
+    </section>
+  </main>
+
+  <footer>
+    © <span id="year"></span> DGS Consulting — All Rights Reserved
+  </footer>
+
+  <script>
+    const editor = document.getElementById('editor');
+    const statusMsg = document.getElementById('status-msg');
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const STORAGE_KEY = 'sop-designer-content-v2';
+
+    // --- STATUS ---
+    function showStatus(message, timeout = 2000) {
+      statusMsg.textContent = message;
+      if (timeout) setTimeout(() => (statusMsg.textContent = ''), timeout);
     }
-    
-    html += '</li>';
-    return html;
-  }).join('');
-  
-  const fullHTML = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>${escapeHtml(sopName)}</title>
-  <style>
-    body { font-family: Arial; padding: 40px; max-width: 800px; margin: 0 auto; }
-    h1 { color: #333; border-bottom: 3px solid #4CAF50; padding-bottom: 12px; }
-    ol, ul { line-height: 1.8; }
-    li { margin: 8px 0; }
-  </style>
-</head>
-<body>
-  <h1>${escapeHtml(sopName)}</h1>
-  <p style="color:#666">${new Date().toLocaleString()}</p>
-  <ol>${stepsHTML}</ol>
-</body>
-</html>`;
-  
-  downloadFile(fullHTML, sopName + '.html', 'text/html');
-  closeExportModal();
-}
 
-function exportCSV() {
-  const sopName = currentSOPId ? allSOPs[currentSOPId].name : 'SOP';
-  let csv = 'Step,Text,Branch,Duration\n';
-  
-  steps.forEach((s, i) => {
-    csv += `${i + 1},"${s.text.replace(/"/g, '""')}","",${s.duration || 0}\n`;
-    if (s.branches && s.branches.length) {
-      s.branches.forEach(b => {
-        csv += `${i + 1},"${s.text.replace(/"/g, '""')}","${b.text.replace(/"/g, '""')}",${b.duration || 0}\n`;
-      });
+    // --- SAVE / LOAD ---
+    function saveToLocal() {
+      localStorage.setItem(STORAGE_KEY, editor.innerHTML);
+      showStatus('✅ SOP saved');
     }
-  });
-  
-  downloadFile(csv, sopName + '.csv', 'text/csv');
-  closeExportModal();
-}
 
-function exportDiagramImage() {
-  const svg = document.getElementById('svgDiagram');
-  const svgData = new XMLSerializer().serializeToString(svg);
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  const img = new Image();
-  
-  canvas.width = 1400;
-  canvas.height = 1000;
-  
-  img.onload = function() {
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    const link = document.createElement('a');
-    link.href = canvas.toDataURL('image/png');
-    link.download = (currentSOPId ? allSOPs[currentSOPId].name : 'diagram') + '.png';
-    link.click();
-    closeExportModal();
-  };
-  
-  img.onerror = () => {
-    alert('Could not export diagram. Try a different browser.');
-    closeExportModal();
-  };
-  
-  img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
-}
-
-function exportAllSOPs() {
-  try {
-    const backup = {
-      version: 1,
-      exportDate: new Date().toISOString(),
-      sopCount: Object.keys(allSOPs).length,
-      data: allSOPs
-    };
-    downloadFile(JSON.stringify(backup, null, 2), 'sop-backup-' + Date.now() + '.json', 'application/json');
-  } catch (e) {
-    alert('Error creating backup: ' + e.message);
-  }
-}
-
-function importSOPs() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json';
-  input.onchange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const backup = JSON.parse(event.target.result);
-        if (!backup.data) throw new Error('Invalid backup file');
-        
-        let importedCount = 0;
-        Object.keys(backup.data).forEach(id => {
-          if (backup.data[id] && backup.data[id].id && backup.data[id].name && Array.isArray(backup.data[id].steps)) {
-            allSOPs[id] = backup.data[id];
-            importedCount++;
-          }
-        });
-        
-        alert(`Imported ${importedCount} SOPs successfully!`);
-        saveToStorage();
-        renderSOPList();
-      } catch (e) {
-        alert('Error importing: ' + e.message);
+    function loadFromLocal() {
+      const content = localStorage.getItem(STORAGE_KEY);
+      if (content) {
+        editor.innerHTML = content;
+        showStatus('📂 SOP loaded');
+      } else {
+        showStatus('⚠️ No saved SOP found');
       }
-    };
-    reader.readAsText(file);
-  };
-  input.click();
-}
-
-function downloadFile(content, filename, type) {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(url);
-}
-
-function openShareModal() {
-  if (!currentSOPId) return;
-  const shareData = btoa(JSON.stringify({ steps, name: allSOPs[currentSOPId]?.name || 'SOP' }));
-  const shareLink = `${window.location.href.split('?')[0]}?sop=${shareData}`;
-  document.getElementById('shareLink').textContent = shareLink;
-  document.getElementById('shareModal').classList.add('active');
-}
-
-function closeShareModal() {
-  document.getElementById('shareModal').classList.remove('active');
-}
-
-function copyToClipboard() {
-  const link = document.getElementById('shareLink');
-  const range = document.createRange();
-  range.selectNodeContents(link);
-  const sel = window.getSelection();
-  sel.removeAllRanges();
-  sel.addRange(range);
-  document.execCommand('copy');
-  alert('Link copied to clipboard!');
-}
-
-function loadTemplate(name) {
-  if (!templates[name]) return;
-  if (!confirm('Replace current SOP with this template?')) return;
-  
-  steps = JSON.parse(JSON.stringify(templates[name]));
-  history = [JSON.stringify(steps)];
-  redoStack = [];
-  render();
-  updateHistoryButtons();
-  saveHistory();
-  markUnsaved();
-  
-  if (currentSOPId) {
-    const templateNames = {
-      onboarding: 'Client Onboarding',
-      invoicing: 'Invoice Processing',
-      qa: 'QA Testing Process',
-      projectHandoff: 'Project Handoff',
-      meetingPrep: 'Meeting Preparation'
-    };
-    document.getElementById('sopNameInput').value = templateNames[name] || 'Template SOP';
-    updateSOPName();
-  }
-}
-
-function saveToStorage() {
-  try {
-    localStorage.setItem('allSOPs', JSON.stringify(allSOPs));
-    localStorage.setItem('trash', JSON.stringify(trash));
-    localStorage.setItem('usageStats', JSON.stringify(usageStats));
-  } catch (e) {
-    console.error('Storage error:', e);
-    alert('Storage full! Export your SOPs as backup.');
-  }
-}
-
-function loadFromStorage() {
-  try {
-    const stored = localStorage.getItem('allSOPs');
-    if (stored) {
-      allSOPs = JSON.parse(stored);
     }
-    
-    const trashedStored = localStorage.getItem('trash');
-    if (trashedStored) {
-      trash = JSON.parse(trashedStored);
+
+    function clearWorkspace() {
+      editor.innerHTML = '';
+      showStatus('🧹 Workspace cleared');
     }
-    
-    const usageStored = localStorage.getItem('usageStats');
-    if (usageStored) {
-      usageStats = JSON.parse(usageStored);
+
+    function newSOP() {
+      editor.innerHTML = '<p><strong>New SOP started.</strong> Add your steps here.</p>';
+      showStatus('✨ New SOP created');
     }
-  } catch (e) {
-    console.error('Failed to load from storage:', e);
-    allSOPs = {};
-    trash = {};
-    usageStats = {};
-  }
-}
 
-function escapeHtml(text) {
-  const map = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;'
-  };
-  return String(text).replace(/[&<>"']/g, m => map[m]);
-}
+    // --- EXPORT ---
+    function exportPDF() {
+      const content = editor.innerText.trim();
+      if (!content) {
+        showStatus('⚠️ Nothing to export');
+        return;
+      }
 
-window.addEventListener('load', () => {
-  loadFromStorage();
-  
-  const firstSOP = Object.keys(allSOPs)[0];
-  
-  if (firstSOP) {
-    showView('sops');
-  } else {
-    createNewSOP();
-    showView('editor');
-  }
-  
-  setInterval(() => {
-    if (currentSOPId && steps.length > 0) {
-      allSOPs[currentSOPId].steps = steps;
-      allSOPs[currentSOPId].tags = tags;
-      allSOPs[currentSOPId].comments = comments;
-      allSOPs[currentSOPId].updatedAt = new Date().toISOString();
-      saveToStorage();
+      const win = window.open('', '', 'width=800,height=600');
+      win.document.write('<html><head><title>SOP Export</title></head><body>');
+      win.document.write('<h1>SOP Export</h1>');
+      win.document.write('<pre style="font-family: Arial, sans-serif;">' + content + '</pre>');
+      win.document.write('</body></html>');
+      win.document.close();
+      win.print();
+      showStatus('📤 SOP ready to print/export');
     }
-  }, 30000);
-});
 
-function updateSOPName() {
-  if (!currentSOPId) return;
-  const newName = document.getElementById('sopNameInput').value.trim();
-  if (newName) {
-    const oldName = allSOPs[currentSOPId].name;
-    allSOPs[currentSOPId].name = newName;
-    document.getElementById('sopTitle').textContent = newName;
-    logChangeLog(currentSOPId, `Renamed from "${oldName}" to "${newName}"`);
-    renderSOPList();
-    saveToStorage();
-  }
-}
-
-function deleteSOP(id, event) {
-  if (event) event.stopPropagation();
-  if (!confirm('Move this SOP to trash?')) return;
-  
-  const sop = allSOPs[id];
-  trash[id] = { ...sop, deletedAt: new Date().toISOString() };
-  delete allSOPs[id];
-  
-  if (currentSOPId === id) {
-    const firstSOP = Object.keys(allSOPs)[0];
-    if (firstSOP) {
-      loadSOP(firstSOP);
-    } else {
-      currentSOPId = null;
-      steps = [];
-      showView('sops');
+    // --- INSERT TEMPLATES ---
+    function insertHTML(html) {
+      editor.focus();
+      const sel = window.getSelection();
+      const range = sel.getRangeAt(0);
+      const frag = range.createContextualFragment(html);
+      range.insertNode(frag);
+      range.collapse(false);
     }
-  }
-  
-  renderSOPList();
-  saveToStorage();
-}
 
-function permanentlyDelete(id) {
-  if (!confirm('Permanently delete? Cannot be undone.')) return;
-  delete trash[id];
-  saveToStorage();
-  viewTrash();
-}
-
-function restoreFromTrash(id) {
-  if (trash[id]) {
-    allSOPs[id] = trash[id];
-    delete allSOPs[id].deletedAt;
-    delete trash[id];
-    saveToStorage();
-    renderSOPList();
-    closeTrashModal();
-  }
-}
-
-function viewTrash() {
-  const container = document.getElementById('trashList');
-  const trashedIds = Object.keys(trash);
-  
-  if (trashedIds.length === 0) {
-    container.innerHTML = '<div class="empty-state">Trash is empty</div>';
-  } else {
-    container.innerHTML = trashedIds.map(id => {
-      const sop = trash[id];
-      const deletedTime = new Date(sop.deletedAt).toLocaleString();
-      return `
-        <div class="version-item">
-          <div style="font-weight: 600; margin-bottom: 8px;">${escapeHtml(sop.name)}</div>
-          <div style="font-size: 11px; color: #666; margin-bottom: 10px;">Deleted: ${deletedTime}</div>
-          <div class="button-row">
-            <button onclick="restoreFromTrash('${id}')" class="secondary">Restore</button>
-            <button onclick="permanentlyDelete('${id}')" class="danger">Delete Forever</button>
-          </div>
+    function insertStep() {
+      insertHTML(`
+        <div class="sop-step" contenteditable="true">
+          <h3>Step Title</h3>
+          <p>Describe the procedure for this step...</p>
         </div>
-      `;
-    }).join('');
-  }
-  
-  document.getElementById('trashModal').classList.add('active');
-}
+      `);
+    }
 
-function closeTrashModal() {
-  document.getElementById('trashModal').classList.remove('active');
-}
-
-function searchSOPs() {
-  const query = document.getElementById('searchBox').value.toLowerCase();
-  renderSOPList(query);
-}
-
-function addStep(text = "New Step") {
-  steps.push({ text, branches: [], duration: 0 });
-  saveHistory();
-  markUnsaved();
-  render();
-  logChangeLog(currentSOPId, 'Added step: ' + text);
-}
-
-function updateStep(idx, value) {
-  if (idx >= 0 && idx < steps.length) {
-    steps[idx].text = value;
-    saveHistory();
-    markUnsaved();
-    render();
-  }
-}
-
-function deleteStep(idx) {
-  if (steps.length === 1) {
-    alert('You must have at least one step.');
-    return;
-  }
-  const deletedStep = steps[idx].text;
-  steps.splice(idx, 1);
-  saveHistory();
-  markUnsaved();
-  render();
-  logChangeLog(currentSOPId, 'Deleted step: ' + deletedStep);
-}
-
-function moveStep(fromIdx, toIdx) {
-  if (fromIdx < 0 || fromIdx >= steps.length || toIdx < 0 || toIdx >= steps.length) return;
-  const [step] = steps.splice(fromIdx, 1);
-  steps.splice(toIdx, 0, step);
-  saveHistory();
-  markUnsaved();
-  render();
-}
-
-function addBranch(stepIdx) {
-  const branchText = prompt("Enter branch step text:");
-  if (!branchText || !branchText.trim()) return;
-  
-  if (stepIdx >= 0 && stepIdx < steps.length) {
-    steps[stepIdx].branches.push({ text: branchText.trim(), branches: [], duration: 0 });
-    saveHistory();
-    markUnsaved();
-    render();
-    logChangeLog(currentSOPId, 'Added branch: ' + branchText.trim());
-  }
-}
-
-function deleteBranch(stepIdx, branchIdx) {
-  if (stepIdx >= 0 && stepIdx < steps.length && branchIdx >= 0 && branchIdx < steps[stepIdx].branches.length) {
-    steps[stepIdx].branches.splice(branchIdx, 1);
-    saveHistory();
-    markUnsaved();
-    render();
-  }
-}
-
-function updateBranch(stepIdx, branchIdx, value) {
-  if (stepIdx >= 0 && stepIdx < steps.length && branchIdx >= 0 && branchIdx < steps[stepIdx].branches.length) {
-    steps[stepIdx].branches[branchIdx].text = value;
-    saveHistory();
-    markUnsaved();
-    render();
-  }
-}
-
-function updateStepDuration(idx, duration) {
-  if (idx >= 0 && idx < steps.length) {
-    steps[idx].duration = parseInt(duration) || 0;
-    saveHistory();
-    markUnsaved();
-    updateTimeDisplay();
-    renderStepTimes();
-  }
-}
-
-function updateTags() {
-  const input = document.getElementById('tagsInput').value;
-  tags = input.split(',').map(t => t.trim()).filter(t => t);
-  renderTags();
-  if (currentSOPId) {
-    allSOPs[currentSOPId].tags = tags;
-    saveToStorage();
-  }
-}
-
-function renderTags() {
-  const container = document.getElementById('tagsList');
-  if (tags.length === 0) {
-    container.innerHTML = '';
-    return;
-  }
-  container.innerHTML = tags.map(tag => 
-    `<span class="tag">${escapeHtml(tag)}<span class="remove" onclick="removeTag('${escapeHtml(tag)}')">×</span></span>`
-  ).join('');
-}
-
-function removeTag(tag) {
-  tags = tags.filter(t => t !== tag);
-  document.getElementById('tagsInput').value = tags.join(', ');
-  updateTags();
-}
-
-function addComment() {
-  const author = document.getElementById('commentAuthorInput').value.trim() || 'Anonymous';
-  const text = document.getElementById('commentTextInput').value.trim();
-  
-  if (!text) return;
-  
-  comments.push({
-    author,
-    text,
-    timestamp: new Date().toISOString()
-  });
-  
-  document.getElementById('commentTextInput').value = '';
-  renderComments();
-  if (currentSOPId) {
-    allSOPs[currentSOPId].comments = comments;
-    saveToStorage();
-  }
-}
-
-function renderComments() {
-  const container = document.getElementById('commentsList');
-  container.innerHTML = comments.length === 0
-    ? '<div class="empty-state" style="padding: 20px;">No comments yet</div>'
-    : comments.map(comment => {
-      const time = new Date(comment.timestamp).toLocaleString();
-      return `
-        <div class="comment">
-          <div style="font-weight: 600; margin-bottom: 4px;">${escapeHtml(comment.author)}</div>
-          <div style="font-size: 11px; color: #999; margin-bottom: 8px;">${time}</div>
-          <div style="color: #555;">${escapeHtml(comment.text)}</div>
+    function insertTask() {
+      insertHTML(`
+        <div class="sop-task" contenteditable="true">
+          <h4>Task Title</h4>
+          <p>Outline the specific task details here.</p>
         </div>
-      `;
-    }).join('');
-}
+      `);
+    }
 
-function openCommentModal() {
-  document.getElementById('commentModal').classList.add('active');
-  renderComments();
-}
+    function insertChecklist() {
+      insertHTML(`
+        <div class="sop-checklist" contenteditable="true">
+          <strong>Checklist:</strong>
+          <ul>
+            <li>[ ] Item 1</li>
+            <li>[ ] Item 2</li>
+            <li>[ ] Item 3</li>
+          </ul>
+        </div>
+      `);
+    }
 
-function closeCommentModal() {
-  document.getElementById('commentModal').classList.remove('active');
-}
+    // --- EVENTS ---
+    document.getElementById('new-sop-btn').addEventListener('click', newSOP);
+    document.getElementById('load-sop-btn').addEventListener('click', loadFromLocal);
+    document.getElementById('save-sop-btn').addEventListener('click', saveToLocal);
+    document.getElementById('export-sop-btn').addEventListener('click', exportPDF);
+    document.getElementById('clear-sop-btn').addEventListener('click', clearWorkspace);
 
-function saveHistory() {
-  const stateStr = JSON.stringify(steps);
-  history.push(stateStr);
-  redoStack = [];
-  
-  if (history.length > 50) history.shift();
-  if (history.length % 5 === 0 && currentSOPId) {
-    versions.unshift({
-      timestamp: new Date().toISOString(),
-      steps: JSON.parse(stateStr),
-      stepCount: steps.length
+    document.getElementById('insert-step-btn').addEventListener('click', insertStep);
+    document.getElementById('insert-task-btn').addEventListener('click', insertTask);
+    document.getElementById('insert-checklist-btn').addEventListener('click', insertChecklist);
+
+    // --- Auto save ---
+    let typingTimer;
+    editor.addEventListener('input', () => {
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(saveToLocal, 1000);
     });
-    if (versions.length > 20) versions.pop();
-    allSOPs[currentSOPId].versions = versions;
-    saveToStorage();
-  }
-  
-  updateHistoryButtons();
-}
 
-function undo() {
-  if (history.length > 1) {
-    redoStack.push(history.pop());
-    steps = JSON.parse(history[history.length - 1]);
-    render();
-    updateHistoryButtons();
-  }
-}
-
-function redo() {
-  if (redoStack.length) {
-    const state = redoStack.pop();
-    steps = JSON.parse(state);
-    history.push(state);
-    render();
-    updateHistoryButtons();
-  }
-}
-
-function updateHistoryButtons() {
-  document.getElementById('undoBtn').disabled = history.length <= 1;
-  document.getElementById('redoBtn').disabled = redoStack.length === 0;
-}
-
-function openVersionsModal() {
-  const container = document.getElementById('versionsList');
-  container.innerHTML = versions.length === 0 
-    ? '<div class="empty-state" style="padding: 20px;">No version history yet</div>'
-    : versions.map((v, idx) => {
-      const time = new Date(v.timestamp).toLocaleString();
-      return `
-        <div class="version-item">
-          <div class="version-item-header">
-            <strong>Version ${versions.length - idx}</strong>
-            <span style="color: #666;">${v.stepCount} steps</span>
-          </div>
-          <div style="font-size: 11px; color: #666; margin-bottom: 10px;">${time}</div>
-          <div class="button-row">
-            <button onclick="restoreVersion(${idx})" class="secondary">Restore</button>
-            <button onclick="viewVersion(${idx})" class="tertiary">Preview</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-  
-  document.getElementById('versionsModal').classList.add('active');
-}
-
-function closeVersionsModal() {
-  document.getElementById('versionsModal').classList.remove('active');
-}
-
-function restoreVersion(idx) {
-  if (!confirm('Restore to this version?')) return;
-  
-  steps = JSON.parse(JSON.stringify(versions[idx].steps));
-  history = [JSON.stringify(steps)];
-  redoStack = [];
-  render();
-  updateHistoryButtons();
-  saveHistory();
-  closeVersionsModal();
-}
-
-function viewVersion(idx) {
-  const stepTexts = versions[idx].steps.map((s, i) => `${i + 1}. ${s.text}`).join('\n');
-  alert('Version from ' + new Date(versions[idx].timestamp).toLocaleString() + '\n\n' + stepTexts);
-}
-
-function updateSOPStatus(newStatus) {
-  if (!currentSOPId) return;
-  const oldStatus = sopStatus;
-  sopStatus = newStatus;
-  allSOPs[currentSOPId].status = newStatus;
-  document.getElementById('sopStatus').textContent = newStatus;
-  logAuditTrail(currentSOPId, 'status_changed', { from: oldStatus, to: newStatus });
-  logChangeLog(currentSOPId, 'Status changed to ' + newStatus);
-  renderSOPList();
-  saveToStorage();
-}
-
-function updateSOPCategory(newCategory) {
-  if (!currentSOPId) return;
-  sopCategory = newCategory;
-  allSOPs[currentSOPId].category = newCategory;
-  logAuditTrail(currentSOPId, 'category_changed', { category: newCategory });
-  logChangeLog(currentSOPId, 'Category changed to ' + newCategory);
-  renderSOPList();
-  saveToStorage();
-}
-
-function updateTotalTime(minutes) {
-  if (!currentSOPId) return;
-  totalTimeEstimate = parseInt(minutes) || 0;
-  allSOPs[currentSOPId].totalTime = totalTimeEstimate;
-  updateTimeDisplay();
-  saveToStorage();
-}
-
-function updateTimeDisplay() {
-  const total = totalTimeEstimate || calculateTotalStepTime();
-  const hours = Math.floor(total / 60);
-  const mins = total % 60;
-  
-  let displayText = '';
-  if (hours > 0) {
-    displayText = `${hours}h ${mins}m`;
-  } else if (total > 0) {
-    displayText = `${total}m`;
-  } else {
-    displayText = 'Not set';
-  }
-  
-  document.getElementById('timeDisplay').textContent = displayText;
-}
-
-function calculateTotalStepTime() {
-  return steps.reduce((total, step) => total + (step.duration || 0), 0);
-}
-
-function renderStepTimes() {
-  const container = document.getElementById('stepTimesDisplay');
-  const stepTimes = steps
-    .map((step, idx) => {
-      const duration = step.duration || 0;
-      return duration > 0 ? `Step ${idx + 1}: ${duration}m` : null;
-    })
-    .filter(Boolean);
-  
-  if (stepTimes.length === 0) {
-    container.innerHTML = '';
-  } else {
-    container.innerHTML = stepTimes.join(' • ');
-  }
-}
-
-function updateSOPOwner(ownerName) {
-  if (!currentSOPId) return;
-  const oldOwner = sopOwner;
-  sopOwner = ownerName;
-  allSOPs[currentSOPId].owner = ownerName;
-  logAuditTrail(currentSOPId, 'owner_changed', { from: oldOwner || 'Unassigned', to: ownerName || 'Unassigned' });
-  logChangeLog(currentSOPId, 'Owner changed to ' + (ownerName || 'Unassigned'));
-  renderOwnerDisplay();
-  saveToStorage();
-}
-
-function renderOwnerDisplay() {
-  const container = document.getElementById('ownerDisplay');
-  container.textContent = sopOwner || 'Unassigned';
-}
-
-function markReviewedNow() {
-  if (!currentSOPId) return;
-  const reviewer = sopOwner || 'System';
-  const now = new Date().toISOString();
-  
-  allSOPs[currentSOPId].lastReviewedBy = reviewer;
-  allSOPs[currentSOPId].lastReviewedDate = now;
-  
-  logAuditTrail(currentSOPId, 'reviewed', { reviewedBy: reviewer });
-  logChangeLog(currentSOPId, 'Reviewed by ' + reviewer);
-  
-  renderReviewDisplay();
-  saveToStorage();
-}
-
-function renderReviewDisplay() {
-  const container = document.getElementById('reviewDisplay');
-  const sop = allSOPs[currentSOPId];
-  
-  if (sop && sop.lastReviewedDate) {
-    const date = new Date(sop.lastReviewedDate).toLocaleDateString();
-    container.textContent = `${date} by ${sop.lastReviewedBy || 'Unknown'}`;
-  } else {
-    container.textContent = 'Never';
-  }
-}
-
-function renderCreatedDisplay() {
-  const container = document.getElementById('createdDisplay');
-  const sop = allSOPs[currentSOPId];
-  if (sop && sop.createdAt) {
-    const date = new Date(sop.createdAt).toLocaleString();
-    container.textContent = date;
-  } else {
-    container.textContent = 'Unknown';
-  }
-}
+    // Load content on startup
+    window.addEventListener('load', loadFromLocal);
+  </script>
+</body>
+</html>
