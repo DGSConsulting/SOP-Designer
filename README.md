@@ -1,98 +1,57 @@
 
----
+🧭 MVP – Final Feature Set
+🧱 SOP Builder
 
-# SOP Designer
+✅ Add/remove Steps, Tasks, Subtasks, and Checklist items
 
-A simple, browser-based tool for creating **Standard Operating Procedures (SOPs)** with live preview and one-click export. No installs, no setup—just open and start building.
+✅ Drag & drop reordering of all elements
 
-Perfect for small teams, consultants, or anyone who needs clean SOPs without bulky software.
+✅ Inline editing of text, notes, and time
 
-![SOP Designer Screenshot](assets/screenshot.png)
+✅ Auto-save to localStorage
 
----
+✅ Undo / Redo
 
-## ✨ Features
+🖼️ Branding & Export
 
-**Build Quickly**
+✅ Logo upload (stored locally and embedded in export)
 
-* Live preview updates instantly
-* Add, edit, or remove steps on the fly
+✅ Export to PDF (logo, timestamp, page numbers, total estimated time)
 
-**Share Easily**
+✅ Export to Markdown
 
-* Export as **HTML** (for sharing) or **JSON** (for backup/editing)
-* Clean, professional formatting that works on any device
+✅ Clear all SOP
 
-**No Setup Needed**
+📄 Template System
 
-* Runs in any modern browser
-* Just one file: `index.html`
-* Mobile-friendly design for phones, tablets, and desktops
+✅ 5 Default templates:
 
----
+Operations 🏭
 
-## 🚀 Getting Started
+Client Onboarding 🤝
 
-Choose how you want to use SOP Designer:
+Appointment Booking 📅
 
-**Option A: Run locally**
+Customer Payment 💳
 
-1. Download or clone this repo
-2. Open `index.html` in your browser
-3. Start building your SOP
+Employee Expenses 🧾
 
-**Option B: Host online with GitHub Pages**
+✅ Descriptions under each template for clarity
 
-1. Fork this repo
-2. Go to **Settings → Pages**
-3. Under "Branch," select **main** and root (`/`)
-4. Visit: `https://dgsconsulting.github.io/SOP-Designer/`
+✅ Modal template manager UI
 
----
+✅ Load template (with overwrite warning)
 
-## 📄 Example SOP
+✅ Save current SOP as custom template
 
-Here’s what a finished SOP might look like:
+✅ Load custom templates
 
-```
-Title: New Employee Onboarding  
-Version: 1.0 | Date: 2025-08-17  
+✅ Delete custom templates
 
-Purpose: Ensure smooth onboarding for new hires.  
+✅ Templates are fully editable after loading
 
-Steps:  
-1. Create company email account  
-2. Issue laptop and software credentials  
-3. Schedule orientation session  
-4. Assign first-week mentor  
-```
+✨ Bonus UX:
 
----
+Simple toast-style notifications (“✅ Template loaded”)
 
-## 📂 File Structure
-
-```
-SOP-Designer/
-├── index.html       # Main tool
-├── README.md        # Documentation
-├── LICENSE          # MIT License
-└── assets/
-    └── screenshot.png
-```
-
----
-
-## 🤝 Contributing
-
-Got an idea or fix? Jump in:
-
-* Open an issue for bugs or feature requests
-* Submit a pull request for improvements (typos, docs, or code tweaks welcome!)
-
----
-
-## 📜 License
-
-Released under the [MIT License](LICENSE) — free for personal or commercial use.
-
----
+Works fully offline on GitHub Pages
