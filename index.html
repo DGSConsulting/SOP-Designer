@@ -1,11 +1,9 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>SOP Designer — Full MVP with Editable Templates</title>
 
-<!-- jsPDF (for text PDF export) & html2canvas (optional, not required for text export) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -25,7 +23,6 @@
   .small{padding:6px 8px; font-size:13px}
   .danger{background:var(--danger)}
   #editor{background:#fff; padding:14px; border-radius:10px; min-height:320px; border:1px solid #e0e0e0}
-  /* Elements */
   .sop-step, .sop-task, .sop-subtask, .sop-checklist {
     position:relative;
     margin:8px 0;
@@ -58,6 +55,19 @@
   .toast{position:fixed; right:20px; bottom:20px; background:#111; color:#fff; padding:10px 14px; border-radius:8px; opacity:0.95; z-index:1600}
   .bottom-info{margin-top:12px; display:flex; gap:12px; align-items:center; justify-content:space-between}
   .inline-input{padding:6px 8px; border-radius:6px; border:1px solid #ddd}
+  .share-section{background:#f0f7f2; padding:12px; border-radius:8px; margin-top:12px; border-left:4px solid var(--primary)}
+  .share-section h4{margin:0 0 8px 0}
+  .share-section button{font-size:13px}
+  .history-info{font-size:12px; color:#666; margin-top:4px}
+  .role-input{width:100px; font-size:12px; padding:4px; border-radius:4px; border:1px solid #ddd}
+  .step-completed{background:#e8f5e9 !important}
+  .step-completed .title-input{text-decoration:line-through; color:#888}
+  .completion-badge{display:inline-block; width:20px; height:20px; border-radius:50%; background:#4caf50; color:#fff; text-align:center; line-height:20px; font-size:12px; margin-right:6px}
+  .shortcuts-modal{position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:#fff; box-shadow:0 8px 36px rgba(0,0,0,.18); width:500px; max-width:95%; border-radius:12px; z-index:1400; padding:20px; display:none; max-height:80vh; overflow:auto}
+  .shortcuts-modal h3{margin-top:0}
+  .shortcut-item{display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee; font-size:13px}
+  .shortcut-key{background:#f0f0f0; padding:4px 8px; border-radius:4px; font-family:monospace; font-weight:600}
+  .role-section{background:#f9f9f9; padding:8px; border-radius:6px; margin:8px 0; border-left:3px solid var(--accent)}
   @media (max-width:640px){ .modal-body{flex-direction:column} .tmpl-col{max-height:260px} }
 </style>
 </head>
@@ -65,6 +75,11 @@
 <header>
   <img id="logo-preview" alt="" />
   <h1 style="margin:0;font-size:18px">SOP Designer — Editable Templates & Exports</h1>
+  <div style="margin-left:auto; font-size:14px; display:flex; align-items:center; gap:8px">
+    <span>DGS Consulting</span>
+    <span>|</span>
+    <a href="https://dgsconsulting.solutions/" target="_blank" style="color:#fff; text-decoration:none">https://dgsconsulting.solutions/</a>
+  </div>
 </header>
 
 <main>
@@ -76,6 +91,7 @@
     <button onclick="exportMarkdown()">📝 Export MD</button>
     <button id="run-toggle" onclick="toggleRunMode()">▶ Run Mode</button>
     <button class="ghost" onclick="clearSOP()">🧹 Clear</button>
+    <button class="ghost" onclick="showShortcutsModal()">⌨️ Shortcuts</button>
 
     <label style="display:inline-flex;align-items:center;gap:8px;">
       🖼️ Logo
@@ -93,7 +109,10 @@
   <div id="editor" tabindex="0" aria-label="SOP Editor"></div>
 
   <div class="bottom-info">
-    <div>Total estimated time: <strong id="total-time">0</strong> min</div>
+    <div>
+      <div>Total estimated time: <strong id="total-time">0</strong> min</div>
+      <div class="history-info">History: <span id="history-info">0/0</span></div>
+    </div>
     <div style="display:flex;gap:8px;align-items:center">
       <button onclick="undo()" class="small">Undo</button>
       <button onclick="redo()" class="small">Redo</button>
@@ -131,15 +150,24 @@
 <!-- Toast -->
 <div id="toast" class="toast" style="display:none"></div>
 
+<!-- Shortcuts Modal -->
+<div id="shortcutsModal" class="shortcuts-modal">
+  <h3>Keyboard Shortcuts</h3>
+  <div id="shortcutsList"></div>
+  <button onclick="closeShortcutsModal()" style="margin-top:12px; width:100%">Close</button>
+</div>
+
 <script>
 /* ============================
    Core state + keys
    ============================ */
 const STORAGE_KEY = 'sop_designer_data_v2';
 const USER_TEMPLATES_KEY = 'sop_templates_user';
-const defaultTemplates = []; // filled below
+const defaultTemplates = [];
 let logoDataURL = '';
 let runMode = false;
+const MAX_HISTORY = 100;
+const FOOTER_TEXT = 'DGS Consulting | https://dgsconsulting.solutions/';
 
 /* ============================
    Utility: toast
@@ -153,17 +181,88 @@ function showToast(msg, t=2000){
 }
 
 /* ============================
+   Event Binding System (Refactored)
+   ============================ */
+const NodeEvents = {
+  bindNode(node) {
+    const toggle = node.querySelector('.toggle');
+    const titleInput = node.querySelector('.title-input');
+    const timeInput = node.querySelector('.time-input');
+    const noteField = node.querySelector('.note');
+    const removeBtn = node.querySelector('.remove-btn');
+    const addTaskBtn = node.querySelector('.add-task-btn');
+    const addSubBtn = node.querySelector('.add-subtask-btn');
+    const addCheckBtn = node.querySelector('.add-checklist-btn');
+    const addNoteBtn = node.querySelector('.add-note-btn');
+    const toggleRoleBtn = node.querySelector('.toggle-role-btn');
+    const completeCheckbox = node.querySelector('.complete-checkbox');
+
+    if (toggle) toggle.addEventListener('click', () => {
+      node.classList.toggle('collapsed');
+      toggle.textContent = node.classList.contains('collapsed') ? '▸' : '▾';
+      saveSOPDebounced();
+    });
+
+    if (titleInput) titleInput.addEventListener('input', () => {
+      renumber();
+      saveSOPDebounced();
+    });
+
+    if (timeInput) timeInput.addEventListener('input', () => {
+      calcTotalTime();
+      saveSOPDebounced();
+    });
+
+    if (noteField) noteField.addEventListener('input', () => saveSOPDebounced());
+
+    if (removeBtn) removeBtn.addEventListener('click', () => {
+      node.remove();
+      renumber();
+      saveSOPDebounced();
+    });
+
+    if (toggleRoleBtn) toggleRoleBtn.addEventListener('click', () => {
+      const roleSection = node.querySelector('.role-section');
+      roleSection.style.display = roleSection.style.display === 'none' ? 'block' : 'none';
+    });
+
+    if (completeCheckbox) completeCheckbox.addEventListener('change', () => {
+      node.classList.toggle('step-completed', completeCheckbox.checked);
+      saveSOPDebounced();
+    });
+
+    if (addTaskBtn) addTaskBtn.addEventListener('click', () => addTask(node));
+    if (addSubBtn) addSubBtn.addEventListener('click', () => addSubtask(node));
+    if (addCheckBtn) addCheckBtn.addEventListener('click', () => addChecklist(node));
+    if (addNoteBtn) addNoteBtn.addEventListener('click', () => addNote(node));
+
+    enableDrag(node);
+  },
+
+  bindChecklistItem(item) {
+    const checkbox = item.querySelector('input[type="checkbox"]');
+    const textInput = item.querySelector('input[type="text"]');
+    const removeBtn = item.querySelector('.remove-btn');
+
+    if (checkbox) checkbox.addEventListener('change', () => saveSOPDebounced());
+    if (textInput) textInput.addEventListener('input', () => saveSOPDebounced());
+    if (removeBtn) removeBtn.addEventListener('click', () => {
+      item.remove();
+      renumber();
+      saveSOPDebounced();
+    });
+
+    enableDrag(item);
+  },
+
+  bindAll() {
+    editor.querySelectorAll('.sop-step, .sop-task, .sop-subtask').forEach(node => this.bindNode(node));
+    editor.querySelectorAll('.sop-checklist').forEach(item => this.bindChecklistItem(item));
+  }
+};
+
+/* ============================
    Create element helpers
-   Structure:
-   <div class="sop-step" draggable>
-     <span class="toggle">▾</span>
-     <span class="number-label"></span>
-     <input class="title-input" />
-     <input class="time-input" />
-     <div class="controls-inline">buttons...</div>
-     <div class="children"></div>
-     <div class="note" contenteditable>...</div>
-   </div>
    ============================ */
 function createNode(type, titlePlaceholder='') {
   const el = document.createElement('div');
@@ -181,35 +280,22 @@ function createNode(type, titlePlaceholder='') {
       <button class="btn-mini add-checklist-btn">+Checklist</button>
       <button class="btn-mini add-note-btn">Note</button>
       <button class="btn-mini remove-btn">✖</button>
+      <button class="btn-mini toggle-role-btn">👤 Roles</button>
+      <input type="checkbox" class="complete-checkbox" title="Mark as complete" style="width:18px; height:18px; cursor:pointer" />
+    </div>
+    <div class="role-section" style="display:none">
+      <div style="font-size:12px; font-weight:600; margin-bottom:6px">Time by Role:</div>
+      <div class="roles-container" style="display:flex; gap:6px; flex-wrap:wrap"></div>
+      <div style="margin-top:6px"><input type="text" class="new-role-input" placeholder="Role name" style="width:80px; font-size:12px; padding:4px; border-radius:4px; border:1px solid #ddd" /> <button class="btn-mini" onclick="addRoleToNode(this.closest('.sop-step, .sop-task, .sop-subtask'))">Add Role</button></div>
     </div>
     <div class="children"></div>
     <div class="note" contenteditable="true" placeholder="Notes..."></div>
   `;
 
-  // event wiring on the node
-  const toggle = el.querySelector('.toggle');
-  toggle.addEventListener('click', ()=> {
-    el.classList.toggle('collapsed');
-    toggle.textContent = el.classList.contains('collapsed') ? '▸' : '▾';
-    saveSOPDebounced();
-  });
-
-  el.querySelector('.add-task-btn').addEventListener('click', ()=> addTask(el));
-  el.querySelector('.add-subtask-btn').addEventListener('click', ()=> addSubtask(el));
-  el.querySelector('.add-checklist-btn').addEventListener('click', ()=> addChecklist(el));
-  el.querySelector('.add-note-btn').addEventListener('click', ()=> addNote(el));
-  el.querySelector('.remove-btn').addEventListener('click', ()=> { el.remove(); renumber(); saveSOPDebounced(); });
-
-  // inputs change -> save
-  el.querySelector('.title-input').addEventListener('input', ()=> { renumber(); saveSOPDebounced(); });
-  el.querySelector('.time-input').addEventListener('input', ()=> { calcTotalTime(); saveSOPDebounced(); });
-  el.querySelector('.note').addEventListener('input', ()=> saveSOPDebounced());
-
-  enableDrag(el);
+  NodeEvents.bindNode(el);
   return el;
 }
 
-/* ===== create specialized helpers ===== */
 function addStep(){
   const step = createNode('sop-step', 'Step title');
   editor.appendChild(step);
@@ -217,6 +303,7 @@ function addStep(){
   saveSOPDebounced();
   pushHistory();
 }
+
 function addTask(parent){
   const container = parent.querySelector('.children');
   const task = createNode('sop-task', 'Task title');
@@ -225,6 +312,7 @@ function addTask(parent){
   saveSOPDebounced();
   pushHistory();
 }
+
 function addSubtask(parent){
   const container = parent.querySelector('.children');
   const sub = createNode('sop-subtask', 'Subtask title');
@@ -233,28 +321,27 @@ function addSubtask(parent){
   saveSOPDebounced();
   pushHistory();
 }
+
 function addChecklist(parent){
   const container = parent.querySelector('.children');
   const wrap = document.createElement('div');
   wrap.className = 'sop-checklist';
   wrap.draggable = true;
   wrap.innerHTML = `<input type="checkbox" /><input type="text" placeholder="Checklist item" /> <button class="remove-btn">✖</button>`;
-  wrap.querySelector('.remove-btn').addEventListener('click', ()=> { wrap.remove(); renumber(); saveSOPDebounced(); });
-  wrap.querySelector('input[type="text"]').addEventListener('input', ()=> saveSOPDebounced());
-  wrap.querySelector('input[type="checkbox"]').addEventListener('change', ()=> saveSOPDebounced());
-  enableDrag(wrap);
+  NodeEvents.bindChecklistItem(wrap);
   container.appendChild(wrap);
   renumber();
   saveSOPDebounced();
   pushHistory();
 }
+
 function addNote(parent){
   const note = parent.querySelector('.note');
   note.focus();
 }
 
 /* ============================
-   Drag & Drop (simple insertBefore behavior)
+   Drag & Drop
    ============================ */
 let dragSrc = null;
 function enableDrag(el){
@@ -270,7 +357,6 @@ function enableDrag(el){
     saveSOPDebounced();
   });
 
-  // make every element accept drop and insert before
   el.addEventListener('dragover', e => {
     e.preventDefault();
     el.classList.add('drag-over');
@@ -282,7 +368,6 @@ function enableDrag(el){
     e.preventDefault();
     el.classList.remove('drag-over');
     if (!dragSrc || dragSrc === el) return;
-    // if same parent, insert before; otherwise insert into same parent at position
     const parent = el.parentNode;
     parent.insertBefore(dragSrc, el);
     renumber();
@@ -290,7 +375,6 @@ function enableDrag(el){
     pushHistory();
   });
 
-  // make children container accept drops by delegating to parent element
   const ch = el.querySelector('.children');
   if (ch) {
     ch.addEventListener('dragover', e => { e.preventDefault(); ch.classList.add('drag-over'); });
@@ -308,7 +392,7 @@ function enableDrag(el){
 }
 
 /* ============================
-   Numbering logic (live)
+   Numbering logic
    ============================ */
 function renumber(){
   const steps = Array.from(editor.querySelectorAll(':scope > .sop-step'));
@@ -322,6 +406,7 @@ function renumber(){
     });
   });
 }
+
 function setLabel(el, txt){
   const lbl = el.querySelector('.number-label');
   if (lbl) lbl.textContent = txt;
@@ -341,7 +426,7 @@ function calcTotalTime(){
 }
 
 /* ============================
-   Run mode (execution)
+   Run mode
    ============================ */
 function toggleRunMode(){
   runMode = !runMode;
@@ -351,7 +436,7 @@ function toggleRunMode(){
 }
 
 /* ============================
-   Save / Load (autosave + manual)
+   Save / Load
    ============================ */
 function saveSOP(){
   const data = { html: editor.innerHTML, logo: logoDataURL };
@@ -359,13 +444,13 @@ function saveSOP(){
   document.getElementById('autosave-indicator').textContent = 'Saved';
   setTimeout(()=> document.getElementById('autosave-indicator').textContent = 'Autosaved', 1000);
 }
+
 let saveTimer = null;
 function saveSOPDebounced(){
   clearTimeout(saveTimer);
   saveTimer = setTimeout(()=> saveSOP(), 600);
 }
 
-/* load */
 function loadSOP(){
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return;
@@ -376,30 +461,7 @@ function loadSOP(){
       document.getElementById('logo-preview').src = logoDataURL;
     }
     editor.innerHTML = data.html;
-    // rebind dynamic behaviors
-    editor.querySelectorAll('.sop-step, .sop-task, .sop-subtask, .sop-checklist').forEach(node => {
-      // re-enable behaviors for loaded node
-      const title = node.querySelector('.title-input');
-      if (title) title.addEventListener('input', ()=> { renumber(); saveSOPDebounced(); });
-      const time = node.querySelector('.time-input');
-      if (time) time.addEventListener('input', ()=> { calcTotalTime(); saveSOPDebounced(); });
-      const note = node.querySelector('.note');
-      if (note) note.addEventListener('input', ()=> saveSOPDebounced());
-      const toggle = node.querySelector('.toggle');
-      if (toggle) toggle.addEventListener('click', ()=> { node.classList.toggle('collapsed'); toggle.textContent = node.classList.contains('collapsed') ? '▸' : '▾'; saveSOPDebounced(); });
-      const remove = node.querySelector('.remove-btn');
-      if (remove) remove.addEventListener('click', ()=> { node.remove(); renumber(); saveSOPDebounced(); });
-      // controls for add buttons
-      const addTaskBtn = node.querySelector('.add-task-btn');
-      if (addTaskBtn) addTaskBtn.addEventListener('click', ()=> addTask(node));
-      const addSubtaskBtn = node.querySelector('.add-subtask-btn');
-      if (addSubtaskBtn) addSubtaskBtn.addEventListener('click', ()=> addSubtask(node));
-      const addChecklistBtn = node.querySelector('.add-checklist-btn');
-      if (addChecklistBtn) addChecklistBtn.addEventListener('click', ()=> addChecklist(node));
-      const addNoteBtn = node.querySelector('.add-note-btn');
-      if (addNoteBtn) addNoteBtn.addEventListener('click', ()=> addNote(node));
-      enableDrag(node);
-    });
+    NodeEvents.bindAll();
     renumber();
     calcTotalTime();
   } catch(e){
@@ -407,7 +469,6 @@ function loadSOP(){
   }
 }
 
-/* clear */
 function clearSOP(){
   if (!confirm('Clear current SOP (this will remove unsaved changes)?')) return;
   editor.innerHTML = '';
@@ -420,13 +481,13 @@ function clearSOP(){
   pushHistory();
 }
 
-/* Download / Upload SOP file (share/import) */
 function downloadSOPFile(){
   const data = { html: editor.innerHTML, logo: logoDataURL, created: new Date().toISOString() };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href=url; a.download='sop_export.json'; a.click(); URL.revokeObjectURL(url);
 }
+
 document.getElementById('upload-sop-file').addEventListener('change', e=>{
   const f = e.target.files[0];
   if (!f) return;
@@ -435,16 +496,15 @@ document.getElementById('upload-sop-file').addEventListener('change', e=>{
     try {
       const d = JSON.parse(ev.target.result);
       if (d.logo) { logoDataURL = d.logo; document.getElementById('logo-preview').src = logoDataURL; }
-      if (d.html) { if (confirm('Load SOP from file and replace current editor?')) { editor.innerHTML = d.html; loadSOP(); saveSOP(); } }
+      if (d.html) { if (confirm('Load SOP from file and replace current editor?')) { editor.innerHTML = d.html; NodeEvents.bindAll(); saveSOP(); renumber(); calcTotalTime(); } }
     } catch(err){ alert('Invalid file'); }
   };
   reader.readAsText(f);
 });
 
 /* ============================
-   Template system (modal + defaults + user templates)
+   Template system
    ============================ */
-
 const templateModal = document.getElementById('templateModal');
 const defaultDiv = document.getElementById('defaultTemplates');
 const userDiv = document.getElementById('userTemplates');
@@ -452,12 +512,12 @@ const userDiv = document.getElementById('userTemplates');
 function confirmLoadTemplateModal(){ openTemplateModal(); }
 
 function openTemplateModal(){
-  // render lists
   renderDefaultTemplates();
   renderUserTemplates();
   document.getElementById('save-template-name').value = '';
   templateModal.style.display = 'block';
 }
+
 function closeTemplateModal(){ templateModal.style.display = 'none'; }
 
 function renderDefaultTemplates(){
@@ -470,6 +530,7 @@ function renderDefaultTemplates(){
     defaultDiv.appendChild(item);
   }
 }
+
 function renderUserTemplates(){
   userDiv.innerHTML = '';
   const list = loadUserTemplates();
@@ -483,7 +544,6 @@ function renderUserTemplates(){
 }
 
 function builtins(){
-  // Default templates: id, name, description, html
   return [
     {
       id:'operations',
@@ -518,13 +578,8 @@ function builtins(){
   ];
 }
 
-/* ===== default template builders =====
-   These produce HTML consistent with the editor format
-   and allow full editing after loading.
-*/
 function defaultOperations(){
   const e = document.createElement('div');
-
   const s1 = createNodeFromJson('Step 1: Prepare workstation', 5, [
     createNodeFromJson('Task: Gather materials', 2, [
       createChecklistNode('Confirm tools available'),
@@ -535,17 +590,16 @@ function defaultOperations(){
       createChecklistNode('Run diagnostics')
     ])
   ], 'Ensure all safety checks are done.');
-
   const s2 = createNodeFromJson('Step 2: Execute procedure', 30, [
     createNodeFromJson('Task: Run procedure', 25, [
       createChecklistNode('Start machine'),
       createChecklistNode('Monitor readings')
     ])
   ], 'Follow the procedure exactly.');
-
   e.appendChild(s1); e.appendChild(s2);
   return e.innerHTML;
 }
+
 function defaultClientOnboarding(){
   const e = document.createElement('div');
   e.appendChild(createNodeFromJson('Step 1: Collect client info', 10, [
@@ -558,6 +612,7 @@ function defaultClientOnboarding(){
   ], 'Ensure credentials are shared securely.'));
   return e.innerHTML;
 }
+
 function defaultAppointmentBooking(){
   const e = document.createElement('div');
   e.appendChild(createNodeFromJson('Step 1: Receive request', 5, [
@@ -570,6 +625,7 @@ function defaultAppointmentBooking(){
   ], 'Use SMS or email.'));
   return e.innerHTML;
 }
+
 function defaultCustomerPayment(){
   const e = document.createElement('div');
   e.appendChild(createNodeFromJson('Step 1: Issue quote', 5));
@@ -583,6 +639,7 @@ function defaultCustomerPayment(){
   ], 'Escalate delays >14 days.'));
   return e.innerHTML;
 }
+
 function defaultEmployeeExpenses(){
   const e = document.createElement('div');
   e.appendChild(createNodeFromJson('Step 1: Employee submits claim', 5, [
@@ -594,26 +651,22 @@ function defaultEmployeeExpenses(){
   return e.innerHTML;
 }
 
-/* helper to create nodes programmatically and return DOM node */
 function createNodeFromJson(title, time=0, children=[], note=''){
   const node = createNodeTypeFromString(title, time, note);
   const ch = node.querySelector('.children');
-  children.forEach(c=>{
-    ch.appendChild(c);
-  });
+  children.forEach(c=>{ ch.appendChild(c); });
   return node;
 }
+
 function createChecklistNode(text){
   const wrap = document.createElement('div');
   wrap.className = 'sop-checklist';
   wrap.draggable = true;
   wrap.innerHTML = `<input type="checkbox" /><input type="text" placeholder="Checklist item" value="${escapeAttr(text)}" /> <button class="remove-btn">✖</button>`;
-  wrap.querySelector('.remove-btn').addEventListener('click', ()=> { wrap.remove(); saveSOPDebounced(); });
-  wrap.querySelector('input[type="text"]').addEventListener('input', ()=> saveSOPDebounced());
-  wrap.querySelector('input[type="checkbox"]').addEventListener('change', ()=> saveSOPDebounced());
-  enableDrag(wrap);
+  NodeEvents.bindChecklistItem(wrap);
   return wrap;
 }
+
 function createNodeTypeFromString(title, time=0, note=''){
   const type = title.toLowerCase().includes('task')? 'sop-task' : (title.toLowerCase().includes('subtask')? 'sop-subtask':'sop-step');
   const node = createNode(type, '');
@@ -623,27 +676,12 @@ function createNodeTypeFromString(title, time=0, note=''){
   return node;
 }
 
-/* ============================
-   Load & apply a template (default)
-   ============================ */
 function loadTemplate(id){
   const t = builtins().find(x=>x.id===id);
   if (!t) return;
   if (!confirm('Load template "'+t.name+'" and replace current editor?')) return;
   editor.innerHTML = t.html;
-  // rebind events
-  editor.querySelectorAll('.sop-step, .sop-task, .sop-subtask, .sop-checklist').forEach(node=>{
-    enableDrag(node);
-    // reattach remove and control handlers
-    const rem = node.querySelector('.remove-btn'); if (rem) rem.addEventListener('click', ()=> { node.remove(); renumber(); saveSOPDebounced(); });
-    const addTaskBtn = node.querySelector('.add-task-btn'); if (addTaskBtn) addTaskBtn.addEventListener('click', ()=> addTask(node));
-    const addSub = node.querySelector('.add-subtask-btn'); if (addSub) addSub.addEventListener('click', ()=> addSubtask(node));
-    const addChecklistBtn = node.querySelector('.add-checklist-btn'); if (addChecklistBtn) addChecklistBtn.addEventListener('click', ()=> addChecklist(node));
-    const note = node.querySelector('.note'); if (note) note.addEventListener('input', ()=> saveSOPDebounced());
-    const title = node.querySelector('.title-input'); if (title) title.addEventListener('input', ()=> { renumber(); saveSOPDebounced(); });
-    const time = node.querySelector('.time-input'); if (time) time.addEventListener('input', ()=> { calcTotalTime(); saveSOPDebounced(); });
-    const toggle = node.querySelector('.toggle'); if (toggle) toggle.addEventListener('click', ()=> { node.classList.toggle('collapsed'); toggle.textContent = node.classList.contains('collapsed') ? '▸' : '▾'; saveSOPDebounced();});
-  });
+  NodeEvents.bindAll();
   renumber(); calcTotalTime(); saveSOP();
   showToast('Template "'+t.name+'" loaded');
   closeTemplateModal();
@@ -651,20 +689,20 @@ function loadTemplate(id){
 }
 
 /* ============================
-   User templates (save/load/delete)
+   User templates
    ============================ */
 function loadUserTemplates(){
   const raw = localStorage.getItem(USER_TEMPLATES_KEY);
   if (!raw) return [];
   try{ return JSON.parse(raw); } catch(e){ return []; }
 }
+
 function saveUserTemplates(list){ localStorage.setItem(USER_TEMPLATES_KEY, JSON.stringify(list)); }
 
 function saveAsTemplate(){
   const name = (document.getElementById('save-template-name').value || '').trim();
   if (!name) { alert('Enter a template name'); return; }
   const list = loadUserTemplates();
-  // if name exists confirm overwrite
   const exists = list.find(x=>x.name===name);
   if (exists && !confirm('A template with that name exists. Overwrite?')) return;
   const tpl = { key: 'user_' + Date.now(), name, description: 'User template', html: editor.innerHTML };
@@ -686,23 +724,13 @@ function loadUserTemplate(key){
   if (!tpl) return;
   if (!confirm('Load user template "'+tpl.name+'" and replace current editor?')) return;
   editor.innerHTML = tpl.html;
-  // rebind as in loadTemplate
-  editor.querySelectorAll('.sop-step, .sop-task, .sop-subtask, .sop-checklist').forEach(node=>{
-    enableDrag(node);
-    const rem = node.querySelector('.remove-btn'); if (rem) rem.addEventListener('click', ()=> { node.remove(); renumber(); saveSOPDebounced(); });
-    const addTaskBtn = node.querySelector('.add-task-btn'); if (addTaskBtn) addTaskBtn.addEventListener('click', ()=> addTask(node));
-    const addSub = node.querySelector('.add-subtask-btn'); if (addSub) addSub.addEventListener('click', ()=> addSubtask(node));
-    const addChecklistBtn = node.querySelector('.add-checklist-btn'); if (addChecklistBtn) addChecklistBtn.addEventListener('click', ()=> addChecklist(node));
-    const note = node.querySelector('.note'); if (note) note.addEventListener('input', ()=> saveSOPDebounced());
-    const title = node.querySelector('.title-input'); if (title) title.addEventListener('input', ()=> { renumber(); saveSOPDebounced(); });
-    const time = node.querySelector('.time-input'); if (time) time.addEventListener('input', ()=> { calcTotalTime(); saveSOPDebounced(); });
-    const toggle = node.querySelector('.toggle'); if (toggle) toggle.addEventListener('click', ()=> { node.classList.toggle('collapsed'); toggle.textContent = node.classList.contains('collapsed') ? '▸' : '▾'; saveSOPDebounced();});
-  });
+  NodeEvents.bindAll();
   renumber(); calcTotalTime(); saveSOP();
   showToast('Template "'+tpl.name+'" loaded');
   closeTemplateModal();
   pushHistory();
 }
+
 function deleteUserTemplate(key){
   if (!confirm('Delete this saved template?')) return;
   let list = loadUserTemplates();
@@ -712,13 +740,9 @@ function deleteUserTemplate(key){
   showToast('Template deleted');
 }
 
-/* ============================
-   Preview default template simple (show small modal)
-   ============================ */
 function previewTemplate(id){
   const t = builtins().find(x=>x.id===id);
   if (!t) return;
-  // Quick preview modal: reuse templateModal but temporarily show HTML fragment
   const prev = window.open('', '_blank', 'width=600,height=600');
   prev.document.write('<html><head><title>Preview - '+t.name+'</title></head><body>');
   prev.document.write('<h3>'+t.name+'</h3><p>'+t.description+'</p>');
@@ -727,9 +751,6 @@ function previewTemplate(id){
   prev.document.close();
 }
 
-/* ============================
-   Template rendering initialization
-   ============================ */
 function initTemplatesUI(){
   renderDefaultTemplates();
   renderUserTemplates();
@@ -737,8 +758,6 @@ function initTemplatesUI(){
 
 /* ============================
    Exports
-   - PDF: text-based, logo optional, header+timestamp, total time, page numbers
-   - Markdown: hierarchical, notes, times, checklist items
    ============================ */
 const { jsPDF } = window.jspdf;
 
@@ -753,7 +772,6 @@ async function exportPDF(){
   const lineH = 18;
   let totalMinutes = 0;
 
-  // optional logo image as dataURL
   let logoLoaded = false;
   let logoImg;
   let logoW = 60, logoH = 40;
@@ -815,25 +833,23 @@ async function exportPDF(){
 
   traverse(editor, 0);
 
-  // total
   y += 8;
   addWrapped(`Total Estimated Time: ${totalMinutes} min`, margin, pageW - margin*2);
 
-  // footers page numbers
   const pageCount = pdf.internal.getNumberOfPages();
   for (let i=1;i<=pageCount;i++){
     pdf.setPage(i);
     pdf.setFontSize(9);
-    const footer = `DGS Consulting  |  www.dgsconsulting.ca  |  Exported: ${new Date().toLocaleDateString()}`;
+    const footer = `${FOOTER_TEXT}  |  Exported: ${new Date().toLocaleDateString()}`;
     const textW = pdf.getTextWidth(footer);
     pdf.text(footer, (pageW-textW)/2, pageH - 20);
     pdf.text(`Page ${i} of ${pageCount}`, pageW - margin - 60, pageH - 20);
   }
 
   pdf.save('SOP_Export.pdf');
+  showToast('PDF exported');
 }
 
-/* helper load image */
 function loadImage(dataUrl){
   return new Promise((resolve,reject)=>{
     const img = new Image();
@@ -844,7 +860,6 @@ function loadImage(dataUrl){
   });
 }
 
-/* Markdown export */
 function exportMarkdown(){
   renumber();
   let md = `# SOP Export\n_Exported: ${new Date().toLocaleString()}_\n\n`;
@@ -879,19 +894,23 @@ function exportMarkdown(){
 }
 
 /* ============================
-   Simple undo/redo (history)
+   Undo/Redo with configurable history limit
    ============================ */
 let historyStack = [], historyIndex = -1;
+
 function pushHistory(){
-  // store html snapshot + logo
   const snapshot = JSON.stringify({ html: editor.innerHTML, logo: logoDataURL });
-  // if we are not at top, truncate future
   if (historyIndex < historyStack.length - 1) historyStack = historyStack.slice(0, historyIndex + 1);
   historyStack.push(snapshot);
   historyIndex = historyStack.length - 1;
-  // limit
-  if (historyStack.length > 40) historyStack.shift(), historyIndex = historyStack.length - 1;
+  
+  if (historyStack.length > MAX_HISTORY) {
+    historyStack.shift();
+    historyIndex = historyStack.length - 1;
+  }
+  updateHistoryInfo();
 }
+
 function undo(){
   if (historyIndex <= 0) return showToast('Nothing to undo');
   historyIndex--;
@@ -899,10 +918,12 @@ function undo(){
   editor.innerHTML = snap.html;
   logoDataURL = snap.logo || '';
   document.getElementById('logo-preview').src = logoDataURL || '';
-  rebindAll();
+  NodeEvents.bindAll();
   renumber(); calcTotalTime(); saveSOP();
+  updateHistoryInfo();
   showToast('Undo');
 }
+
 function redo(){
   if (historyIndex >= historyStack.length - 1) return showToast('Nothing to redo');
   historyIndex++;
@@ -910,29 +931,65 @@ function redo(){
   editor.innerHTML = snap.html;
   logoDataURL = snap.logo || '';
   document.getElementById('logo-preview').src = logoDataURL || '';
-  rebindAll();
+  NodeEvents.bindAll();
   renumber(); calcTotalTime(); saveSOP();
+  updateHistoryInfo();
   showToast('Redo');
 }
 
-/* rebind after load/undo */
-function rebindAll(){
-  editor.querySelectorAll('.sop-step, .sop-task, .sop-subtask, .sop-checklist').forEach(node=>{
-    enableDrag(node);
-    const rem = node.querySelector('.remove-btn'); if (rem) rem.addEventListener('click', ()=> { node.remove(); renumber(); saveSOPDebounced(); });
-    const addTaskBtn = node.querySelector('.add-task-btn'); if (addTaskBtn) addTaskBtn.addEventListener('click', ()=> addTask(node));
-    const addSub = node.querySelector('.add-subtask-btn'); if (addSub) addSub.addEventListener('click', ()=> addSubtask(node));
-    const addChecklistBtn = node.querySelector('.add-checklist-btn'); if (addChecklistBtn) addChecklistBtn.addEventListener('click', ()=> addChecklist(node));
-    const addNoteBtn = node.querySelector('.add-note-btn'); if (addNoteBtn) addNoteBtn.addEventListener('click', ()=> addNote(node));
-    const note = node.querySelector('.note'); if (note) note.addEventListener('input', ()=> saveSOPDebounced());
-    const title = node.querySelector('.title-input'); if (title) title.addEventListener('input', ()=> { renumber(); saveSOPDebounced(); });
-    const time = node.querySelector('.time-input'); if (time) time.addEventListener('input', ()=> { calcTotalTime(); saveSOPDebounced(); });
-    const toggle = node.querySelector('.toggle'); if (toggle) toggle.addEventListener('click', ()=> { node.classList.toggle('collapsed'); toggle.textContent = node.classList.contains('collapsed') ? '▸' : '▾'; saveSOPDebounced();});
-  });
+function updateHistoryInfo(){
+  const total = historyStack.length;
+  const current = historyIndex + 1;
+  document.getElementById('history-info').textContent = `${current}/${total} (max ${MAX_HISTORY})`;
 }
 
 /* ============================
-   Logo upload handler
+   Collaboration Features (Share Link & Versioning)
+   ============================ */
+function generateShareLink(){
+  const data = { html: editor.innerHTML, logo: logoDataURL, timestamp: new Date().toISOString(), version: 1 };
+  const encoded = btoa(JSON.stringify(data));
+  const url = `${window.location.origin}${window.location.pathname}?sop=${encoded}`;
+  
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('Share link copied to clipboard');
+    document.getElementById('share-status').textContent = 'Link copied!';
+    setTimeout(() => {
+      document.getElementById('share-status').textContent = '';
+    }, 3000);
+  }).catch(() => {
+    showToast('Copy failed, try manual copy');
+  });
+}
+
+function loadFromShareLink(){
+  const params = new URLSearchParams(window.location.search);
+  const sopData = params.get('sop');
+  if (!sopData) return;
+  
+  try {
+    const data = JSON.parse(atob(sopData));
+    if (data.html && confirm('Load SOP from share link?')) {
+      editor.innerHTML = data.html;
+      if (data.logo) {
+        logoDataURL = data.logo;
+        document.getElementById('logo-preview').src = logoDataURL;
+      }
+      NodeEvents.bindAll();
+      renumber();
+      calcTotalTime();
+      showToast('SOP loaded from share link');
+      pushHistory();
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  } catch(e) {
+    console.error('Failed to load from share link', e);
+  }
+}
+
+/* ============================
+   Logo upload
    ============================ */
 document.getElementById('logo-upload').addEventListener('change', e=>{
   const f = e.target.files[0];
@@ -947,30 +1004,153 @@ document.getElementById('logo-upload').addEventListener('change', e=>{
 });
 
 /* ============================
-   Init: load saved SOP, templates UI, start history
+   Init
    ============================ */
 const editor = document.getElementById('editor');
 loadSOP();
+loadFromShareLink();
 initTemplatesUI();
 pushHistory();
 renumber();
 calcTotalTime();
+updateHistoryInfo();
 
 /* Helpers */
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
 function escapeAttr(s){ return (s||'').replace(/"/g, '&quot;'); }
-function saveSOP() { saveSOPDebounced(); } // alias for button
 
-// expose some functions for template button inline handlers
 window.loadTemplate = loadTemplate;
 window.previewTemplate = previewTemplate;
 window.loadUserTemplate = loadUserTemplate;
 window.deleteUserTemplate = deleteUserTemplate;
 
 /* ============================
-   Expose for console debug
+   Role-based time estimates
    ============================ */
-window._sop = { addStep, addTask, addSubtask, addChecklist, renumber, saveSOP, exportPDF, exportMarkdown, saveAsTemplate };
+function addRoleToNode(node) {
+  const input = node.querySelector('.new-role-input');
+  const roleName = (input.value || '').trim();
+  if (!roleName) { showToast('Enter a role name'); return; }
+  
+  const container = node.querySelector('.roles-container');
+  const roleId = 'role_' + Date.now();
+  const roleDiv = document.createElement('div');
+  roleDiv.setAttribute('data-role-id', roleId);
+  roleDiv.className = 'role-section';
+  roleDiv.style.display = 'inline-block';
+  roleDiv.style.background = 'transparent';
+  roleDiv.style.border = 'none';
+  roleDiv.style.padding = '0';
+  roleDiv.style.margin = '0';
+  roleDiv.innerHTML = `
+    <span style="font-size:12px; background:#e3f2fd; padding:4px 8px; border-radius:4px; display:inline-flex; gap:4px; align-items:center">
+      ${escapeHtml(roleName)}: 
+      <input type="number" class="role-time" value="0" min="0" style="width:40px; font-size:11px; padding:2px" />
+      min
+      <button class="remove-btn" style="padding:0; font-size:11px; min-width:auto; width:auto">✖</button>
+    </span>
+  `;
+  
+  roleDiv.querySelector('.role-time').addEventListener('input', () => saveSOPDebounced());
+  roleDiv.querySelector('.remove-btn').addEventListener('click', () => { roleDiv.remove(); saveSOPDebounced(); });
+  
+  container.appendChild(roleDiv);
+  input.value = '';
+  saveSOPDebounced();
+}
+
+function getRoleTimeEstimates(node) {
+  const roles = {};
+  node.querySelectorAll('.roles-container [data-role-id]').forEach(roleDiv => {
+    const roleId = roleDiv.getAttribute('data-role-id');
+    const roleText = roleDiv.textContent.split(':')[0].trim();
+    const time = parseInt(roleDiv.querySelector('.role-time').value) || 0;
+    roles[roleText] = time;
+  });
+  return roles;
+}
+
+/* ============================
+   Keyboard shortcuts
+   ============================ */
+const SHORTCUTS = {
+  'Ctrl+Z': 'Undo',
+  'Ctrl+Y': 'Redo',
+  'Ctrl+S': 'Save',
+  'Ctrl+N': 'New Step',
+  'Ctrl+T': 'Toggle Run Mode',
+  'Ctrl+E': 'Export PDF',
+  'Ctrl+M': 'Export Markdown',
+  'Ctrl+L': 'Share Link',
+  'Ctrl+H': 'Show Shortcuts'
+};
+
+document.addEventListener('keydown', (e) => {
+  const key = `${e.ctrlKey || e.metaKey ? 'Ctrl+' : ''}${e.shiftKey ? 'Shift+' : ''}${e.key.toUpperCase()}`;
+  
+  if (e.ctrlKey || e.metaKey) {
+    switch(true) {
+      case e.key === 'z' || e.key === 'Z':
+        e.preventDefault();
+        undo();
+        break;
+      case e.key === 'y' || e.key === 'Y':
+        e.preventDefault();
+        redo();
+        break;
+      case e.key === 's' || e.key === 'S':
+        e.preventDefault();
+        saveSOP();
+        break;
+      case e.key === 'n' || e.key === 'N':
+        e.preventDefault();
+        addStep();
+        break;
+      case e.key === 't' || e.key === 'T':
+        e.preventDefault();
+        toggleRunMode();
+        break;
+      case e.key === 'e' || e.key === 'E':
+        e.preventDefault();
+        exportPDF();
+        break;
+      case e.key === 'm' || e.key === 'M':
+        e.preventDefault();
+        exportMarkdown();
+        break;
+      case e.key === 'l' || e.key === 'L':
+        e.preventDefault();
+        generateShareLink();
+        break;
+      case e.key === 'h' || e.key === 'H':
+        e.preventDefault();
+        showShortcutsModal();
+        break;
+    }
+  }
+});
+
+function showShortcutsModal() {
+  const modal = document.getElementById('shortcutsModal');
+  const list = document.getElementById('shortcutsList');
+  list.innerHTML = '';
+  for (const [key, action] of Object.entries(SHORTCUTS)) {
+    const item = document.createElement('div');
+    item.className = 'shortcut-item';
+    item.innerHTML = `
+      <span>${action}</span>
+      <span class="shortcut-key">${key}</span>
+    `;
+    list.appendChild(item);
+  }
+  modal.style.display = 'block';
+}
+
+function closeShortcutsModal() {
+  document.getElementById('shortcutsModal').style.display = 'none';
+}
+
+window._sop = { addStep, addTask, addSubtask, addChecklist, renumber, saveSOP, exportPDF, exportMarkdown, saveAsTemplate, addRoleToNode };
 
 </script>
 </body>
