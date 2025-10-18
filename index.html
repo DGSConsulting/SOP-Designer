@@ -1,224 +1,977 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>SOP Designer – MVP</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; background:#f5f5f5; padding:1rem; }
-    h1 { margin-bottom:1rem; }
-    #controls { margin-bottom:1rem; display:flex; flex-wrap:wrap; gap:.5rem; }
-    button { padding:0.5rem 1rem; border:none; background:#007b55; color:white; border-radius:6px; cursor:pointer; }
-    button:hover { background:#005e40; }
-    #editor { background:white; padding:1rem; border-radius:8px; min-height:300px; }
-    .sop-step, .sop-task, .sop-subtask, .sop-checklist {
-      margin:.4rem 0; padding:.5rem; border:1px solid #ccc; border-radius:6px;
-      background:#fafafa; cursor:grab;
-    }
-    .sop-step { background:#e8f5e9; }
-    .sop-task { background:#f0f0f0; margin-left:20px; }
-    .sop-subtask { background:#f9f9f9; margin-left:40px; }
-    .sop-checklist { background:#fff; margin-left:60px; display:flex; align-items:center; gap:0.5rem; }
-    .note { display:block; font-style:italic; color:#444; margin-top:0.3rem; }
-    .time-input { width:60px; margin-left:8px; }
-    .add-item-btn, .remove-item-btn { margin-left:0.5rem; background:#666; }
-    .remove-item-btn { background:#c62828; }
-    .drag-over { border:2px dashed #007b55; }
-    #logo-preview { max-height:40px; margin-left:1rem; vertical-align:middle; }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SOP Designer — Full MVP with Editable Templates</title>
+
+<!-- jsPDF (for text PDF export) & html2canvas (optional, not required for text export) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+  :root{
+    --primary:#1d4e2d; --accent:#2f7a4d; --danger:#b00020; --bg:#f6f7f8;
+  }
+  *{box-sizing:border-box}
+  body{font-family:Inter,Segoe UI,Roboto,Arial; margin:0; background:var(--bg); color:#111}
+  header{background:var(--primary); color:#fff; padding:14px 18px; display:flex; align-items:center; gap:12px;}
+  header h1{margin:0; font-size:18px}
+  .topbar{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  main{max-width:1100px; margin:20px auto; padding:0 18px 60px;}
+  #controls{display:flex; gap:8px; margin-bottom:12px; align-items:center; flex-wrap:wrap}
+  button{background:var(--primary); color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;}
+  button.ghost{background:transparent; color:var(--primary); border:1px solid var(--primary)}
+  .small{padding:6px 8px; font-size:13px}
+  .danger{background:var(--danger)}
+  #editor{background:#fff; padding:14px; border-radius:10px; min-height:320px; border:1px solid #e0e0e0}
+  /* Elements */
+  .sop-step, .sop-task, .sop-subtask, .sop-checklist {
+    position:relative;
+    margin:8px 0;
+    padding:10px 12px;
+    border-radius:8px;
+    border-left:5px solid var(--primary);
+    background:#fcfffb;
+  }
+  .sop-task{margin-left:18px; border-color:#2f7a4d}
+  .sop-subtask{margin-left:36px; border-color:#4a9f5c}
+  .sop-checklist{margin-left:54px; display:flex; gap:8px; align-items:center; padding:8px; border-left:4px solid #9aa}
+  .controls-inline{display:inline-flex; gap:6px; margin-left:8px; vertical-align:middle}
+  .btn-mini{padding:4px 8px; font-size:13px; border-radius:6px}
+  .number-label{font-weight:700; color:var(--primary); margin-right:8px}
+  .title-input{font-size:14px; padding:6px; border-radius:6px; border:1px solid #ddd; min-width:180px}
+  .time-input{width:70px; font-size:13px; padding:6px; border-radius:6px; border:1px solid #ddd}
+  .note{display:block; margin-top:8px; font-style:italic; color:#555; padding:6px; border-radius:6px; border:1px dashed transparent}
+  .note[contenteditable]{border:1px dashed #eee}
+  .toggle{position:absolute; left:-22px; top:10px; cursor:pointer; color:var(--primary); font-weight:700}
+  .collapsed > .children{display:none}
+  .children{margin-top:8px}
+  .remove{background:transparent; color:var(--danger); border:none; font-weight:700; cursor:pointer}
+  .template-modal{position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:#fff; box-shadow:0 8px 36px rgba(0,0,0,.18); width:850px; max-width:95%; border-radius:12px; z-index:1400; padding:16px; display:none}
+  .modal-header{display:flex; justify-content:space-between; align-items:center; gap:12px}
+  .modal-body{display:flex; gap:12px; margin-top:12px}
+  .tmpl-col{flex:1; min-width:220px; max-height:520px; overflow:auto; padding:8px; border-radius:8px; border:1px solid #eee}
+  .tmpl-item{padding:8px; border-radius:8px; margin-bottom:8px; border:1px solid #f0f0f0; background:#fafafa}
+  .tmpl-actions{display:flex; gap:6px; margin-top:8px}
+  #logo-preview{height:36px; object-fit:contain}
+  .toast{position:fixed; right:20px; bottom:20px; background:#111; color:#fff; padding:10px 14px; border-radius:8px; opacity:0.95; z-index:1600}
+  .bottom-info{margin-top:12px; display:flex; gap:12px; align-items:center; justify-content:space-between}
+  .inline-input{padding:6px 8px; border-radius:6px; border:1px solid #ddd}
+  @media (max-width:640px){ .modal-body{flex-direction:column} .tmpl-col{max-height:260px} }
+</style>
 </head>
 <body>
-  <h1>SOP Designer MVP 🛠️ <img id="logo-preview" /></h1>
+<header>
+  <img id="logo-preview" alt="" />
+  <h1 style="margin:0;font-size:18px">SOP Designer — Editable Templates & Exports</h1>
+</header>
 
-  <div id="controls">
+<main>
+  <div id="controls" class="topbar">
+    <button onclick="confirmLoadTemplateModal()">Templates</button>
     <button onclick="addStep()">+ Add Step</button>
+    <button id="save-btn" onclick="saveSOP()">💾 Save</button>
     <button onclick="exportPDF()">📄 Export PDF</button>
-    <button onclick="exportMarkdown()">📝 Export Markdown</button>
-    <label style="display:flex;align-items:center;gap:.5rem;">
-      🖼️ Upload Logo
-      <input type="file" id="logo-upload" accept="image/*" />
+    <button onclick="exportMarkdown()">📝 Export MD</button>
+    <button id="run-toggle" onclick="toggleRunMode()">▶ Run Mode</button>
+    <button class="ghost" onclick="clearSOP()">🧹 Clear</button>
+
+    <label style="display:inline-flex;align-items:center;gap:8px;">
+      🖼️ Logo
+      <input id="logo-upload" type="file" accept="image/*" style="display:inline-block" />
     </label>
+
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <span id="autosave-indicator" style="font-size:13px;color:#666">Autosaved</span>
+      <button class="small" onclick="downloadSOPFile()">⬇️ Download SOP</button>
+      <input id="upload-sop-file" type="file" accept=".json,.sop" style="display:none" />
+      <button class="small" onclick="document.getElementById('upload-sop-file').click()">⬆️ Upload SOP</button>
+    </div>
   </div>
 
-  <div id="editor"></div>
+  <div id="editor" tabindex="0" aria-label="SOP Editor"></div>
 
-  <script>
-    let logoDataURL = "";
+  <div class="bottom-info">
+    <div>Total estimated time: <strong id="total-time">0</strong> min</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button onclick="undo()" class="small">Undo</button>
+      <button onclick="redo()" class="small">Redo</button>
+      <button onclick="showToast('Tip: Drag steps to reorder')">?</button>
+    </div>
+  </div>
+</main>
 
-    // === Add Elements ===
-    function addStep() {
-      const step = createElement('sop-step', 'Step');
-      editor.appendChild(step);
-    }
+<!-- Template Modal -->
+<div id="templateModal" class="template-modal" role="dialog" aria-modal="true">
+  <div class="modal-header">
+    <strong>Templates</strong>
+    <div>
+      <button onclick="closeTemplateModal()" class="small">Close</button>
+    </div>
+  </div>
 
-    function addTask(parent) {
-      const task = createElement('sop-task', 'Task');
-      parent.appendChild(task);
-    }
+  <div class="modal-body">
+    <div class="tmpl-col">
+      <h4>Default templates</h4>
+      <div id="defaultTemplates"></div>
+    </div>
 
-    function addSubtask(parent) {
-      const sub = createElement('sop-subtask', 'Subtask');
-      parent.appendChild(sub);
-    }
+    <div class="tmpl-col">
+      <h4>Your templates</h4>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input id="save-template-name" class="inline-input" placeholder="Template name (save current)" />
+        <button onclick="saveAsTemplate()" class="small">Save As</button>
+      </div>
+      <div id="userTemplates"></div>
+    </div>
+  </div>
+</div>
 
-    function addChecklist(parent) {
-      const check = document.createElement('div');
-      check.className = 'sop-checklist';
-      check.draggable = true;
-      check.innerHTML = `
-        <input type="checkbox" />
-        <input type="text" placeholder="Checklist item..." />
-        <button class="remove-item-btn" onclick="this.parentNode.remove()">✖</button>`;
-      enableDrag(check);
-      parent.appendChild(check);
-    }
+<!-- Toast -->
+<div id="toast" class="toast" style="display:none"></div>
 
-    function createElement(type, placeholder) {
-      const div = document.createElement('div');
-      div.className = type;
-      div.draggable = true;
-      div.innerHTML = `
-        <span class="number-label"></span>
-        <input type="text" placeholder="${placeholder}..." />
-        <input type="number" class="time-input" placeholder="min" />
-        <button class="add-item-btn" onclick="addTask(this.parentNode)">+ Task</button>
-        <button class="add-item-btn" onclick="addSubtask(this.parentNode)">+ Subtask</button>
-        <button class="add-item-btn" onclick="addChecklist(this.parentNode)">+ Checklist</button>
-        <button class="remove-item-btn" onclick="this.parentNode.remove()">✖</button>
-        <span class="note" contenteditable="true" placeholder="Add note..."></span>`;
-      enableDrag(div);
-      return div;
-    }
+<script>
+/* ============================
+   Core state + keys
+   ============================ */
+const STORAGE_KEY = 'sop_designer_data_v2';
+const USER_TEMPLATES_KEY = 'sop_templates_user';
+const defaultTemplates = []; // filled below
+let logoDataURL = '';
+let runMode = false;
 
-    // === Drag & Drop ===
-    let dragged;
-    function enableDrag(el) {
-      el.addEventListener('dragstart', e => dragged = el);
-      el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('drag-over'); });
-      el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
-      el.addEventListener('drop', e => {
-        e.preventDefault();
-        el.classList.remove('drag-over');
-        if (dragged && dragged !== el) el.parentNode.insertBefore(dragged, el);
-      });
-    }
+/* ============================
+   Utility: toast
+   ============================ */
+function showToast(msg, t=2000){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.display = 'block';
+  clearTimeout(el._timeout);
+  el._timeout = setTimeout(()=> el.style.display='none', t);
+}
 
-    // === Logo Upload ===
-    document.getElementById('logo-upload').addEventListener('change', e => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = ev => {
-          logoDataURL = ev.target.result;
-          document.getElementById('logo-preview').src = logoDataURL;
-        };
-        reader.readAsDataURL(file);
-      }
+/* ============================
+   Create element helpers
+   Structure:
+   <div class="sop-step" draggable>
+     <span class="toggle">▾</span>
+     <span class="number-label"></span>
+     <input class="title-input" />
+     <input class="time-input" />
+     <div class="controls-inline">buttons...</div>
+     <div class="children"></div>
+     <div class="note" contenteditable>...</div>
+   </div>
+   ============================ */
+function createNode(type, titlePlaceholder='') {
+  const el = document.createElement('div');
+  el.className = type;
+  el.draggable = true;
+
+  el.innerHTML = `
+    <span class="toggle" title="Collapse/expand">▾</span>
+    <span class="number-label"></span>
+    <input class="title-input" placeholder="${titlePlaceholder}" />
+    <input class="time-input" type="number" placeholder="min" />
+    <div class="controls-inline">
+      <button class="btn-mini add-task-btn">+Task</button>
+      <button class="btn-mini add-subtask-btn">+Subtask</button>
+      <button class="btn-mini add-checklist-btn">+Checklist</button>
+      <button class="btn-mini add-note-btn">Note</button>
+      <button class="btn-mini remove-btn">✖</button>
+    </div>
+    <div class="children"></div>
+    <div class="note" contenteditable="true" placeholder="Notes..."></div>
+  `;
+
+  // event wiring on the node
+  const toggle = el.querySelector('.toggle');
+  toggle.addEventListener('click', ()=> {
+    el.classList.toggle('collapsed');
+    toggle.textContent = el.classList.contains('collapsed') ? '▸' : '▾';
+    saveSOPDebounced();
+  });
+
+  el.querySelector('.add-task-btn').addEventListener('click', ()=> addTask(el));
+  el.querySelector('.add-subtask-btn').addEventListener('click', ()=> addSubtask(el));
+  el.querySelector('.add-checklist-btn').addEventListener('click', ()=> addChecklist(el));
+  el.querySelector('.add-note-btn').addEventListener('click', ()=> addNote(el));
+  el.querySelector('.remove-btn').addEventListener('click', ()=> { el.remove(); renumber(); saveSOPDebounced(); });
+
+  // inputs change -> save
+  el.querySelector('.title-input').addEventListener('input', ()=> { renumber(); saveSOPDebounced(); });
+  el.querySelector('.time-input').addEventListener('input', ()=> { calcTotalTime(); saveSOPDebounced(); });
+  el.querySelector('.note').addEventListener('input', ()=> saveSOPDebounced());
+
+  enableDrag(el);
+  return el;
+}
+
+/* ===== create specialized helpers ===== */
+function addStep(){
+  const step = createNode('sop-step', 'Step title');
+  editor.appendChild(step);
+  renumber();
+  saveSOPDebounced();
+  pushHistory();
+}
+function addTask(parent){
+  const container = parent.querySelector('.children');
+  const task = createNode('sop-task', 'Task title');
+  container.appendChild(task);
+  renumber();
+  saveSOPDebounced();
+  pushHistory();
+}
+function addSubtask(parent){
+  const container = parent.querySelector('.children');
+  const sub = createNode('sop-subtask', 'Subtask title');
+  container.appendChild(sub);
+  renumber();
+  saveSOPDebounced();
+  pushHistory();
+}
+function addChecklist(parent){
+  const container = parent.querySelector('.children');
+  const wrap = document.createElement('div');
+  wrap.className = 'sop-checklist';
+  wrap.draggable = true;
+  wrap.innerHTML = `<input type="checkbox" /><input type="text" placeholder="Checklist item" /> <button class="remove-btn">✖</button>`;
+  wrap.querySelector('.remove-btn').addEventListener('click', ()=> { wrap.remove(); renumber(); saveSOPDebounced(); });
+  wrap.querySelector('input[type="text"]').addEventListener('input', ()=> saveSOPDebounced());
+  wrap.querySelector('input[type="checkbox"]').addEventListener('change', ()=> saveSOPDebounced());
+  enableDrag(wrap);
+  container.appendChild(wrap);
+  renumber();
+  saveSOPDebounced();
+  pushHistory();
+}
+function addNote(parent){
+  const note = parent.querySelector('.note');
+  note.focus();
+}
+
+/* ============================
+   Drag & Drop (simple insertBefore behavior)
+   ============================ */
+let dragSrc = null;
+function enableDrag(el){
+  el.addEventListener('dragstart', e => {
+    dragSrc = el;
+    el.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  el.addEventListener('dragend', () => {
+    if (dragSrc) dragSrc.classList.remove('dragging');
+    dragSrc = null;
+    renumber();
+    saveSOPDebounced();
+  });
+
+  // make every element accept drop and insert before
+  el.addEventListener('dragover', e => {
+    e.preventDefault();
+    el.classList.add('drag-over');
+  });
+  el.addEventListener('dragleave', e => {
+    el.classList.remove('drag-over');
+  });
+  el.addEventListener('drop', e => {
+    e.preventDefault();
+    el.classList.remove('drag-over');
+    if (!dragSrc || dragSrc === el) return;
+    // if same parent, insert before; otherwise insert into same parent at position
+    const parent = el.parentNode;
+    parent.insertBefore(dragSrc, el);
+    renumber();
+    saveSOPDebounced();
+    pushHistory();
+  });
+
+  // make children container accept drops by delegating to parent element
+  const ch = el.querySelector('.children');
+  if (ch) {
+    ch.addEventListener('dragover', e => { e.preventDefault(); ch.classList.add('drag-over'); });
+    ch.addEventListener('dragleave', () => ch.classList.remove('drag-over'));
+    ch.addEventListener('drop', e => {
+      e.preventDefault();
+      ch.classList.remove('drag-over');
+      if (!dragSrc) return;
+      ch.appendChild(dragSrc);
+      renumber();
+      saveSOPDebounced();
+      pushHistory();
     });
+  }
+}
 
-    // === PDF Export ===
-    const { jsPDF } = window.jspdf;
-    async function exportPDF() {
-      const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
-      const margin = 40;
-      let y = margin;
-      const lineHeight = 18;
-      const pageHeight = pdf.internal.pageSize.getHeight();
+/* ============================
+   Numbering logic (live)
+   ============================ */
+function renumber(){
+  const steps = Array.from(editor.querySelectorAll(':scope > .sop-step'));
+  steps.forEach((step, si) => {
+    setLabel(step, `${si+1}`);
+    const tasks = Array.from(step.querySelectorAll(':scope > .children > .sop-task'));
+    tasks.forEach((task, ti) => {
+      setLabel(task, `${si+1}.${ti+1}`);
+      const subs = Array.from(task.querySelectorAll(':scope > .children > .sop-subtask'));
+      subs.forEach((sub, ui) => setLabel(sub, `${si+1}.${ti+1}.${ui+1}`));
+    });
+  });
+}
+function setLabel(el, txt){
+  const lbl = el.querySelector('.number-label');
+  if (lbl) lbl.textContent = txt;
+}
 
-      if (logoDataURL) {
-        pdf.addImage(logoDataURL, 'PNG', margin, y - 20, 60, 40);
-      }
+/* ============================
+   Total time calc
+   ============================ */
+function calcTotalTime(){
+  let total = 0;
+  editor.querySelectorAll('.time-input').forEach(inp => {
+    const v = parseInt(inp.value);
+    if (!isNaN(v)) total += v;
+  });
+  document.getElementById('total-time').textContent = total;
+  return total;
+}
 
-      const titleX = logoDataURL ? margin + 80 : margin;
-      pdf.setFont('helvetica', 'bold'); pdf.setFontSize(16);
-      pdf.text('SOP Export', titleX, y);
-      pdf.setFont('helvetica', 'normal'); pdf.setFontSize(10);
-      pdf.text(new Date().toLocaleString(), titleX, y + 15);
+/* ============================
+   Run mode (execution)
+   ============================ */
+function toggleRunMode(){
+  runMode = !runMode;
+  document.body.classList.toggle('run-mode', runMode);
+  document.getElementById('run-toggle').textContent = runMode ? '⏹️ Exit Run' : '▶ Run Mode';
+  showToast(runMode ? 'Run Mode: checklist enabled' : 'Edit Mode');
+}
 
-      y += logoDataURL ? 50 : 40;
+/* ============================
+   Save / Load (autosave + manual)
+   ============================ */
+function saveSOP(){
+  const data = { html: editor.innerHTML, logo: logoDataURL };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  document.getElementById('autosave-indicator').textContent = 'Saved';
+  setTimeout(()=> document.getElementById('autosave-indicator').textContent = 'Autosaved', 1000);
+}
+let saveTimer = null;
+function saveSOPDebounced(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=> saveSOP(), 600);
+}
 
-      let totalMinutes = 0;
-      function addTextWrapped(text, x, maxWidth) {
-        const lines = pdf.splitTextToSize(text, maxWidth);
-        lines.forEach(line => {
-          if (y > pageHeight - margin) { pdf.addPage(); y = margin; }
-          pdf.text(line, x, y);
-          y += lineHeight;
-        });
-      }
-
-      function traverse(node, depth = 0) {
-        [...node.children].forEach(child => {
-          if (child.classList.contains('sop-step') || child.classList.contains('sop-task') || child.classList.contains('sop-subtask')) {
-            const text = child.querySelector('input[type="text"]').value;
-            const time = child.querySelector('.time-input').value;
-            const note = child.querySelector('.note').textContent.trim();
-            const indent = margin + depth * 20;
-            addTextWrapped(`${text}${time ? ` (${time} min)` : ''}`, indent, 500 - indent);
-            if (time) totalMinutes += parseInt(time);
-            if (note) { pdf.setFont('helvetica', 'italic'); addTextWrapped(`Note: ${note}`, indent+15, 480 - indent); pdf.setFont('helvetica','normal'); }
-            traverse(child, depth + 1);
-          }
-          if (child.classList.contains('sop-checklist')) {
-            const checked = child.querySelector('input[type="checkbox"]').checked;
-            const text = child.querySelector('input[type="text"]').value;
-            addTextWrapped(`${checked ? '[x]' : '[ ]'} ${text}`, margin + depth * 20 + 15, 480);
-          }
-        });
-      }
-
-      traverse(editor);
-      y += 10;
-      pdf.setFont('helvetica', 'bold');
-      addTextWrapped(`Total Estimated Time: ${totalMinutes} min`, margin, 500);
-
-      const pageCount = pdf.internal.getNumberOfPages();
-      for (let i = 1; i <= pageCount; i++) {
-        pdf.setPage(i);
-        pdf.setFontSize(9);
-        pdf.text(`Page ${i} of ${pageCount}`, pdf.internal.pageSize.getWidth() - margin - 60, pageHeight - 20);
-      }
-
-      pdf.save('SOP_Export.pdf');
+/* load */
+function loadSOP(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    if (data.logo) {
+      logoDataURL = data.logo;
+      document.getElementById('logo-preview').src = logoDataURL;
     }
+    editor.innerHTML = data.html;
+    // rebind dynamic behaviors
+    editor.querySelectorAll('.sop-step, .sop-task, .sop-subtask, .sop-checklist').forEach(node => {
+      // re-enable behaviors for loaded node
+      const title = node.querySelector('.title-input');
+      if (title) title.addEventListener('input', ()=> { renumber(); saveSOPDebounced(); });
+      const time = node.querySelector('.time-input');
+      if (time) time.addEventListener('input', ()=> { calcTotalTime(); saveSOPDebounced(); });
+      const note = node.querySelector('.note');
+      if (note) note.addEventListener('input', ()=> saveSOPDebounced());
+      const toggle = node.querySelector('.toggle');
+      if (toggle) toggle.addEventListener('click', ()=> { node.classList.toggle('collapsed'); toggle.textContent = node.classList.contains('collapsed') ? '▸' : '▾'; saveSOPDebounced(); });
+      const remove = node.querySelector('.remove-btn');
+      if (remove) remove.addEventListener('click', ()=> { node.remove(); renumber(); saveSOPDebounced(); });
+      // controls for add buttons
+      const addTaskBtn = node.querySelector('.add-task-btn');
+      if (addTaskBtn) addTaskBtn.addEventListener('click', ()=> addTask(node));
+      const addSubtaskBtn = node.querySelector('.add-subtask-btn');
+      if (addSubtaskBtn) addSubtaskBtn.addEventListener('click', ()=> addSubtask(node));
+      const addChecklistBtn = node.querySelector('.add-checklist-btn');
+      if (addChecklistBtn) addChecklistBtn.addEventListener('click', ()=> addChecklist(node));
+      const addNoteBtn = node.querySelector('.add-note-btn');
+      if (addNoteBtn) addNoteBtn.addEventListener('click', ()=> addNote(node));
+      enableDrag(node);
+    });
+    renumber();
+    calcTotalTime();
+  } catch(e){
+    console.error('failed to load SOP', e);
+  }
+}
 
-    // === Markdown Export ===
-    function exportMarkdown() {
-      let md = `# SOP Export\n_${new Date().toLocaleString()}_\n\n`;
-      let totalMinutes = 0;
+/* clear */
+function clearSOP(){
+  if (!confirm('Clear current SOP (this will remove unsaved changes)?')) return;
+  editor.innerHTML = '';
+  logoDataURL = '';
+  document.getElementById('logo-preview').src = '';
+  localStorage.removeItem(STORAGE_KEY);
+  renumber();
+  calcTotalTime();
+  saveSOP();
+  pushHistory();
+}
 
-      function traverseMD(node, depth = 0) {
-        [...node.children].forEach(child => {
-          const indent = '  '.repeat(depth);
-          if (child.classList.contains('sop-step') || child.classList.contains('sop-task') || child.classList.contains('sop-subtask')) {
-            const text = child.querySelector('input[type="text"]').value;
-            const time = child.querySelector('.time-input').value;
-            const note = child.querySelector('.note').textContent.trim();
-            md += `${indent}- ${text}${time ? ` (${time} min)` : ''}\n`;
-            if (note) md += `${indent}  _Note: ${note}_\n`;
-            if (time) totalMinutes += parseInt(time);
-            traverseMD(child, depth + 1);
-          }
-          if (child.classList.contains('sop-checklist')) {
-            const checked = child.querySelector('input[type="checkbox"]').checked;
-            const text = child.querySelector('input[type="text"]').value;
-            md += `${indent}- [${checked ? 'x' : ' '}] ${text}\n`;
-          }
-        });
-      }
-      traverseMD(editor);
-      md += `\n**Total Estimated Time:** ${totalMinutes} min\n`;
+/* Download / Upload SOP file (share/import) */
+function downloadSOPFile(){
+  const data = { html: editor.innerHTML, logo: logoDataURL, created: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='sop_export.json'; a.click(); URL.revokeObjectURL(url);
+}
+document.getElementById('upload-sop-file').addEventListener('change', e=>{
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      if (d.logo) { logoDataURL = d.logo; document.getElementById('logo-preview').src = logoDataURL; }
+      if (d.html) { if (confirm('Load SOP from file and replace current editor?')) { editor.innerHTML = d.html; loadSOP(); saveSOP(); } }
+    } catch(err){ alert('Invalid file'); }
+  };
+  reader.readAsText(f);
+});
 
-      const blob = new Blob([md], { type: 'text/markdown' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'SOP_Export.md';
-      a.click();
-      URL.revokeObjectURL(url);
+/* ============================
+   Template system (modal + defaults + user templates)
+   ============================ */
+
+const templateModal = document.getElementById('templateModal');
+const defaultDiv = document.getElementById('defaultTemplates');
+const userDiv = document.getElementById('userTemplates');
+
+function confirmLoadTemplateModal(){ openTemplateModal(); }
+
+function openTemplateModal(){
+  // render lists
+  renderDefaultTemplates();
+  renderUserTemplates();
+  document.getElementById('save-template-name').value = '';
+  templateModal.style.display = 'block';
+}
+function closeTemplateModal(){ templateModal.style.display = 'none'; }
+
+function renderDefaultTemplates(){
+  defaultDiv.innerHTML = '';
+  for (const t of builtins()){
+    const item = document.createElement('div'); item.className='tmpl-item';
+    item.innerHTML = `<strong>${t.name}</strong><div style="font-size:13px;color:#444;margin-top:6px">${t.description}</div>
+      <div class="tmpl-actions"><button class="small" onclick='loadTemplate("${t.id}")'>Load</button>
+      <button class="small" onclick='previewTemplate("${t.id}")'>Preview</button></div>`;
+    defaultDiv.appendChild(item);
+  }
+}
+function renderUserTemplates(){
+  userDiv.innerHTML = '';
+  const list = loadUserTemplates();
+  if (!list.length) { userDiv.innerHTML = '<div style="color:#777">No saved templates</div>'; return; }
+  for (const t of list){
+    const item = document.createElement('div'); item.className='tmpl-item';
+    item.innerHTML = `<strong>${escapeHtml(t.name)}</strong><div style="font-size:13px;color:#444;margin-top:6px">${escapeHtml(t.description||'User template')}</div>
+      <div style="margin-top:6px;display:flex;gap:6px"><button class="small" onclick='loadUserTemplate("${t.key}")'>Load</button><button class="small" onclick='deleteUserTemplate("${t.key}")'>Delete</button></div>`;
+    userDiv.appendChild(item);
+  }
+}
+
+function builtins(){
+  // Default templates: id, name, description, html
+  return [
+    {
+      id:'operations',
+      name:'Operations',
+      description:'Standard ops flow: Prepare → Check → Execute → Verify with checklists.',
+      html: defaultOperations()
+    },
+    {
+      id:'client_onboarding',
+      name:'Client Onboarding',
+      description:'Steps to onboard a new client: documentation, intro call, setup accounts.',
+      html: defaultClientOnboarding()
+    },
+    {
+      id:'appointment_booking',
+      name:'Appointment Booking',
+      description:'Flow to manage bookings: request, confirm, prepare, follow-up.',
+      html: defaultAppointmentBooking()
+    },
+    {
+      id:'customer_payment',
+      name:'Customer Payment',
+      description:'Payment handling SOP: quote, invoice, confirm payment, receipt.',
+      html: defaultCustomerPayment()
+    },
+    {
+      id:'employee_expenses',
+      name:'Employee Expenses',
+      description:'Submitting and approving expense claims and receipts.',
+      html: defaultEmployeeExpenses()
     }
-  </script>
+  ];
+}
+
+/* ===== default template builders =====
+   These produce HTML consistent with the editor format
+   and allow full editing after loading.
+*/
+function defaultOperations(){
+  const e = document.createElement('div');
+
+  const s1 = createNodeFromJson('Step 1: Prepare workstation', 5, [
+    createNodeFromJson('Task: Gather materials', 2, [
+      createChecklistNode('Confirm tools available'),
+      createChecklistNode('PPE worn')
+    ]),
+    createNodeFromJson('Task: Verify systems', 3, [
+      createChecklistNode('Power on systems'),
+      createChecklistNode('Run diagnostics')
+    ])
+  ], 'Ensure all safety checks are done.');
+
+  const s2 = createNodeFromJson('Step 2: Execute procedure', 30, [
+    createNodeFromJson('Task: Run procedure', 25, [
+      createChecklistNode('Start machine'),
+      createChecklistNode('Monitor readings')
+    ])
+  ], 'Follow the procedure exactly.');
+
+  e.appendChild(s1); e.appendChild(s2);
+  return e.innerHTML;
+}
+function defaultClientOnboarding(){
+  const e = document.createElement('div');
+  e.appendChild(createNodeFromJson('Step 1: Collect client info', 10, [
+    createNodeFromJson('Task: Send welcome packet', 5),
+    createNodeFromJson('Task: Schedule onboarding call', 15)
+  ], 'Collect legal & billing details.'));
+  e.appendChild(createNodeFromJson('Step 2: Setup', 20, [
+    createNodeFromJson('Task: Create account', 10),
+    createNodeFromJson('Task: Configure services', 10)
+  ], 'Ensure credentials are shared securely.'));
+  return e.innerHTML;
+}
+function defaultAppointmentBooking(){
+  const e = document.createElement('div');
+  e.appendChild(createNodeFromJson('Step 1: Receive request', 5, [
+    createNodeFromJson('Task: Check availability', 3),
+    createNodeFromJson('Task: Propose times', 2)
+  ], 'Confirm client timezone.'));
+  e.appendChild(createNodeFromJson('Step 2: Confirm & remind', 2, [
+    createNodeFromJson('Task: Send confirmation', 1),
+    createNodeFromJson('Task: Send reminder', 1)
+  ], 'Use SMS or email.'));
+  return e.innerHTML;
+}
+function defaultCustomerPayment(){
+  const e = document.createElement('div');
+  e.appendChild(createNodeFromJson('Step 1: Issue quote', 5));
+  e.appendChild(createNodeFromJson('Step 2: Invoice customer', 3, [
+    createNodeFromJson('Task: Record invoice', 2),
+    createNodeFromJson('Task: Send invoice', 1)
+  ], 'Include payment terms.'));
+  e.appendChild(createNodeFromJson('Step 3: Confirm payment', 2, [
+    createNodeFromJson('Task: Reconcile', 1),
+    createNodeFromJson('Task: Issue receipt', 1)
+  ], 'Escalate delays >14 days.'));
+  return e.innerHTML;
+}
+function defaultEmployeeExpenses(){
+  const e = document.createElement('div');
+  e.appendChild(createNodeFromJson('Step 1: Employee submits claim', 5, [
+    createNodeFromJson('Task: Attach receipts', 2),
+    createNodeFromJson('Task: Fill form', 3)
+  ], 'Use approved expense categories.'));
+  e.appendChild(createNodeFromJson('Step 2: Manager approval', 3));
+  e.appendChild(createNodeFromJson('Step 3: Finance processes payment', 5));
+  return e.innerHTML;
+}
+
+/* helper to create nodes programmatically and return DOM node */
+function createNodeFromJson(title, time=0, children=[], note=''){
+  const node = createNodeTypeFromString(title, time, note);
+  const ch = node.querySelector('.children');
+  children.forEach(c=>{
+    ch.appendChild(c);
+  });
+  return node;
+}
+function createChecklistNode(text){
+  const wrap = document.createElement('div');
+  wrap.className = 'sop-checklist';
+  wrap.draggable = true;
+  wrap.innerHTML = `<input type="checkbox" /><input type="text" placeholder="Checklist item" value="${escapeAttr(text)}" /> <button class="remove-btn">✖</button>`;
+  wrap.querySelector('.remove-btn').addEventListener('click', ()=> { wrap.remove(); saveSOPDebounced(); });
+  wrap.querySelector('input[type="text"]').addEventListener('input', ()=> saveSOPDebounced());
+  wrap.querySelector('input[type="checkbox"]').addEventListener('change', ()=> saveSOPDebounced());
+  enableDrag(wrap);
+  return wrap;
+}
+function createNodeTypeFromString(title, time=0, note=''){
+  const type = title.toLowerCase().includes('task')? 'sop-task' : (title.toLowerCase().includes('subtask')? 'sop-subtask':'sop-step');
+  const node = createNode(type, '');
+  node.querySelector('.title-input').value = title;
+  node.querySelector('.time-input').value = time;
+  node.querySelector('.note').textContent = note || '';
+  return node;
+}
+
+/* ============================
+   Load & apply a template (default)
+   ============================ */
+function loadTemplate(id){
+  const t = builtins().find(x=>x.id===id);
+  if (!t) return;
+  if (!confirm('Load template "'+t.name+'" and replace current editor?')) return;
+  editor.innerHTML = t.html;
+  // rebind events
+  editor.querySelectorAll('.sop-step, .sop-task, .sop-subtask, .sop-checklist').forEach(node=>{
+    enableDrag(node);
+    // reattach remove and control handlers
+    const rem = node.querySelector('.remove-btn'); if (rem) rem.addEventListener('click', ()=> { node.remove(); renumber(); saveSOPDebounced(); });
+    const addTaskBtn = node.querySelector('.add-task-btn'); if (addTaskBtn) addTaskBtn.addEventListener('click', ()=> addTask(node));
+    const addSub = node.querySelector('.add-subtask-btn'); if (addSub) addSub.addEventListener('click', ()=> addSubtask(node));
+    const addChecklistBtn = node.querySelector('.add-checklist-btn'); if (addChecklistBtn) addChecklistBtn.addEventListener('click', ()=> addChecklist(node));
+    const note = node.querySelector('.note'); if (note) note.addEventListener('input', ()=> saveSOPDebounced());
+    const title = node.querySelector('.title-input'); if (title) title.addEventListener('input', ()=> { renumber(); saveSOPDebounced(); });
+    const time = node.querySelector('.time-input'); if (time) time.addEventListener('input', ()=> { calcTotalTime(); saveSOPDebounced(); });
+    const toggle = node.querySelector('.toggle'); if (toggle) toggle.addEventListener('click', ()=> { node.classList.toggle('collapsed'); toggle.textContent = node.classList.contains('collapsed') ? '▸' : '▾'; saveSOPDebounced();});
+  });
+  renumber(); calcTotalTime(); saveSOP();
+  showToast('Template "'+t.name+'" loaded');
+  closeTemplateModal();
+  pushHistory();
+}
+
+/* ============================
+   User templates (save/load/delete)
+   ============================ */
+function loadUserTemplates(){
+  const raw = localStorage.getItem(USER_TEMPLATES_KEY);
+  if (!raw) return [];
+  try{ return JSON.parse(raw); } catch(e){ return []; }
+}
+function saveUserTemplates(list){ localStorage.setItem(USER_TEMPLATES_KEY, JSON.stringify(list)); }
+
+function saveAsTemplate(){
+  const name = (document.getElementById('save-template-name').value || '').trim();
+  if (!name) { alert('Enter a template name'); return; }
+  const list = loadUserTemplates();
+  // if name exists confirm overwrite
+  const exists = list.find(x=>x.name===name);
+  if (exists && !confirm('A template with that name exists. Overwrite?')) return;
+  const tpl = { key: 'user_' + Date.now(), name, description: 'User template', html: editor.innerHTML };
+  if (exists) {
+    exists.html = tpl.html;
+    exists.description = tpl.description;
+  } else {
+    list.push(tpl);
+  }
+  saveUserTemplates(list);
+  renderUserTemplates();
+  showToast('Template saved');
+  document.getElementById('save-template-name').value = '';
+}
+
+function loadUserTemplate(key){
+  const list = loadUserTemplates();
+  const tpl = list.find(x=>x.key===key);
+  if (!tpl) return;
+  if (!confirm('Load user template "'+tpl.name+'" and replace current editor?')) return;
+  editor.innerHTML = tpl.html;
+  // rebind as in loadTemplate
+  editor.querySelectorAll('.sop-step, .sop-task, .sop-subtask, .sop-checklist').forEach(node=>{
+    enableDrag(node);
+    const rem = node.querySelector('.remove-btn'); if (rem) rem.addEventListener('click', ()=> { node.remove(); renumber(); saveSOPDebounced(); });
+    const addTaskBtn = node.querySelector('.add-task-btn'); if (addTaskBtn) addTaskBtn.addEventListener('click', ()=> addTask(node));
+    const addSub = node.querySelector('.add-subtask-btn'); if (addSub) addSub.addEventListener('click', ()=> addSubtask(node));
+    const addChecklistBtn = node.querySelector('.add-checklist-btn'); if (addChecklistBtn) addChecklistBtn.addEventListener('click', ()=> addChecklist(node));
+    const note = node.querySelector('.note'); if (note) note.addEventListener('input', ()=> saveSOPDebounced());
+    const title = node.querySelector('.title-input'); if (title) title.addEventListener('input', ()=> { renumber(); saveSOPDebounced(); });
+    const time = node.querySelector('.time-input'); if (time) time.addEventListener('input', ()=> { calcTotalTime(); saveSOPDebounced(); });
+    const toggle = node.querySelector('.toggle'); if (toggle) toggle.addEventListener('click', ()=> { node.classList.toggle('collapsed'); toggle.textContent = node.classList.contains('collapsed') ? '▸' : '▾'; saveSOPDebounced();});
+  });
+  renumber(); calcTotalTime(); saveSOP();
+  showToast('Template "'+tpl.name+'" loaded');
+  closeTemplateModal();
+  pushHistory();
+}
+function deleteUserTemplate(key){
+  if (!confirm('Delete this saved template?')) return;
+  let list = loadUserTemplates();
+  list = list.filter(x=>x.key!==key);
+  saveUserTemplates(list);
+  renderUserTemplates();
+  showToast('Template deleted');
+}
+
+/* ============================
+   Preview default template simple (show small modal)
+   ============================ */
+function previewTemplate(id){
+  const t = builtins().find(x=>x.id===id);
+  if (!t) return;
+  // Quick preview modal: reuse templateModal but temporarily show HTML fragment
+  const prev = window.open('', '_blank', 'width=600,height=600');
+  prev.document.write('<html><head><title>Preview - '+t.name+'</title></head><body>');
+  prev.document.write('<h3>'+t.name+'</h3><p>'+t.description+'</p>');
+  prev.document.write(t.html);
+  prev.document.write('</body></html>');
+  prev.document.close();
+}
+
+/* ============================
+   Template rendering initialization
+   ============================ */
+function initTemplatesUI(){
+  renderDefaultTemplates();
+  renderUserTemplates();
+}
+
+/* ============================
+   Exports
+   - PDF: text-based, logo optional, header+timestamp, total time, page numbers
+   - Markdown: hierarchical, notes, times, checklist items
+   ============================ */
+const { jsPDF } = window.jspdf;
+
+async function exportPDF(){
+  renumber();
+  calcTotalTime();
+  const pdf = new jsPDF({ unit:'pt', format:'a4' });
+  const margin = 40;
+  const pageW = pdf.internal.pageSize.getWidth();
+  const pageH = pdf.internal.pageSize.getHeight();
+  let y = margin;
+  const lineH = 18;
+  let totalMinutes = 0;
+
+  // optional logo image as dataURL
+  let logoLoaded = false;
+  let logoImg;
+  let logoW = 60, logoH = 40;
+  if (logoDataURL){
+    try{
+      logoImg = await loadImage(logoDataURL);
+      logoLoaded = true;
+      logoW = 60;
+      logoH = (logoImg.height/logoImg.width)*logoW;
+      pdf.addImage(logoDataURL, 'PNG', margin, y - 6, logoW, logoH);
+    }catch(e){ console.warn('logo failed to load, skipping'); logoLoaded = false; }
+  }
+
+  const titleX = logoLoaded ? margin + logoW + 12 : margin;
+  pdf.setFont('helvetica', 'bold'); pdf.setFontSize(16);
+  pdf.text('Standard Operating Procedure', titleX, y);
+  pdf.setFont('helvetica', 'normal'); pdf.setFontSize(10);
+  pdf.text(new Date().toLocaleString(), titleX, y + 16);
+
+  y += logoLoaded ? logoH + 8 : 30;
+
+  function addWrapped(text, x, maxW){
+    const lines = pdf.splitTextToSize(text, maxW);
+    for (const line of lines){
+      if (y > pageH - margin - 30){
+        pdf.addPage();
+        y = margin;
+      }
+      pdf.text(line, x, y);
+      y += lineH;
+    }
+  }
+
+  function traverse(node, depth=0){
+    const children = Array.from(node.children);
+    for (const child of children){
+      if (child.classList.contains('sop-step') || child.classList.contains('sop-task') || child.classList.contains('sop-subtask')){
+        const number = child.querySelector('.number-label')?.textContent || '';
+        const title = child.querySelector('.title-input')?.value || '[untitled]';
+        const time = child.querySelector('.time-input')?.value;
+        const note = child.querySelector('.note')?.textContent?.trim();
+        const indent = margin + depth * 20;
+        const line = `${number} ${title}${time ? ` (${time} min)` : ''}`;
+        addWrapped(line, indent, pageW - margin - indent);
+        if (time) totalMinutes += parseInt(time) || 0;
+        if (note){
+          pdf.setFont('helvetica','italic'); addWrapped(`Note: ${note}`, indent+12, pageW - margin - indent - 12); pdf.setFont('helvetica','normal');
+        }
+        traverse(child.querySelector('.children'), depth+1);
+      }
+      if (child.classList.contains('sop-checklist')){
+        const checked = child.querySelector('input[type="checkbox"]')?.checked;
+        const text = child.querySelector('input[type="text"]')?.value || '';
+        const indent = margin + depth*20 + 12;
+        addWrapped(`${checked ? '[x]' : '[ ]'} ${text}`, indent, pageW - margin - indent);
+      }
+    }
+  }
+
+  traverse(editor, 0);
+
+  // total
+  y += 8;
+  addWrapped(`Total Estimated Time: ${totalMinutes} min`, margin, pageW - margin*2);
+
+  // footers page numbers
+  const pageCount = pdf.internal.getNumberOfPages();
+  for (let i=1;i<=pageCount;i++){
+    pdf.setPage(i);
+    pdf.setFontSize(9);
+    const footer = `DGS Consulting  |  www.dgsconsulting.ca  |  Exported: ${new Date().toLocaleDateString()}`;
+    const textW = pdf.getTextWidth(footer);
+    pdf.text(footer, (pageW-textW)/2, pageH - 20);
+    pdf.text(`Page ${i} of ${pageCount}`, pageW - margin - 60, pageH - 20);
+  }
+
+  pdf.save('SOP_Export.pdf');
+}
+
+/* helper load image */
+function loadImage(dataUrl){
+  return new Promise((resolve,reject)=>{
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = ()=> resolve(img);
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
+}
+
+/* Markdown export */
+function exportMarkdown(){
+  renumber();
+  let md = `# SOP Export\n_Exported: ${new Date().toLocaleString()}_\n\n`;
+  let total=0;
+  function walk(node, depth=0){
+    const children = Array.from(node.children);
+    for (const child of children){
+      if (child.classList.contains('sop-step')||child.classList.contains('sop-task')||child.classList.contains('sop-subtask')){
+        const indent = '  '.repeat(depth);
+        const number = child.querySelector('.number-label')?.textContent || '';
+        const title = child.querySelector('.title-input')?.value || '';
+        const time = child.querySelector('.time-input')?.value;
+        md += `${indent}- **${number} ${title}**${time?` (${time} min)`:''}\n`;
+        const note = child.querySelector('.note')?.textContent?.trim();
+        if (note) md += `${indent}  > ${note}\n`;
+        if (time) total += parseInt(time)||0;
+        walk(child.querySelector('.children'), depth+1);
+      }
+      if (child.classList.contains('sop-checklist')){
+        const checked = child.querySelector('input[type="checkbox"]')?.checked;
+        const text = child.querySelector('input[type="text"]')?.value || '';
+        md += `${'  '.repeat(depth)}- [${checked?'x':' '}] ${text}\n`;
+      }
+    }
+  }
+  walk(editor, 0);
+  md += `\n**Total Estimated Time:** ${total} min\n`;
+  const blob = new Blob([md], { type:'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download='SOP_Export.md'; a.click(); URL.revokeObjectURL(url);
+  showToast('Markdown exported');
+}
+
+/* ============================
+   Simple undo/redo (history)
+   ============================ */
+let historyStack = [], historyIndex = -1;
+function pushHistory(){
+  // store html snapshot + logo
+  const snapshot = JSON.stringify({ html: editor.innerHTML, logo: logoDataURL });
+  // if we are not at top, truncate future
+  if (historyIndex < historyStack.length - 1) historyStack = historyStack.slice(0, historyIndex + 1);
+  historyStack.push(snapshot);
+  historyIndex = historyStack.length - 1;
+  // limit
+  if (historyStack.length > 40) historyStack.shift(), historyIndex = historyStack.length - 1;
+}
+function undo(){
+  if (historyIndex <= 0) return showToast('Nothing to undo');
+  historyIndex--;
+  const snap = JSON.parse(historyStack[historyIndex]);
+  editor.innerHTML = snap.html;
+  logoDataURL = snap.logo || '';
+  document.getElementById('logo-preview').src = logoDataURL || '';
+  rebindAll();
+  renumber(); calcTotalTime(); saveSOP();
+  showToast('Undo');
+}
+function redo(){
+  if (historyIndex >= historyStack.length - 1) return showToast('Nothing to redo');
+  historyIndex++;
+  const snap = JSON.parse(historyStack[historyIndex]);
+  editor.innerHTML = snap.html;
+  logoDataURL = snap.logo || '';
+  document.getElementById('logo-preview').src = logoDataURL || '';
+  rebindAll();
+  renumber(); calcTotalTime(); saveSOP();
+  showToast('Redo');
+}
+
+/* rebind after load/undo */
+function rebindAll(){
+  editor.querySelectorAll('.sop-step, .sop-task, .sop-subtask, .sop-checklist').forEach(node=>{
+    enableDrag(node);
+    const rem = node.querySelector('.remove-btn'); if (rem) rem.addEventListener('click', ()=> { node.remove(); renumber(); saveSOPDebounced(); });
+    const addTaskBtn = node.querySelector('.add-task-btn'); if (addTaskBtn) addTaskBtn.addEventListener('click', ()=> addTask(node));
+    const addSub = node.querySelector('.add-subtask-btn'); if (addSub) addSub.addEventListener('click', ()=> addSubtask(node));
+    const addChecklistBtn = node.querySelector('.add-checklist-btn'); if (addChecklistBtn) addChecklistBtn.addEventListener('click', ()=> addChecklist(node));
+    const addNoteBtn = node.querySelector('.add-note-btn'); if (addNoteBtn) addNoteBtn.addEventListener('click', ()=> addNote(node));
+    const note = node.querySelector('.note'); if (note) note.addEventListener('input', ()=> saveSOPDebounced());
+    const title = node.querySelector('.title-input'); if (title) title.addEventListener('input', ()=> { renumber(); saveSOPDebounced(); });
+    const time = node.querySelector('.time-input'); if (time) time.addEventListener('input', ()=> { calcTotalTime(); saveSOPDebounced(); });
+    const toggle = node.querySelector('.toggle'); if (toggle) toggle.addEventListener('click', ()=> { node.classList.toggle('collapsed'); toggle.textContent = node.classList.contains('collapsed') ? '▸' : '▾'; saveSOPDebounced();});
+  });
+}
+
+/* ============================
+   Logo upload handler
+   ============================ */
+document.getElementById('logo-upload').addEventListener('change', e=>{
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    logoDataURL = ev.target.result;
+    document.getElementById('logo-preview').src = logoDataURL;
+    saveSOPDebounced();
+  };
+  reader.readAsDataURL(f);
+});
+
+/* ============================
+   Init: load saved SOP, templates UI, start history
+   ============================ */
+const editor = document.getElementById('editor');
+loadSOP();
+initTemplatesUI();
+pushHistory();
+renumber();
+calcTotalTime();
+
+/* Helpers */
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+function escapeAttr(s){ return (s||'').replace(/"/g, '&quot;'); }
+function saveSOP() { saveSOPDebounced(); } // alias for button
+
+// expose some functions for template button inline handlers
+window.loadTemplate = loadTemplate;
+window.previewTemplate = previewTemplate;
+window.loadUserTemplate = loadUserTemplate;
+window.deleteUserTemplate = deleteUserTemplate;
+
+/* ============================
+   Expose for console debug
+   ============================ */
+window._sop = { addStep, addTask, addSubtask, addChecklist, renumber, saveSOP, exportPDF, exportMarkdown, saveAsTemplate };
+
+</script>
 </body>
 </html>
