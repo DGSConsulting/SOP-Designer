@@ -1,176 +1,248 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOP Designer — Full MVP with Editable Templates</title>
-
+<title>SOP Designer</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
   :root{
-    --primary:#1d4e2d; --accent:#2f7a4d; --danger:#b00020; --bg:#f6f7f8;
+    --primary:#1d4e2d; --accent:#2f7a4d; --danger:#b00020; --bg:#f9fafb; --border:#e5e7eb;
   }
   *{box-sizing:border-box}
-  body{font-family:Inter,Segoe UI,Roboto,Arial; margin:0; background:var(--bg); color:#111}
-  header{background:var(--primary); color:#fff; padding:14px 18px; display:flex; align-items:center; gap:12px;}
-  header h1{margin:0; font-size:18px}
-  .topbar{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
-  main{max-width:1100px; margin:20px auto; padding:0 18px 60px;}
-  #controls{display:flex; gap:8px; margin-bottom:12px; align-items:center; flex-wrap:wrap}
-  button{background:var(--primary); color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;}
-  button.ghost{background:transparent; color:var(--primary); border:1px solid var(--primary)}
-  .small{padding:6px 8px; font-size:13px}
-  .danger{background:var(--danger)}
-  #editor{background:#fff; padding:14px; border-radius:10px; min-height:320px; border:1px solid #e0e0e0}
-  .sop-step, .sop-task, .sop-subtask, .sop-checklist {
-    position:relative;
-    margin:8px 0;
-    padding:10px 12px;
-    border-radius:8px;
-    border-left:5px solid var(--primary);
-    background:#fcfffb;
+  body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; margin:0; background:var(--bg); color:#1f2937}
+  
+  .top-bar{background:#fff; border-bottom:1px solid var(--border); padding:12px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px; box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+  .save-animation{position:fixed; top:20px; right:20px; background:#10b981; color:#fff; padding:10px 14px; border-radius:6px; font-size:13px; animation:fadeInOut 2s ease-in-out}
+  @keyframes fadeInOut{0%{opacity:1; transform:translateY(0)} 90%{opacity:1} 100%{opacity:0; transform:translateY(-10px)}}
+  .logo-area{font-size:18px; font-weight:600; color:var(--primary); display:flex; align-items:center; gap:8px}
+  .logo-area img{height:28px; object-fit:contain}
+  button{
+    background-color: #f3f7fe;
+    color: #3b82f6;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.3s;
   }
-  .sop-task{margin-left:18px; border-color:#2f7a4d}
-  .sop-subtask{margin-left:36px; border-color:#4a9f5c}
-  .sop-checklist{margin-left:54px; display:flex; gap:8px; align-items:center; padding:8px; border-left:4px solid #9aa}
-  .controls-inline{display:inline-flex; gap:6px; margin-left:8px; vertical-align:middle}
-  .btn-mini{padding:4px 8px; font-size:13px; border-radius:6px}
-  .number-label{font-weight:700; color:var(--primary); margin-right:8px}
-  .title-input{font-size:14px; padding:6px; border-radius:6px; border:1px solid #ddd; min-width:180px}
-  .time-input{width:70px; font-size:13px; padding:6px; border-radius:6px; border:1px solid #ddd}
-  .note{display:block; margin-top:8px; font-style:italic; color:#555; padding:6px; border-radius:6px; border:1px dashed transparent}
-  .note[contenteditable]{border:1px dashed #eee}
-  .toggle{position:absolute; left:-22px; top:10px; cursor:pointer; color:var(--primary); font-weight:700}
-  .collapsed > .children{display:none}
-  .children{margin-top:8px}
-  .remove{background:transparent; color:var(--danger); border:none; font-weight:700; cursor:pointer}
-  .template-modal{position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:#fff; box-shadow:0 8px 36px rgba(0,0,0,.18); width:850px; max-width:95%; border-radius:12px; z-index:1400; padding:16px; display:none}
-  .modal-header{display:flex; justify-content:space-between; align-items:center; gap:12px}
-  .modal-body{display:flex; gap:12px; margin-top:12px}
-  .tmpl-col{flex:1; min-width:220px; max-height:520px; overflow:auto; padding:8px; border-radius:8px; border:1px solid #eee}
-  .tmpl-item{padding:8px; border-radius:8px; margin-bottom:8px; border:1px solid #f0f0f0; background:#fafafa}
-  .tmpl-actions{display:flex; gap:6px; margin-top:8px}
-  #logo-preview{height:36px; object-fit:contain}
-  .toast{position:fixed; right:20px; bottom:20px; background:#111; color:#fff; padding:10px 14px; border-radius:8px; opacity:0.95; z-index:1600}
-  .bottom-info{margin-top:12px; display:flex; gap:12px; align-items:center; justify-content:space-between}
-  .inline-input{padding:6px 8px; border-radius:6px; border:1px solid #ddd}
-  .share-section{background:#f0f7f2; padding:12px; border-radius:8px; margin-top:12px; border-left:4px solid var(--primary)}
-  .share-section h4{margin:0 0 8px 0}
-  .share-section button{font-size:13px}
-  .history-info{font-size:12px; color:#666; margin-top:4px}
-  .role-input{width:100px; font-size:12px; padding:4px; border-radius:4px; border:1px solid #ddd}
-  .step-completed{background:#e8f5e9 !important}
-  .step-completed .title-input{text-decoration:line-through; color:#888}
-  .completion-badge{display:inline-block; width:20px; height:20px; border-radius:50%; background:#4caf50; color:#fff; text-align:center; line-height:20px; font-size:12px; margin-right:6px}
-  .shortcuts-modal{position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:#fff; box-shadow:0 8px 36px rgba(0,0,0,.18); width:500px; max-width:95%; border-radius:12px; z-index:1400; padding:20px; display:none; max-height:80vh; overflow:auto}
-  .shortcuts-modal h3{margin-top:0}
-  .shortcut-item{display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee; font-size:13px}
-  .shortcut-key{background:#f0f0f0; padding:4px 8px; border-radius:4px; font-family:monospace; font-weight:600}
-  .role-section{background:#f9f9f9; padding:8px; border-radius:6px; margin:8px 0; border-left:3px solid var(--accent)}
-  @media (max-width:640px){ .modal-body{flex-direction:column} .tmpl-col{max-height:260px} }
+  button:hover{
+    background-color: #3b82f6;
+    box-shadow: 0 0 0 5px #3b83f65f;
+    color: #fff;
+  }
+  button.secondary{background:#fff; color:var(--primary); border:1px solid var(--border)}
+  button.secondary:hover{background:#f3f4f6}
+  .editor-panel{flex:1; padding:20px; overflow:auto}
+  .sidebar{width:280px; background:#fff; border-left:1px solid var(--border); padding:16px; overflow:auto; display:none}
+  .sidebar.open{display:block}
+  
+  #editor{background:#fff; border-radius:8px; min-height:400px; border:1px solid var(--border); padding:16px}
+  
+  .empty-state{text-align:center; padding:40px 20px; color:#6b7280}
+  .empty-state h2{color:var(--primary); font-size:20px; margin:0 0 12px 0}
+  .template-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-top:20px}
+  .template-card{padding:16px; border:2px solid var(--border); border-radius:8px; cursor:pointer; transition:all 0.2s}
+  .template-card:hover{border-color:var(--primary); background:#f0f9f4; transform:translateY(-2px)}
+  .template-card-title{font-weight:600; color:var(--primary); margin:0 0 4px 0; font-size:13px}
+  .template-card-desc{font-size:12px; color:#6b7280; margin:0}
+  
+  .sop-step, .sop-task, .sop-subtask, .sop-checklist{
+    position:relative; margin:8px 0; padding:12px; border-radius:6px; border-left:4px solid var(--primary); background:#fcfffb; border:1px solid var(--border)
+  }
+  .sop-task{margin-left:16px; border-color:var(--accent)}
+  .sop-subtask{margin-left:32px; border-color:#4a9f5c}
+  .sop-checklist{margin-left:48px; display:flex; gap:8px; align-items:center; padding:8px; border-left:3px solid #d1d5db}
+  
+  .step-header{display:flex; align-items:center; gap:8px; margin-bottom:8px}
+  .step-number{font-weight:700; color:var(--primary); min-width:24px}
+  .step-title{flex:1; font-size:15px; font-weight:500; color:#1f2937; border:none; padding:0; background:transparent}
+  .step-time{font-size:12px; color:#6b7280; width:50px; text-align:right}
+  
+  .step-controls{display:flex; gap:4px; margin-top:8px}
+  .btn-icon{width:28px; height:28px; padding:0; font-size:13px; display:flex; align-items:center; justify-content:center; border-radius:4px}
+  
+  .step-completed{background:#ecfdf5 !important; opacity:0.7}
+  .step-completed .step-title{text-decoration:line-through; color:#9ca3af}
+  
+  .sidebar-section{margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--border)}
+  .sidebar-section h4{margin:0 0 8px 0; font-size:13px; font-weight:600; color:var(--primary); text-transform:uppercase}
+  .status-indicator{display:inline-block; width:10px; height:10px; border-radius:50%; background:#10b981; margin-right:6px}
+  .save-status{font-size:12px; color:#6b7280}
+  
+  .toast{position:fixed; right:20px; bottom:20px; background:#1f2937; color:#fff; padding:12px 16px; border-radius:6px; opacity:0.95; z-index:1600; display:none}
+  
+  .modal{position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:#fff; box-shadow:0 20px 60px rgba(0,0,0,0.15); border-radius:8px; z-index:1400; padding:20px; max-width:95%; max-height:80vh; overflow:auto; display:none}
+  .modal-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px}
+  .modal-header h3{margin:0; font-size:16px}
+  .modal-close{background:transparent; color:#6b7280; border:none; font-size:20px; cursor:pointer; padding:0; width:24px; height:24px}
+  
+  .modal-overlay{position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.3); z-index:1399; display:none}
+  
+  footer{background:#fff; border-top:1px solid var(--border); padding:16px 20px; text-align:center; font-size:12px; color:#6b7280; margin-top:auto}
+  footer a{color:var(--primary); text-decoration:none; font-weight:500}
+  
+  @media(min-width:768px){
+    .sidebar{display:block !important}
+  }
+  @media(max-width:640px){
+    .container{flex-direction:column}
+    .sidebar{width:100%; border-left:none; border-top:1px solid var(--border)}
+  }
 </style>
 </head>
 <body>
-<header>
-  <img id="logo-preview" alt="" />
-  <h1 style="margin:0;font-size:18px">SOP Designer — Editable Templates & Exports</h1>
-  <div style="margin-left:auto; font-size:14px; display:flex; align-items:center; gap:8px">
-    <span>DGS Consulting</span>
-    <span>|</span>
-    <a href="https://dgsconsulting.solutions/" target="_blank" style="color:#fff; text-decoration:none">https://dgsconsulting.solutions/</a>
+
+<div class="top-bar">
+  <div class="logo-area">
+    <img id="logo-preview" alt="" />
+    <span>SOP Designer</span>
   </div>
-</header>
-
-<main>
-  <div id="controls" class="topbar">
-    <button onclick="confirmLoadTemplateModal()">Templates</button>
-    <button onclick="addStep()">+ Add Step</button>
-    <button id="save-btn" onclick="saveSOP()">💾 Save</button>
-    <button onclick="exportPDF()">📄 Export PDF</button>
-    <button onclick="exportMarkdown()">📝 Export MD</button>
-    <button id="run-toggle" onclick="toggleRunMode()">▶ Run Mode</button>
-    <button class="ghost" onclick="clearSOP()">🧹 Clear</button>
-    <button class="ghost" onclick="showShortcutsModal()">⌨️ Shortcuts</button>
-
-    <label style="display:inline-flex;align-items:center;gap:8px;">
-      🖼️ Logo
-      <input id="logo-upload" type="file" accept="image/*" style="display:inline-block" />
-    </label>
-
-    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-      <span id="autosave-indicator" style="font-size:13px;color:#666">Autosaved</span>
-      <button class="small" onclick="downloadSOPFile()">⬇️ Download SOP</button>
-      <input id="upload-sop-file" type="file" accept=".json,.sop" style="display:none" />
-      <button class="small" onclick="document.getElementById('upload-sop-file').click()">⬆️ Upload SOP</button>
-    </div>
+  
+  <div class="main-controls">
+    <button id="new-btn" onclick="showNewMenu()">+ New SOP</button>
+    <button id="export-btn" onclick="showExportMenu()" style="display:none">Export</button>
+    <button id="share-btn" onclick="generateShareLink()" style="display:none" class="secondary">Share</button>
+    <button onclick="toggleSidebar()" class="secondary">≡ Menu</button>
   </div>
+</div>
 
-  <div id="editor" tabindex="0" aria-label="SOP Editor"></div>
-
-  <div class="bottom-info">
-    <div>
-      <div>Total estimated time: <strong id="total-time">0</strong> min</div>
-      <div class="history-info">History: <span id="history-info">0/0</span></div>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <button onclick="undo()" class="small">Undo</button>
-      <button onclick="redo()" class="small">Redo</button>
-      <button onclick="showToast('Tip: Drag steps to reorder')">?</button>
-    </div>
+<div class="container">
+  <div class="editor-panel">
+    <div id="editor"></div>
   </div>
-</main>
-
-<!-- Template Modal -->
-<div id="templateModal" class="template-modal" role="dialog" aria-modal="true">
-  <div class="modal-header">
-    <strong>Templates</strong>
-    <div>
-      <button onclick="closeTemplateModal()" class="small">Close</button>
+  
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <h4>Status</h4>
+      <div class="save-status"><span class="status-indicator"></span><span id="save-status">Saved</span></div>
+      <div style="font-size:12px; color:#6b7280; margin-top:4px">Auto-saves as you work</div>
     </div>
-  </div>
-
-  <div class="modal-body">
-    <div class="tmpl-col">
-      <h4>Default templates</h4>
-      <div id="defaultTemplates"></div>
+    
+    <div class="sidebar-section">
+      <h4>Options</h4>
+      <button onclick="showUploadSOP()" style="width:100%; margin-bottom:8px">📂 Open SOP File</button>
+      <button onclick="downloadSOPFile()" style="width:100%; margin-bottom:8px">💾 Save File</button>
+      <button onclick="toggleRunMode()" style="width:100%; margin-bottom:8px" id="run-mode-btn">▶ Run Mode</button>
+      <button onclick="undo()" style="width:100%; margin-bottom:8px" class="secondary">Undo</button>
+      <button onclick="redo()" style="width:100%; margin-bottom:8px" class="secondary">Redo</button>
     </div>
-
-    <div class="tmpl-col">
-      <h4>Your templates</h4>
-      <div style="display:flex;gap:8px;margin-bottom:8px">
-        <input id="save-template-name" class="inline-input" placeholder="Template name (save current)" />
-        <button onclick="saveAsTemplate()" class="small">Save As</button>
+    
+    <div class="sidebar-section">
+      <h4>Info</h4>
+      <div style="font-size:12px; color:#6b7280">
+        <div>Total time: <strong id="total-time">0</strong> min</div>
+        <div style="margin-top:4px">Steps: <strong id="step-count">0</strong></div>
       </div>
-      <div id="userTemplates"></div>
+    </div>
+    
+    <div style="margin-top:16px; padding:12px; background:#f3f4f6; border-radius:6px">
+      <div style="font-size:11px; color:#6b7280; font-weight:500">💡 Tip: Use Ctrl+N to add steps</div>
     </div>
   </div>
 </div>
 
-<!-- Toast -->
-<div id="toast" class="toast" style="display:none"></div>
+<!-- Modals -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeAllModals()"></div>
 
-<!-- Shortcuts Modal -->
-<div id="shortcutsModal" class="shortcuts-modal">
-  <h3>Keyboard Shortcuts</h3>
-  <div id="shortcutsList"></div>
-  <button onclick="closeShortcutsModal()" style="margin-top:12px; width:100%">Close</button>
+<!-- New SOP Modal -->
+<div class="modal" id="newSOPModal">
+  <div class="modal-header">
+    <h3>Create New SOP</h3>
+    <button class="modal-close" onclick="closeAllModals()">×</button>
+  </div>
+  <div>
+    <p style="color:#6b7280; margin-bottom:16px">Start with a template or begin from scratch</p>
+    <div class="template-grid" id="templateGrid"></div>
+    <button onclick="closeAllModals(); startBlankSOP()" style="width:100%; margin-top:16px">Start Blank</button>
+  </div>
 </div>
+
+<!-- Export Modal -->
+<div class="modal" id="exportModal">
+  <div class="modal-header">
+    <h3>Export SOP</h3>
+    <button class="modal-close" onclick="closeAllModals()">×</button>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:8px">
+    <button onclick="exportPDF()" style="justify-content:flex-start">📄 Export as PDF</button>
+    <button onclick="exportMarkdown()" style="justify-content:flex-start">📝 Export as Markdown</button>
+    <button onclick="downloadSOPFile()" style="justify-content:flex-start">💾 Save as File</button>
+  </div>
+</div>
+
+<!-- Share Modal -->
+<div class="modal" id="shareModal">
+  <div class="modal-header">
+    <h3>Share SOP</h3>
+    <button class="modal-close" onclick="closeAllModals()">×</button>
+  </div>
+  <div>
+    <p style="color:#6b7280; font-size:13px; margin-bottom:12px">Anyone with this link can view and use your SOP</p>
+    <div style="display:flex; gap:8px">
+      <input type="text" id="shareLink" readonly style="flex:1; padding:8px 12px; border:1px solid var(--border); border-radius:6px; font-size:13px" />
+      <button onclick="copyShareLink()">Copy</button>
+    </div>
+    <div id="share-feedback" style="font-size:12px; color:#6b7280; margin-top:8px"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<input id="upload-sop-file" type="file" accept=".json,.sop" style="display:none" />
+<label id="logo-upload-label" style="display:none">
+  <input id="logo-upload" type="file" accept="image/*" />
+</label>
+
+<footer>
+  <p style="margin:0">DGS Consulting<br><a href="https://dgsconsulting.solutions/" target="_blank" class="footer-button">Visit Website</a> <a href="https://www.linkedin.com/in/dg-snook/" target="_blank" class="footer-button">LinkedIn</a> <a href="mailto:DGSConsult@consultant.com" class="footer-button">Contact</a></p>
+</footer>
+
+<style>
+.footer-button{
+  background-color: #f3f4f6;
+  color: #6b7280;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0.7em 1.4em;
+  font-size: 13px;
+  font-weight: 500;
+  transition: 0.3s;
+  text-decoration: none;
+  display: inline-block;
+  margin: 6px 4px;
+}
+.footer-button:hover{
+  background-color: #6b7280;
+  box-shadow: 0 0 0 5px #6b72805f;
+  color: #fff;
+}
+</style>
 
 <script>
-/* ============================
-   Core state + keys
-   ============================ */
 const STORAGE_KEY = 'sop_designer_data_v2';
 const USER_TEMPLATES_KEY = 'sop_templates_user';
-const defaultTemplates = [];
 let logoDataURL = '';
 let runMode = false;
 const MAX_HISTORY = 100;
 const FOOTER_TEXT = 'DGS Consulting | https://dgsconsulting.solutions/';
+const COMPANY_NAME = 'DGS Consulting';
+const COMPANY_WEBSITE = 'https://dgsconsulting.solutions/';
+const LINKEDIN_URL = 'https://www.linkedin.com/in/dg-snook/';
+const CONTACT_EMAIL = 'DGSConsult@consultant.com';
+
+let historyStack = [], historyIndex = -1;
+let saveTimer = null;
+let dragSrc = null;
+
+const editor = document.getElementById('editor');
 
 /* ============================
-   Utility: toast
+   Utils
    ============================ */
 function showToast(msg, t=2000){
   const el = document.getElementById('toast');
@@ -180,978 +252,441 @@ function showToast(msg, t=2000){
   el._timeout = setTimeout(()=> el.style.display='none', t);
 }
 
-/* ============================
-   Event Binding System (Refactored)
-   ============================ */
-const NodeEvents = {
-  bindNode(node) {
-    const toggle = node.querySelector('.toggle');
-    const titleInput = node.querySelector('.title-input');
-    const timeInput = node.querySelector('.time-input');
-    const noteField = node.querySelector('.note');
-    const removeBtn = node.querySelector('.remove-btn');
-    const addTaskBtn = node.querySelector('.add-task-btn');
-    const addSubBtn = node.querySelector('.add-subtask-btn');
-    const addCheckBtn = node.querySelector('.add-checklist-btn');
-    const addNoteBtn = node.querySelector('.add-note-btn');
-    const toggleRoleBtn = node.querySelector('.toggle-role-btn');
-    const completeCheckbox = node.querySelector('.complete-checkbox');
+function closeAllModals(){
+  document.getElementById('newSOPModal').style.display = 'none';
+  document.getElementById('exportModal').style.display = 'none';
+  document.getElementById('shareModal').style.display = 'none';
+  document.getElementById('modalOverlay').style.display = 'none';
+}
 
-    if (toggle) toggle.addEventListener('click', () => {
-      node.classList.toggle('collapsed');
-      toggle.textContent = node.classList.contains('collapsed') ? '▸' : '▾';
-      saveSOPDebounced();
-    });
+function showModal(modalId){
+  document.getElementById('modalOverlay').style.display = 'block';
+  document.getElementById(modalId).style.display = 'block';
+}
 
-    if (titleInput) titleInput.addEventListener('input', () => {
-      renumber();
-      saveSOPDebounced();
-    });
+function toggleSidebar(){
+  document.querySelector('.sidebar').classList.toggle('open');
+}
 
-    if (timeInput) timeInput.addEventListener('input', () => {
-      calcTotalTime();
-      saveSOPDebounced();
-    });
+function updateUI(){
+  renumber();
+  calcTotalTime();
+  updateStepCount();
+  updateSaveStatus();
+}
 
-    if (noteField) noteField.addEventListener('input', () => saveSOPDebounced());
+function updateStepCount(){
+  const count = editor.querySelectorAll(':scope > .sop-step').length;
+  document.getElementById('step-count').textContent = count;
+}
 
-    if (removeBtn) removeBtn.addEventListener('click', () => {
-      node.remove();
-      renumber();
-      saveSOPDebounced();
-    });
-
-    if (toggleRoleBtn) toggleRoleBtn.addEventListener('click', () => {
-      const roleSection = node.querySelector('.role-section');
-      roleSection.style.display = roleSection.style.display === 'none' ? 'block' : 'none';
-    });
-
-    if (completeCheckbox) completeCheckbox.addEventListener('change', () => {
-      node.classList.toggle('step-completed', completeCheckbox.checked);
-      saveSOPDebounced();
-    });
-
-    if (addTaskBtn) addTaskBtn.addEventListener('click', () => addTask(node));
-    if (addSubBtn) addSubBtn.addEventListener('click', () => addSubtask(node));
-    if (addCheckBtn) addCheckBtn.addEventListener('click', () => addChecklist(node));
-    if (addNoteBtn) addNoteBtn.addEventListener('click', () => addNote(node));
-
-    enableDrag(node);
-  },
-
-  bindChecklistItem(item) {
-    const checkbox = item.querySelector('input[type="checkbox"]');
-    const textInput = item.querySelector('input[type="text"]');
-    const removeBtn = item.querySelector('.remove-btn');
-
-    if (checkbox) checkbox.addEventListener('change', () => saveSOPDebounced());
-    if (textInput) textInput.addEventListener('input', () => saveSOPDebounced());
-    if (removeBtn) removeBtn.addEventListener('click', () => {
-      item.remove();
-      renumber();
-      saveSOPDebounced();
-    });
-
-    enableDrag(item);
-  },
-
-  bindAll() {
-    editor.querySelectorAll('.sop-step, .sop-task, .sop-subtask').forEach(node => this.bindNode(node));
-    editor.querySelectorAll('.sop-checklist').forEach(item => this.bindChecklistItem(item));
-  }
-};
+function updateSaveStatus(){
+  const status = document.getElementById('save-status');
+  status.textContent = 'Saving...';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    status.textContent = 'Saved';
+  }, 600);
+}
 
 /* ============================
-   Create element helpers
+   Node Creation & Binding
    ============================ */
-function createNode(type, titlePlaceholder='') {
+function createNode(type, titlePlaceholder=''){
   const el = document.createElement('div');
   el.className = type;
   el.draggable = true;
-
+  
   el.innerHTML = `
-    <span class="toggle" title="Collapse/expand">▾</span>
-    <span class="number-label"></span>
-    <input class="title-input" placeholder="${titlePlaceholder}" />
-    <input class="time-input" type="number" placeholder="min" />
-    <div class="controls-inline">
-      <button class="btn-mini add-task-btn">+Task</button>
-      <button class="btn-mini add-subtask-btn">+Subtask</button>
-      <button class="btn-mini add-checklist-btn">+Checklist</button>
-      <button class="btn-mini add-note-btn">Note</button>
-      <button class="btn-mini remove-btn">✖</button>
-      <button class="btn-mini toggle-role-btn">👤 Roles</button>
-      <input type="checkbox" class="complete-checkbox" title="Mark as complete" style="width:18px; height:18px; cursor:pointer" />
+    <div class="step-header">
+      <span class="step-number"></span>
+      <input type="text" class="step-title" placeholder="${titlePlaceholder}" />
+      <input type="number" class="step-time" min="0" placeholder="0 min" />
+      <input type="checkbox" class="complete-checkbox" title="Mark complete" />
     </div>
-    <div class="role-section" style="display:none">
-      <div style="font-size:12px; font-weight:600; margin-bottom:6px">Time by Role:</div>
-      <div class="roles-container" style="display:flex; gap:6px; flex-wrap:wrap"></div>
-      <div style="margin-top:6px"><input type="text" class="new-role-input" placeholder="Role name" style="width:80px; font-size:12px; padding:4px; border-radius:4px; border:1px solid #ddd" /> <button class="btn-mini" onclick="addRoleToNode(this.closest('.sop-step, .sop-task, .sop-subtask'))">Add Role</button></div>
+    <div class="step-controls">
+      <button class="btn-icon add-step-btn" title="Add step">+</button>
+      <button class="btn-icon remove-btn" title="Remove">✖</button>
     </div>
-    <div class="children"></div>
-    <div class="note" contenteditable="true" placeholder="Notes..."></div>
+    <div class="children" style="margin-top:8px"></div>
+    <div class="note" contenteditable="true" placeholder="Notes..." style="font-size:13px; color:#6b7280; margin-top:8px; padding:8px; border-radius:4px; background:#f9fafb; min-height:24px"></div>
   `;
-
-  NodeEvents.bindNode(el);
+  
+  bindNode(el);
   return el;
 }
 
-function addStep(){
-  const step = createNode('sop-step', 'Step title');
-  editor.appendChild(step);
-  renumber();
-  saveSOPDebounced();
-  pushHistory();
+function bindNode(node){
+  const titleInput = node.querySelector('.step-title');
+  const timeInput = node.querySelector('.step-time');
+  const noteField = node.querySelector('.note');
+  const removeBtn = node.querySelector('.remove-btn');
+  const addBtn = node.querySelector('.add-step-btn');
+  const completeCheckbox = node.querySelector('.complete-checkbox');
+
+  if(titleInput) titleInput.addEventListener('input', ()=> { renumber(); saveSOPDebounced(); });
+  if(timeInput) timeInput.addEventListener('input', ()=> { calcTotalTime(); saveSOPDebounced(); });
+  if(noteField) noteField.addEventListener('input', ()=> saveSOPDebounced());
+  
+  if(removeBtn) removeBtn.addEventListener('click', ()=> {
+    node.remove();
+    updateUI();
+    saveSOPDebounced();
+  });
+  
+  if(addBtn) addBtn.addEventListener('click', ()=> {
+    const type = node.className === 'sop-step' ? 'sop-task' : node.className === 'sop-task' ? 'sop-subtask' : 'sop-step';
+    const child = createNode(type, 'New item');
+    node.querySelector('.children').appendChild(child);
+    updateUI();
+    saveSOPDebounced();
+  });
+  
+  if(completeCheckbox) completeCheckbox.addEventListener('change', ()=> {
+    node.classList.toggle('step-completed', completeCheckbox.checked);
+    saveSOPDebounced();
+  });
+  
+  enableDrag(node);
 }
 
-function addTask(parent){
-  const container = parent.querySelector('.children');
-  const task = createNode('sop-task', 'Task title');
-  container.appendChild(task);
-  renumber();
-  saveSOPDebounced();
-  pushHistory();
-}
-
-function addSubtask(parent){
-  const container = parent.querySelector('.children');
-  const sub = createNode('sop-subtask', 'Subtask title');
-  container.appendChild(sub);
-  renumber();
-  saveSOPDebounced();
-  pushHistory();
-}
-
-function addChecklist(parent){
-  const container = parent.querySelector('.children');
-  const wrap = document.createElement('div');
-  wrap.className = 'sop-checklist';
-  wrap.draggable = true;
-  wrap.innerHTML = `<input type="checkbox" /><input type="text" placeholder="Checklist item" /> <button class="remove-btn">✖</button>`;
-  NodeEvents.bindChecklistItem(wrap);
-  container.appendChild(wrap);
-  renumber();
-  saveSOPDebounced();
-  pushHistory();
-}
-
-function addNote(parent){
-  const note = parent.querySelector('.note');
-  note.focus();
+function bindAll(){
+  editor.querySelectorAll('.sop-step, .sop-task, .sop-subtask').forEach(node => bindNode(node));
 }
 
 /* ============================
    Drag & Drop
    ============================ */
-let dragSrc = null;
 function enableDrag(el){
   el.addEventListener('dragstart', e => {
     dragSrc = el;
-    el.classList.add('dragging');
+    el.style.opacity = '0.5';
     e.dataTransfer.effectAllowed = 'move';
   });
+  
   el.addEventListener('dragend', () => {
-    if (dragSrc) dragSrc.classList.remove('dragging');
+    if(dragSrc) dragSrc.style.opacity = '1';
     dragSrc = null;
-    renumber();
-    saveSOPDebounced();
   });
 
-  el.addEventListener('dragover', e => {
-    e.preventDefault();
-    el.classList.add('drag-over');
-  });
-  el.addEventListener('dragleave', e => {
-    el.classList.remove('drag-over');
-  });
+  el.addEventListener('dragover', e => e.preventDefault());
   el.addEventListener('drop', e => {
     e.preventDefault();
-    el.classList.remove('drag-over');
-    if (!dragSrc || dragSrc === el) return;
-    const parent = el.parentNode;
-    parent.insertBefore(dragSrc, el);
-    renumber();
+    if(!dragSrc || dragSrc === el) return;
+    el.parentNode.insertBefore(dragSrc, el);
+    updateUI();
     saveSOPDebounced();
-    pushHistory();
   });
-
-  const ch = el.querySelector('.children');
-  if (ch) {
-    ch.addEventListener('dragover', e => { e.preventDefault(); ch.classList.add('drag-over'); });
-    ch.addEventListener('dragleave', () => ch.classList.remove('drag-over'));
-    ch.addEventListener('drop', e => {
-      e.preventDefault();
-      ch.classList.remove('drag-over');
-      if (!dragSrc) return;
-      ch.appendChild(dragSrc);
-      renumber();
-      saveSOPDebounced();
-      pushHistory();
-    });
-  }
 }
 
 /* ============================
-   Numbering logic
+   Numbering & Time
    ============================ */
 function renumber(){
   const steps = Array.from(editor.querySelectorAll(':scope > .sop-step'));
   steps.forEach((step, si) => {
-    setLabel(step, `${si+1}`);
+    step.querySelector('.step-number').textContent = si+1;
     const tasks = Array.from(step.querySelectorAll(':scope > .children > .sop-task'));
     tasks.forEach((task, ti) => {
-      setLabel(task, `${si+1}.${ti+1}`);
+      task.querySelector('.step-number').textContent = `${si+1}.${ti+1}`;
       const subs = Array.from(task.querySelectorAll(':scope > .children > .sop-subtask'));
-      subs.forEach((sub, ui) => setLabel(sub, `${si+1}.${ti+1}.${ui+1}`));
+      subs.forEach((sub, ui) => sub.querySelector('.step-number').textContent = `${si+1}.${ti+1}.${ui+1}`);
     });
   });
 }
 
-function setLabel(el, txt){
-  const lbl = el.querySelector('.number-label');
-  if (lbl) lbl.textContent = txt;
-}
-
-/* ============================
-   Total time calc
-   ============================ */
 function calcTotalTime(){
   let total = 0;
-  editor.querySelectorAll('.time-input').forEach(inp => {
+  editor.querySelectorAll('.step-time').forEach(inp => {
     const v = parseInt(inp.value);
-    if (!isNaN(v)) total += v;
+    if(!isNaN(v)) total += v;
   });
   document.getElementById('total-time').textContent = total;
-  return total;
 }
 
 /* ============================
-   Run mode
-   ============================ */
-function toggleRunMode(){
-  runMode = !runMode;
-  document.body.classList.toggle('run-mode', runMode);
-  document.getElementById('run-toggle').textContent = runMode ? '⏹️ Exit Run' : '▶ Run Mode';
-  showToast(runMode ? 'Run Mode: checklist enabled' : 'Edit Mode');
-}
-
-/* ============================
-   Save / Load
+   Save/Load/Clear
    ============================ */
 function saveSOP(){
   const data = { html: editor.innerHTML, logo: logoDataURL };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  document.getElementById('autosave-indicator').textContent = 'Saved';
-  setTimeout(()=> document.getElementById('autosave-indicator').textContent = 'Autosaved', 1000);
+  updateSaveStatus();
 }
 
-let saveTimer = null;
 function saveSOPDebounced(){
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(()=> saveSOP(), 600);
+  saveTimer = setTimeout(() => saveSOP(), 600);
 }
 
 function loadSOP(){
   const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return;
+  if(!raw) return showEmptyState();
   try {
     const data = JSON.parse(raw);
-    if (data.logo) {
+    if(data.logo) {
       logoDataURL = data.logo;
       document.getElementById('logo-preview').src = logoDataURL;
     }
     editor.innerHTML = data.html;
-    NodeEvents.bindAll();
-    renumber();
-    calcTotalTime();
-  } catch(e){
-    console.error('failed to load SOP', e);
-  }
+    bindAll();
+    updateUI();
+    showEditorUI();
+  } catch(e){ console.error('Load failed', e); }
 }
 
 function clearSOP(){
-  if (!confirm('Clear current SOP (this will remove unsaved changes)?')) return;
+  if(!confirm('Clear current SOP?')) return;
   editor.innerHTML = '';
   logoDataURL = '';
-  document.getElementById('logo-preview').src = '';
   localStorage.removeItem(STORAGE_KEY);
-  renumber();
-  calcTotalTime();
-  saveSOP();
+  showEmptyState();
+  updateUI();
+}
+
+function startBlankSOP(){
+  editor.innerHTML = '';
+  showEditorUI();
   pushHistory();
+}
+
+/* ============================
+   UI States
+   ============================ */
+function showEmptyState(){
+  editor.innerHTML = `
+    <div class="empty-state">
+      <h2>Welcome to SOP Designer</h2>
+      <p>Create Standard Operating Procedures for your business</p>
+      <div class="template-grid" id="emptyTemplateGrid"></div>
+      <button onclick="showNewMenu()" style="margin-top:20px">Get Started</button>
+    </div>
+  `;
+  document.getElementById('export-btn').style.display = 'none';
+  document.getElementById('share-btn').style.display = 'none';
+  document.getElementById('new-btn').style.display = 'block';
+  renderEmptyTemplates();
+}
+
+function showEditorUI(){
+  document.getElementById('export-btn').style.display = 'block';
+  document.getElementById('share-btn').style.display = 'block';
+  document.getElementById('new-btn').textContent = '+ Add Step';
+  document.getElementById('new-btn').onclick = addStep;
+}
+
+function renderEmptyTemplates(){
+  const grid = document.getElementById('emptyTemplateGrid');
+  if(!grid) return;
+  grid.innerHTML = '';
+  const templates = getDefaultTemplates();
+  templates.slice(0, 3).forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'template-card';
+    card.innerHTML = `<div class="template-card-title">${t.name}</div><div class="template-card-desc">${t.description}</div>`;
+    card.onclick = () => loadTemplate(t.id);
+    grid.appendChild(card);
+  });
+}
+
+/* ============================
+   Templates
+   ============================ */
+function getDefaultTemplates(){
+  return [
+    { id:'ops', name:'Operations', description:'Prepare, check, execute, verify', html: defaultOps() },
+    { id:'onboard', name:'Onboarding', description:'Client setup & intro', html: defaultOnboard() },
+    { id:'booking', name:'Appointment', description:'Request, confirm, follow-up', html: defaultBooking() }
+  ];
+}
+
+function defaultOps(){
+  const e = document.createElement('div');
+  e.appendChild(createNodeFromJson('Prepare workstation', 5, [], 'Ensure all safety checks'));
+  e.appendChild(createNodeFromJson('Execute procedure', 20, [], 'Follow exactly'));
+  e.appendChild(createNodeFromJson('Verify completion', 5, [], 'Sign off'));
+  return e.innerHTML;
+}
+
+function defaultOnboard(){
+  const e = document.createElement('div');
+  e.appendChild(createNodeFromJson('Collect information', 10, [], ''));
+  e.appendChild(createNodeFromJson('Schedule introduction', 15, [], ''));
+  e.appendChild(createNodeFromJson('Setup access', 20, [], ''));
+  return e.innerHTML;
+}
+
+function defaultBooking(){
+  const e = document.createElement('div');
+  e.appendChild(createNodeFromJson('Receive request', 5, [], ''));
+  e.appendChild(createNodeFromJson('Confirm availability', 3, [], ''));
+  e.appendChild(createNodeFromJson('Send confirmation', 1, [], ''));
+  return e.innerHTML;
+}
+
+function createNodeFromJson(title, time=0, children=[], note=''){
+  const node = createNode('sop-step', '');
+  node.querySelector('.step-title').value = title;
+  node.querySelector('.step-time').value = time;
+  node.querySelector('.note').textContent = note;
+  children.forEach(c => node.querySelector('.children').appendChild(c));
+  return node;
+}
+
+function loadTemplate(id){
+  if(!confirm('Load this template?')) return;
+  const t = getDefaultTemplates().find(x => x.id === id);
+  if(!t) return;
+  editor.innerHTML = t.html;
+  bindAll();
+  showEditorUI();
+  updateUI();
+  pushHistory();
+  showToast('Template loaded');
+  closeAllModals();
+}
+
+function showNewMenu(){
+  renderTemplateGrid();
+  showModal('newSOPModal');
+}
+
+function renderTemplateGrid(){
+  const grid = document.getElementById('templateGrid');
+  grid.innerHTML = '';
+  getDefaultTemplates().forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'template-card';
+    card.innerHTML = `<div class="template-card-title">${t.name}</div><div class="template-card-desc">${t.description}</div>`;
+    card.onclick = () => loadTemplate(t.id);
+    grid.appendChild(card);
+  });
+}
+
+/* ============================
+   Core Functions
+   ============================ */
+function addStep(){
+  if(editor.innerHTML.includes('empty-state')) showEditorUI();
+  const step = createNode('sop-step', 'New step');
+  editor.appendChild(step);
+  updateUI();
+  saveSOPDebounced();
+  pushHistory();
+  step.querySelector('.step-title').focus();
+}
+
+function toggleRunMode(){
+  runMode = !runMode;
+  document.body.style.background = runMode ? '#e8f5e9' : 'var(--bg)';
+  document.getElementById('run-mode-btn').textContent = runMode ? '⏹ Exit Run' : '▶ Run Mode';
+  showToast(runMode ? 'Execution mode' : 'Edit mode');
+}
+
+/* ============================
+   Export
+   ============================ */
+const { jsPDF } = window.jspdf;
+
+async function exportPDF(){
+  const pdf = new jsPDF({ unit:'pt', format:'a4' });
+  const margin = 40, pageW = pdf.internal.pageSize.getWidth(), pageH = pdf.internal.pageSize.getHeight();
+  let y = margin, total = 0;
+
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(16);
+  pdf.text('Standard Operating Procedure', margin, y);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(10);
+  pdf.text(new Date().toLocaleString(), margin, y + 16);
+  y += 40;
+
+  function traverse(node, depth=0){
+    Array.from(node.children).forEach(child => {
+      if(child.classList.contains('sop-step') || child.classList.contains('sop-task') || child.classList.contains('sop-subtask')){
+        const num = child.querySelector('.step-number')?.textContent || '';
+        const title = child.querySelector('.step-title')?.value || '';
+        const time = child.querySelector('.step-time')?.value;
+        const indent = margin + depth * 20;
+        pdf.text(`${num} ${title}${time ? ` (${time}m)` : ''}`, indent, y);
+        if(time) total += parseInt(time) || 0;
+        y += 16;
+        traverse(child.querySelector('.children'), depth+1);
+      }
+    });
+  }
+
+  traverse(editor, 0);
+  y += 8;
+  pdf.text(`Total: ${total} minutes`, margin, y);
+
+  const pageCount = pdf.internal.getNumberOfPages();
+  for(let i=1; i<=pageCount; i++){
+    pdf.setPage(i);
+    pdf.setFontSize(9);
+    const footer = `${FOOTER_TEXT} | ${new Date().toLocaleDateString()}`;
+    const textW = pdf.getTextWidth(footer);
+    pdf.text(footer, (pageW-textW)/2, pageH - 20);
+  }
+
+  pdf.save('SOP_Export.pdf');
+  showToast('PDF exported');
+}
+  let md = `# SOP\n_${new Date().toLocaleString()}_\n\n`;
+  let total = 0;
+
+  function walk(node, depth=0){
+    Array.from(node.children).forEach(child => {
+      if(child.classList.contains('sop-step') || child.classList.contains('sop-task') || child.classList.contains('sop-subtask')){
+        const indent = '  '.repeat(depth);
+        const num = child.querySelector('.step-number')?.textContent || '';
+        const title = child.querySelector('.step-title')?.value || '';
+        const time = child.querySelector('.step-time')?.value;
+        md += `${indent}- **${num} ${title}**${time ? ` (${time}m)` : ''}\n`;
+        if(time) total += parseInt(time) || 0;
+        walk(child.querySelector('.children'), depth+1);
+      }
+    });
+  }
+
+  walk(editor, 0);
+  md += `\n**Total: ${total} minutes**\n`;
+  const blob = new Blob([md], { type:'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'SOP_Export.md';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Markdown exported');
+}
+
+function showExportMenu(){
+  showModal('exportModal');
 }
 
 function downloadSOPFile(){
   const data = { html: editor.innerHTML, logo: logoDataURL, created: new Date().toISOString() };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url; a.download='sop_export.json'; a.click(); URL.revokeObjectURL(url);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'SOP.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
-document.getElementById('upload-sop-file').addEventListener('change', e=>{
+function showUploadSOP(){
+  document.getElementById('upload-sop-file').click();
+}
+
+document.getElementById('upload-sop-file').addEventListener('change', e => {
   const f = e.target.files[0];
-  if (!f) return;
+  if(!f) return;
   const reader = new FileReader();
   reader.onload = ev => {
     try {
       const d = JSON.parse(ev.target.result);
-      if (d.logo) { logoDataURL = d.logo; document.getElementById('logo-preview').src = logoDataURL; }
-      if (d.html) { if (confirm('Load SOP from file and replace current editor?')) { editor.innerHTML = d.html; NodeEvents.bindAll(); saveSOP(); renumber(); calcTotalTime(); } }
-    } catch(err){ alert('Invalid file'); }
-  };
-  reader.readAsText(f);
-});
-
-/* ============================
-   Template system
-   ============================ */
-const templateModal = document.getElementById('templateModal');
-const defaultDiv = document.getElementById('defaultTemplates');
-const userDiv = document.getElementById('userTemplates');
-
-function confirmLoadTemplateModal(){ openTemplateModal(); }
-
-function openTemplateModal(){
-  renderDefaultTemplates();
-  renderUserTemplates();
-  document.getElementById('save-template-name').value = '';
-  templateModal.style.display = 'block';
-}
-
-function closeTemplateModal(){ templateModal.style.display = 'none'; }
-
-function renderDefaultTemplates(){
-  defaultDiv.innerHTML = '';
-  for (const t of builtins()){
-    const item = document.createElement('div'); item.className='tmpl-item';
-    item.innerHTML = `<strong>${t.name}</strong><div style="font-size:13px;color:#444;margin-top:6px">${t.description}</div>
-      <div class="tmpl-actions"><button class="small" onclick='loadTemplate("${t.id}")'>Load</button>
-      <button class="small" onclick='previewTemplate("${t.id}")'>Preview</button></div>`;
-    defaultDiv.appendChild(item);
-  }
-}
-
-function renderUserTemplates(){
-  userDiv.innerHTML = '';
-  const list = loadUserTemplates();
-  if (!list.length) { userDiv.innerHTML = '<div style="color:#777">No saved templates</div>'; return; }
-  for (const t of list){
-    const item = document.createElement('div'); item.className='tmpl-item';
-    item.innerHTML = `<strong>${escapeHtml(t.name)}</strong><div style="font-size:13px;color:#444;margin-top:6px">${escapeHtml(t.description||'User template')}</div>
-      <div style="margin-top:6px;display:flex;gap:6px"><button class="small" onclick='loadUserTemplate("${t.key}")'>Load</button><button class="small" onclick='deleteUserTemplate("${t.key}")'>Delete</button></div>`;
-    userDiv.appendChild(item);
-  }
-}
-
-function builtins(){
-  return [
-    {
-      id:'operations',
-      name:'Operations',
-      description:'Standard ops flow: Prepare → Check → Execute → Verify with checklists.',
-      html: defaultOperations()
-    },
-    {
-      id:'client_onboarding',
-      name:'Client Onboarding',
-      description:'Steps to onboard a new client: documentation, intro call, setup accounts.',
-      html: defaultClientOnboarding()
-    },
-    {
-      id:'appointment_booking',
-      name:'Appointment Booking',
-      description:'Flow to manage bookings: request, confirm, prepare, follow-up.',
-      html: defaultAppointmentBooking()
-    },
-    {
-      id:'customer_payment',
-      name:'Customer Payment',
-      description:'Payment handling SOP: quote, invoice, confirm payment, receipt.',
-      html: defaultCustomerPayment()
-    },
-    {
-      id:'employee_expenses',
-      name:'Employee Expenses',
-      description:'Submitting and approving expense claims and receipts.',
-      html: defaultEmployeeExpenses()
-    }
-  ];
-}
-
-function defaultOperations(){
-  const e = document.createElement('div');
-  const s1 = createNodeFromJson('Step 1: Prepare workstation', 5, [
-    createNodeFromJson('Task: Gather materials', 2, [
-      createChecklistNode('Confirm tools available'),
-      createChecklistNode('PPE worn')
-    ]),
-    createNodeFromJson('Task: Verify systems', 3, [
-      createChecklistNode('Power on systems'),
-      createChecklistNode('Run diagnostics')
-    ])
-  ], 'Ensure all safety checks are done.');
-  const s2 = createNodeFromJson('Step 2: Execute procedure', 30, [
-    createNodeFromJson('Task: Run procedure', 25, [
-      createChecklistNode('Start machine'),
-      createChecklistNode('Monitor readings')
-    ])
-  ], 'Follow the procedure exactly.');
-  e.appendChild(s1); e.appendChild(s2);
-  return e.innerHTML;
-}
-
-function defaultClientOnboarding(){
-  const e = document.createElement('div');
-  e.appendChild(createNodeFromJson('Step 1: Collect client info', 10, [
-    createNodeFromJson('Task: Send welcome packet', 5),
-    createNodeFromJson('Task: Schedule onboarding call', 15)
-  ], 'Collect legal & billing details.'));
-  e.appendChild(createNodeFromJson('Step 2: Setup', 20, [
-    createNodeFromJson('Task: Create account', 10),
-    createNodeFromJson('Task: Configure services', 10)
-  ], 'Ensure credentials are shared securely.'));
-  return e.innerHTML;
-}
-
-function defaultAppointmentBooking(){
-  const e = document.createElement('div');
-  e.appendChild(createNodeFromJson('Step 1: Receive request', 5, [
-    createNodeFromJson('Task: Check availability', 3),
-    createNodeFromJson('Task: Propose times', 2)
-  ], 'Confirm client timezone.'));
-  e.appendChild(createNodeFromJson('Step 2: Confirm & remind', 2, [
-    createNodeFromJson('Task: Send confirmation', 1),
-    createNodeFromJson('Task: Send reminder', 1)
-  ], 'Use SMS or email.'));
-  return e.innerHTML;
-}
-
-function defaultCustomerPayment(){
-  const e = document.createElement('div');
-  e.appendChild(createNodeFromJson('Step 1: Issue quote', 5));
-  e.appendChild(createNodeFromJson('Step 2: Invoice customer', 3, [
-    createNodeFromJson('Task: Record invoice', 2),
-    createNodeFromJson('Task: Send invoice', 1)
-  ], 'Include payment terms.'));
-  e.appendChild(createNodeFromJson('Step 3: Confirm payment', 2, [
-    createNodeFromJson('Task: Reconcile', 1),
-    createNodeFromJson('Task: Issue receipt', 1)
-  ], 'Escalate delays >14 days.'));
-  return e.innerHTML;
-}
-
-function defaultEmployeeExpenses(){
-  const e = document.createElement('div');
-  e.appendChild(createNodeFromJson('Step 1: Employee submits claim', 5, [
-    createNodeFromJson('Task: Attach receipts', 2),
-    createNodeFromJson('Task: Fill form', 3)
-  ], 'Use approved expense categories.'));
-  e.appendChild(createNodeFromJson('Step 2: Manager approval', 3));
-  e.appendChild(createNodeFromJson('Step 3: Finance processes payment', 5));
-  return e.innerHTML;
-}
-
-function createNodeFromJson(title, time=0, children=[], note=''){
-  const node = createNodeTypeFromString(title, time, note);
-  const ch = node.querySelector('.children');
-  children.forEach(c=>{ ch.appendChild(c); });
-  return node;
-}
-
-function createChecklistNode(text){
-  const wrap = document.createElement('div');
-  wrap.className = 'sop-checklist';
-  wrap.draggable = true;
-  wrap.innerHTML = `<input type="checkbox" /><input type="text" placeholder="Checklist item" value="${escapeAttr(text)}" /> <button class="remove-btn">✖</button>`;
-  NodeEvents.bindChecklistItem(wrap);
-  return wrap;
-}
-
-function createNodeTypeFromString(title, time=0, note=''){
-  const type = title.toLowerCase().includes('task')? 'sop-task' : (title.toLowerCase().includes('subtask')? 'sop-subtask':'sop-step');
-  const node = createNode(type, '');
-  node.querySelector('.title-input').value = title;
-  node.querySelector('.time-input').value = time;
-  node.querySelector('.note').textContent = note || '';
-  return node;
-}
-
-function loadTemplate(id){
-  const t = builtins().find(x=>x.id===id);
-  if (!t) return;
-  if (!confirm('Load template "'+t.name+'" and replace current editor?')) return;
-  editor.innerHTML = t.html;
-  NodeEvents.bindAll();
-  renumber(); calcTotalTime(); saveSOP();
-  showToast('Template "'+t.name+'" loaded');
-  closeTemplateModal();
-  pushHistory();
-}
-
-/* ============================
-   User templates
-   ============================ */
-function loadUserTemplates(){
-  const raw = localStorage.getItem(USER_TEMPLATES_KEY);
-  if (!raw) return [];
-  try{ return JSON.parse(raw); } catch(e){ return []; }
-}
-
-function saveUserTemplates(list){ localStorage.setItem(USER_TEMPLATES_KEY, JSON.stringify(list)); }
-
-function saveAsTemplate(){
-  const name = (document.getElementById('save-template-name').value || '').trim();
-  if (!name) { alert('Enter a template name'); return; }
-  const list = loadUserTemplates();
-  const exists = list.find(x=>x.name===name);
-  if (exists && !confirm('A template with that name exists. Overwrite?')) return;
-  const tpl = { key: 'user_' + Date.now(), name, description: 'User template', html: editor.innerHTML };
-  if (exists) {
-    exists.html = tpl.html;
-    exists.description = tpl.description;
-  } else {
-    list.push(tpl);
-  }
-  saveUserTemplates(list);
-  renderUserTemplates();
-  showToast('Template saved');
-  document.getElementById('save-template-name').value = '';
-}
-
-function loadUserTemplate(key){
-  const list = loadUserTemplates();
-  const tpl = list.find(x=>x.key===key);
-  if (!tpl) return;
-  if (!confirm('Load user template "'+tpl.name+'" and replace current editor?')) return;
-  editor.innerHTML = tpl.html;
-  NodeEvents.bindAll();
-  renumber(); calcTotalTime(); saveSOP();
-  showToast('Template "'+tpl.name+'" loaded');
-  closeTemplateModal();
-  pushHistory();
-}
-
-function deleteUserTemplate(key){
-  if (!confirm('Delete this saved template?')) return;
-  let list = loadUserTemplates();
-  list = list.filter(x=>x.key!==key);
-  saveUserTemplates(list);
-  renderUserTemplates();
-  showToast('Template deleted');
-}
-
-function previewTemplate(id){
-  const t = builtins().find(x=>x.id===id);
-  if (!t) return;
-  const prev = window.open('', '_blank', 'width=600,height=600');
-  prev.document.write('<html><head><title>Preview - '+t.name+'</title></head><body>');
-  prev.document.write('<h3>'+t.name+'</h3><p>'+t.description+'</p>');
-  prev.document.write(t.html);
-  prev.document.write('</body></html>');
-  prev.document.close();
-}
-
-function initTemplatesUI(){
-  renderDefaultTemplates();
-  renderUserTemplates();
-}
-
-/* ============================
-   Exports
-   ============================ */
-const { jsPDF } = window.jspdf;
-
-async function exportPDF(){
-  renumber();
-  calcTotalTime();
-  const pdf = new jsPDF({ unit:'pt', format:'a4' });
-  const margin = 40;
-  const pageW = pdf.internal.pageSize.getWidth();
-  const pageH = pdf.internal.pageSize.getHeight();
-  let y = margin;
-  const lineH = 18;
-  let totalMinutes = 0;
-
-  let logoLoaded = false;
-  let logoImg;
-  let logoW = 60, logoH = 40;
-  if (logoDataURL){
-    try{
-      logoImg = await loadImage(logoDataURL);
-      logoLoaded = true;
-      logoW = 60;
-      logoH = (logoImg.height/logoImg.width)*logoW;
-      pdf.addImage(logoDataURL, 'PNG', margin, y - 6, logoW, logoH);
-    }catch(e){ console.warn('logo failed to load, skipping'); logoLoaded = false; }
-  }
-
-  const titleX = logoLoaded ? margin + logoW + 12 : margin;
-  pdf.setFont('helvetica', 'bold'); pdf.setFontSize(16);
-  pdf.text('Standard Operating Procedure', titleX, y);
-  pdf.setFont('helvetica', 'normal'); pdf.setFontSize(10);
-  pdf.text(new Date().toLocaleString(), titleX, y + 16);
-
-  y += logoLoaded ? logoH + 8 : 30;
-
-  function addWrapped(text, x, maxW){
-    const lines = pdf.splitTextToSize(text, maxW);
-    for (const line of lines){
-      if (y > pageH - margin - 30){
-        pdf.addPage();
-        y = margin;
-      }
-      pdf.text(line, x, y);
-      y += lineH;
-    }
-  }
-
-  function traverse(node, depth=0){
-    const children = Array.from(node.children);
-    for (const child of children){
-      if (child.classList.contains('sop-step') || child.classList.contains('sop-task') || child.classList.contains('sop-subtask')){
-        const number = child.querySelector('.number-label')?.textContent || '';
-        const title = child.querySelector('.title-input')?.value || '[untitled]';
-        const time = child.querySelector('.time-input')?.value;
-        const note = child.querySelector('.note')?.textContent?.trim();
-        const indent = margin + depth * 20;
-        const line = `${number} ${title}${time ? ` (${time} min)` : ''}`;
-        addWrapped(line, indent, pageW - margin - indent);
-        if (time) totalMinutes += parseInt(time) || 0;
-        if (note){
-          pdf.setFont('helvetica','italic'); addWrapped(`Note: ${note}`, indent+12, pageW - margin - indent - 12); pdf.setFont('helvetica','normal');
-        }
-        traverse(child.querySelector('.children'), depth+1);
-      }
-      if (child.classList.contains('sop-checklist')){
-        const checked = child.querySelector('input[type="checkbox"]')?.checked;
-        const text = child.querySelector('input[type="text"]')?.value || '';
-        const indent = margin + depth*20 + 12;
-        addWrapped(`${checked ? '[x]' : '[ ]'} ${text}`, indent, pageW - margin - indent);
-      }
-    }
-  }
-
-  traverse(editor, 0);
-
-  y += 8;
-  addWrapped(`Total Estimated Time: ${totalMinutes} min`, margin, pageW - margin*2);
-
-  const pageCount = pdf.internal.getNumberOfPages();
-  for (let i=1;i<=pageCount;i++){
-    pdf.setPage(i);
-    pdf.setFontSize(9);
-    const footer = `${FOOTER_TEXT}  |  Exported: ${new Date().toLocaleDateString()}`;
-    const textW = pdf.getTextWidth(footer);
-    pdf.text(footer, (pageW-textW)/2, pageH - 20);
-    pdf.text(`Page ${i} of ${pageCount}`, pageW - margin - 60, pageH - 20);
-  }
-
-  pdf.save('SOP_Export.pdf');
-  showToast('PDF exported');
-}
-
-function loadImage(dataUrl){
-  return new Promise((resolve,reject)=>{
-    const img = new Image();
-    img.crossOrigin = 'Anonymous';
-    img.onload = ()=> resolve(img);
-    img.onerror = reject;
-    img.src = dataUrl;
-  });
-}
-
-function exportMarkdown(){
-  renumber();
-  let md = `# SOP Export\n_Exported: ${new Date().toLocaleString()}_\n\n`;
-  let total=0;
-  function walk(node, depth=0){
-    const children = Array.from(node.children);
-    for (const child of children){
-      if (child.classList.contains('sop-step')||child.classList.contains('sop-task')||child.classList.contains('sop-subtask')){
-        const indent = '  '.repeat(depth);
-        const number = child.querySelector('.number-label')?.textContent || '';
-        const title = child.querySelector('.title-input')?.value || '';
-        const time = child.querySelector('.time-input')?.value;
-        md += `${indent}- **${number} ${title}**${time?` (${time} min)`:''}\n`;
-        const note = child.querySelector('.note')?.textContent?.trim();
-        if (note) md += `${indent}  > ${note}\n`;
-        if (time) total += parseInt(time)||0;
-        walk(child.querySelector('.children'), depth+1);
-      }
-      if (child.classList.contains('sop-checklist')){
-        const checked = child.querySelector('input[type="checkbox"]')?.checked;
-        const text = child.querySelector('input[type="text"]')?.value || '';
-        md += `${'  '.repeat(depth)}- [${checked?'x':' '}] ${text}\n`;
-      }
-    }
-  }
-  walk(editor, 0);
-  md += `\n**Total Estimated Time:** ${total} min\n`;
-  const blob = new Blob([md], { type:'text/markdown' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download='SOP_Export.md'; a.click(); URL.revokeObjectURL(url);
-  showToast('Markdown exported');
-}
-
-/* ============================
-   Undo/Redo with configurable history limit
-   ============================ */
-let historyStack = [], historyIndex = -1;
-
-function pushHistory(){
-  const snapshot = JSON.stringify({ html: editor.innerHTML, logo: logoDataURL });
-  if (historyIndex < historyStack.length - 1) historyStack = historyStack.slice(0, historyIndex + 1);
-  historyStack.push(snapshot);
-  historyIndex = historyStack.length - 1;
-  
-  if (historyStack.length > MAX_HISTORY) {
-    historyStack.shift();
-    historyIndex = historyStack.length - 1;
-  }
-  updateHistoryInfo();
-}
-
-function undo(){
-  if (historyIndex <= 0) return showToast('Nothing to undo');
-  historyIndex--;
-  const snap = JSON.parse(historyStack[historyIndex]);
-  editor.innerHTML = snap.html;
-  logoDataURL = snap.logo || '';
-  document.getElementById('logo-preview').src = logoDataURL || '';
-  NodeEvents.bindAll();
-  renumber(); calcTotalTime(); saveSOP();
-  updateHistoryInfo();
-  showToast('Undo');
-}
-
-function redo(){
-  if (historyIndex >= historyStack.length - 1) return showToast('Nothing to redo');
-  historyIndex++;
-  const snap = JSON.parse(historyStack[historyIndex]);
-  editor.innerHTML = snap.html;
-  logoDataURL = snap.logo || '';
-  document.getElementById('logo-preview').src = logoDataURL || '';
-  NodeEvents.bindAll();
-  renumber(); calcTotalTime(); saveSOP();
-  updateHistoryInfo();
-  showToast('Redo');
-}
-
-function updateHistoryInfo(){
-  const total = historyStack.length;
-  const current = historyIndex + 1;
-  document.getElementById('history-info').textContent = `${current}/${total} (max ${MAX_HISTORY})`;
-}
-
-/* ============================
-   Collaboration Features (Share Link & Versioning)
-   ============================ */
-function generateShareLink(){
-  const data = { html: editor.innerHTML, logo: logoDataURL, timestamp: new Date().toISOString(), version: 1 };
-  const encoded = btoa(JSON.stringify(data));
-  const url = `${window.location.origin}${window.location.pathname}?sop=${encoded}`;
-  
-  navigator.clipboard.writeText(url).then(() => {
-    showToast('Share link copied to clipboard');
-    document.getElementById('share-status').textContent = 'Link copied!';
-    setTimeout(() => {
-      document.getElementById('share-status').textContent = '';
-    }, 3000);
-  }).catch(() => {
-    showToast('Copy failed, try manual copy');
-  });
-}
-
-function loadFromShareLink(){
-  const params = new URLSearchParams(window.location.search);
-  const sopData = params.get('sop');
-  if (!sopData) return;
-  
-  try {
-    const data = JSON.parse(atob(sopData));
-    if (data.html && confirm('Load SOP from share link?')) {
-      editor.innerHTML = data.html;
-      if (data.logo) {
-        logoDataURL = data.logo;
-        document.getElementById('logo-preview').src = logoDataURL;
-      }
-      NodeEvents.bindAll();
-      renumber();
-      calcTotalTime();
-      showToast('SOP loaded from share link');
-      pushHistory();
-      // Clean URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  } catch(e) {
-    console.error('Failed to load from share link', e);
-  }
-}
-
-/* ============================
-   Logo upload
-   ============================ */
-document.getElementById('logo-upload').addEventListener('change', e=>{
-  const f = e.target.files[0];
-  if (!f) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    logoDataURL = ev.target.result;
-    document.getElementById('logo-preview').src = logoDataURL;
-    saveSOPDebounced();
-  };
-  reader.readAsDataURL(f);
-});
-
-/* ============================
-   Init
-   ============================ */
-const editor = document.getElementById('editor');
-loadSOP();
-loadFromShareLink();
-initTemplatesUI();
-pushHistory();
-renumber();
-calcTotalTime();
-updateHistoryInfo();
-
-/* Helpers */
-function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
-function escapeAttr(s){ return (s||'').replace(/"/g, '&quot;'); }
-
-window.loadTemplate = loadTemplate;
-window.previewTemplate = previewTemplate;
-window.loadUserTemplate = loadUserTemplate;
-window.deleteUserTemplate = deleteUserTemplate;
-
-/* ============================
-   Role-based time estimates
-   ============================ */
-function addRoleToNode(node) {
-  const input = node.querySelector('.new-role-input');
-  const roleName = (input.value || '').trim();
-  if (!roleName) { showToast('Enter a role name'); return; }
-  
-  const container = node.querySelector('.roles-container');
-  const roleId = 'role_' + Date.now();
-  const roleDiv = document.createElement('div');
-  roleDiv.setAttribute('data-role-id', roleId);
-  roleDiv.className = 'role-section';
-  roleDiv.style.display = 'inline-block';
-  roleDiv.style.background = 'transparent';
-  roleDiv.style.border = 'none';
-  roleDiv.style.padding = '0';
-  roleDiv.style.margin = '0';
-  roleDiv.innerHTML = `
-    <span style="font-size:12px; background:#e3f2fd; padding:4px 8px; border-radius:4px; display:inline-flex; gap:4px; align-items:center">
-      ${escapeHtml(roleName)}: 
-      <input type="number" class="role-time" value="0" min="0" style="width:40px; font-size:11px; padding:2px" />
-      min
-      <button class="remove-btn" style="padding:0; font-size:11px; min-width:auto; width:auto">✖</button>
-    </span>
-  `;
-  
-  roleDiv.querySelector('.role-time').addEventListener('input', () => saveSOPDebounced());
-  roleDiv.querySelector('.remove-btn').addEventListener('click', () => { roleDiv.remove(); saveSOPDebounced(); });
-  
-  container.appendChild(roleDiv);
-  input.value = '';
-  saveSOPDebounced();
-}
-
-function getRoleTimeEstimates(node) {
-  const roles = {};
-  node.querySelectorAll('.roles-container [data-role-id]').forEach(roleDiv => {
-    const roleId = roleDiv.getAttribute('data-role-id');
-    const roleText = roleDiv.textContent.split(':')[0].trim();
-    const time = parseInt(roleDiv.querySelector('.role-time').value) || 0;
-    roles[roleText] = time;
-  });
-  return roles;
-}
-
-/* ============================
-   Keyboard shortcuts
-   ============================ */
-const SHORTCUTS = {
-  'Ctrl+Z': 'Undo',
-  'Ctrl+Y': 'Redo',
-  'Ctrl+S': 'Save',
-  'Ctrl+N': 'New Step',
-  'Ctrl+T': 'Toggle Run Mode',
-  'Ctrl+E': 'Export PDF',
-  'Ctrl+M': 'Export Markdown',
-  'Ctrl+L': 'Share Link',
-  'Ctrl+H': 'Show Shortcuts'
-};
-
-document.addEventListener('keydown', (e) => {
-  const key = `${e.ctrlKey || e.metaKey ? 'Ctrl+' : ''}${e.shiftKey ? 'Shift+' : ''}${e.key.toUpperCase()}`;
-  
-  if (e.ctrlKey || e.metaKey) {
-    switch(true) {
-      case e.key === 'z' || e.key === 'Z':
-        e.preventDefault();
-        undo();
-        break;
-      case e.key === 'y' || e.key === 'Y':
-        e.preventDefault();
-        redo();
-        break;
-      case e.key === 's' || e.key === 'S':
-        e.preventDefault();
-        saveSOP();
-        break;
-      case e.key === 'n' || e.key === 'N':
-        e.preventDefault();
-        addStep();
-        break;
-      case e.key === 't' || e.key === 'T':
-        e.preventDefault();
-        toggleRunMode();
-        break;
-      case e.key === 'e' || e.key === 'E':
-        e.preventDefault();
-        exportPDF();
-        break;
-      case e.key === 'm' || e.key === 'M':
-        e.preventDefault();
-        exportMarkdown();
-        break;
-      case e.key === 'l' || e.key === 'L':
-        e.preventDefault();
-        generateShareLink();
-        break;
-      case e.key === 'h' || e.key === 'H':
-        e.preventDefault();
-        showShortcutsModal();
-        break;
-    }
-  }
-});
-
-function showShortcutsModal() {
-  const modal = document.getElementById('shortcutsModal');
-  const list = document.getElementById('shortcutsList');
-  list.innerHTML = '';
-  for (const [key, action] of Object.entries(SHORTCUTS)) {
-    const item = document.createElement('div');
-    item.className = 'shortcut-item';
-    item.innerHTML = `
-      <span>${action}</span>
-      <span class="shortcut-key">${key}</span>
-    `;
-    list.appendChild(item);
-  }
-  modal.style.display = 'block';
-}
-
-function closeShortcutsModal() {
-  document.getElementById('shortcutsModal').style.display = 'none';
-}
-
-window._sop = { addStep, addTask, addSubtask, addChecklist, renumber, saveSOP, exportPDF, exportMarkdown, saveAsTemplate, addRoleToNode };
-
-</script>
-</body>
-</html>
+      if(d.html) {
+        editor.innerHTML = d.html;
+        if(d.logo) {
+          logoDataURL = d.logo;
