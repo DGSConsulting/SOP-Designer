@@ -3,95 +3,434 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOP Designer</title>
+<title>Free SOP Designer Tool | DGS Consulting</title>
+<meta name="description" content="Create professional Standard Operating Procedures in minutes. Free tool with 50+ templates. Trusted by 500+ businesses.">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-:root{--primary:#1d4e2d; --accent:#2f7a4d; --danger:#b00020; --bg:#f9fafb; --border:#e5e7eb}
-*{box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; margin:0; background:var(--bg); color:#1f2937}
+:root{--primary:#1E293B; --accent:#06B6D4; --success:#10b981; --danger:#ef4444; --bg:#F9FAFB; --border:#e5e7eb; --text:#1f2937; --text-light:#6b7280; --light:#F9FAFB; --lighter:#FFFFFF; --dark:#1e1e1e; --white:#ffffff}
+*{box-sizing:border-box; margin:0; padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; 
+  background: linear-gradient(rgba(249, 250, 251, 0.95), rgba(249, 250, 251, 0.95)),
+    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(99, 102, 241, 0.02) 10px, rgba(99, 102, 241, 0.02) 20px);
+  color:var(--text);
+  overflow-x:hidden;
+}
 
-.top-bar{background:#fff; border-bottom:1px solid var(--border); padding:12px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px; box-shadow:0 1px 3px rgba(0,0,0,0.05)}
-.logo-area{font-size:18px; font-weight:600; color:var(--primary); display:flex; align-items:center; gap:8px}
-.logo-area img{height:28px; object-fit:contain}
+/* Trust Bar */
+.trust-bar{background:linear-gradient(90deg, var(--success) 0%, #059669 100%); color:#fff; padding:10px 20px; text-align:center; font-size:13px; font-weight:500; box-shadow:0 2px 8px rgba(16,185,129,0.2)}
+.trust-bar span{margin:0 20px; display:inline-block}
 
-.main-controls{display:flex; gap:8px; align-items:center}
-button{background-color:#e8f5e9; color:#1d4e2d; border:none; cursor:pointer; border-radius:8px; padding:8px 14px; font-size:14px; font-weight:500; transition:0.3s}
-button:hover{background-color:#1d4e2d; box-shadow:0 0 0 5px #1d4e2d5f; color:#fff}
-button.secondary{background:#f3f4f6; color:#6b7280}
-button.secondary:hover{background:#6b7280; box-shadow:0 0 0 5px #6b72805f; color:#fff}
+/* Top Bar */
+.top-bar{background:#fff; border-bottom:2px solid var(--border); padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px; box-shadow:0 2px 12px rgba(0,0,0,0.08); position:sticky; top:0; z-index:100}
+.logo-area{font-size:20px; font-weight:700; color:var(--primary); display:flex; align-items:center; gap:10px}
+.logo-area img{height:32px; object-fit:contain}
+.logo-badge{background:var(--success); color:#fff; font-size:10px; padding:3px 8px; border-radius:12px; font-weight:600; margin-left:8px}
 
-.container{display:flex; height:calc(100vh - 60px)}
-.editor-panel{flex:1; padding:20px; overflow:auto}
-.sidebar{width:280px; background:#fff; border-left:1px solid var(--border); padding:16px; overflow:auto}
+.main-controls{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+button{
+  background:var(--accent); 
+  color:var(--white); 
+  border:none; 
+  cursor:pointer; 
+  border-radius:8px; 
+  padding:10px 18px; 
+  font-size:14px; 
+  font-weight:600; 
+  transition:all 0.3s ease;
+  box-shadow:0 2px 8px rgba(6,182,212,0.25);
+}
+button:hover{
+  background:#0891b2; 
+  transform:translateY(-2px);
+  box-shadow:0 4px 16px rgba(6,182,212,0.4);
+}
+button:active{transform:translateY(0)}
+button.secondary{background:#f3f4f6; color:var(--text-light); box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+button.secondary:hover{background:var(--text-light); color:#fff}
+button.cta-primary{
+  background:linear-gradient(135deg, var(--success) 0%, #059669 100%);
+  font-size:15px;
+  padding:12px 24px;
+  box-shadow:0 4px 14px rgba(16,185,129,0.4);
+  animation:pulse 2s infinite;
+}
+button.cta-primary:hover{
+  transform:scale(1.05);
+  box-shadow:0 6px 20px rgba(16,185,129,0.6);
+}
+
+@keyframes pulse{
+  0%, 100%{box-shadow:0 4px 14px rgba(16,185,129,0.4)}
+  50%{box-shadow:0 6px 24px rgba(16,185,129,0.7)}
+}
+
+/* Social Proof Ticker */
+.proof-ticker{
+  background:var(--lighter); 
+  border-bottom:1px solid var(--border); 
+  padding:12px 0; 
+  overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+.ticker-content{
+  display:flex; 
+  animation:scroll 30s linear infinite; 
+  white-space:nowrap;
+}
+.ticker-item{
+  padding:0 40px; 
+  font-size:14px; 
+  color:var(--text-light); 
+  font-weight:500;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+@keyframes scroll{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+
+.container{display:flex; min-height:calc(100vh - 200px); margin-top:20px}
+.editor-panel{flex:1; padding:20px; overflow:auto; max-width:1200px; margin:0 auto}
+.sidebar{width:320px; background:#fff; border-left:2px solid var(--border); padding:20px; overflow:auto; box-shadow:-2px 0 12px rgba(0,0,0,0.05)}
 .sidebar.hidden{display:none}
 
-#editor{background:#fff; border-radius:8px; min-height:400px; border:1px solid var(--border); padding:16px}
+#editor{background:#fff; border-radius:12px; min-height:400px; border:2px solid var(--border); padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.08)}
 
-.empty-state{text-align:center; padding:40px 20px; color:#6b7280}
-.empty-state h2{color:var(--primary); font-size:20px; margin:0 0 12px 0}
-.template-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-top:20px}
-.template-card{padding:16px; border:2px solid var(--border); border-radius:8px; cursor:pointer; transition:all 0.2s}
-.template-card:hover{border-color:var(--primary); background:#f0f9f4; transform:translateY(-2px)}
-.template-card-title{font-weight:600; color:var(--primary); margin:0 0 4px 0; font-size:13px}
-.template-card-desc{font-size:12px; color:#6b7280; margin:0}
+/* Empty State */
+.empty-state{text-align:center; padding:60px 20px; color:var(--text-light); max-width:800px; margin:0 auto}
+.empty-state h2{color:var(--primary); font-size:32px; margin:0 0 16px 0; font-weight:700}
+.empty-state p{font-size:18px; margin-bottom:24px; color:var(--text)}
+.empty-state .highlight-box{
+  background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); 
+  border:2px solid var(--primary); 
+  border-radius:12px; 
+  padding:24px; 
+  margin:24px 0; 
+  text-align:left;
+  box-shadow:0 4px 16px rgba(99,102,241,0.15);
+}
+.highlight-box h3{color:var(--primary); margin-bottom:12px; font-size:20px}
+.highlight-box ul{list-style:none; padding:0}
+.highlight-box li{padding:8px 0; font-size:15px; line-height:1.6; color:var(--text)}
+.highlight-box li:before{content:"✓"; color:var(--success); font-weight:bold; margin-right:12px}
 
-.sop-step, .sop-task, .sop-subtask{position:relative; margin:8px 0; padding:12px; border-radius:6px; border-left:4px solid var(--primary); background:#fcfffb; border:1px solid var(--border)}
-.sop-task{margin-left:16px; border-color:var(--accent)}
-.sop-subtask{margin-left:32px; border-color:#4a9f5c}
+.template-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-top:24px}
+.template-card{
+  padding:20px; 
+  border:2px solid var(--border); 
+  border-radius:12px; 
+  cursor:pointer; 
+  transition:all 0.3s ease;
+  background:#fff;
+  position:relative;
+  overflow:hidden;
+}
+.template-card:before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:4px;
+  background:linear-gradient(90deg, var(--accent), var(--primary));
+  transform:scaleX(0);
+  transition:transform 0.3s ease;
+}
+.template-card:hover{
+  border-color:var(--accent); 
+  background:linear-gradient(135deg, #f0f9ff 0%, #cffafe 100%);
+  transform:translateY(-4px);
+  box-shadow:0 8px 24px rgba(6,182,212,0.2);
+}
+.template-card:hover:before{transform:scaleX(1)}
+.template-card-icon{font-size:32px; margin-bottom:12px}
+.template-card-title{font-weight:700; color:var(--primary); margin:0 0 8px 0; font-size:16px}
+.template-card-desc{font-size:13px; color:var(--text-light); margin:0; line-height:1.5}
+.template-card-badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  background:var(--success);
+  color:#fff;
+  font-size:10px;
+  padding:4px 8px;
+  border-radius:8px;
+  font-weight:600;
+}
 
-.step-header{display:flex; align-items:center; gap:8px; margin-bottom:8px}
-.step-number{font-weight:700; color:var(--primary); min-width:24px}
-.step-title{flex:1; font-size:15px; font-weight:500; color:#1f2937; border:none; padding:0; background:transparent}
-.step-time{font-size:12px; color:#6b7280; width:50px; text-align:right}
+/* SOP Elements */
+.sop-step, .sop-task, .sop-subtask{
+  position:relative; 
+  margin:12px 0; 
+  padding:16px; 
+  border-radius:10px; 
+  border-left:4px solid var(--primary); 
+  background:#fff;
+  border:2px solid var(--border);
+  transition:all 0.2s ease;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+.sop-step:hover, .sop-task:hover, .sop-subtask:hover{
+  box-shadow:0 4px 16px rgba(0,0,0,0.1);
+  transform:translateX(4px);
+}
+.sop-task{margin-left:24px; border-left-color:var(--accent)}
+.sop-subtask{margin-left:48px; border-left-color:var(--success)}
 
-.step-controls{display:flex; gap:4px; margin-top:8px}
-.btn-icon{width:28px; height:28px; padding:0; font-size:13px; display:flex; align-items:center; justify-content:center; border-radius:4px; background:#e8f5e9; color:#1d4e2d; border:none; cursor:pointer}
-.btn-icon:hover{background:#1d4e2d; color:#fff}
+.step-header{display:flex; align-items:center; gap:12px; margin-bottom:12px}
+.step-number{font-weight:800; color:var(--primary); min-width:32px; font-size:16px}
+.step-title{
+  flex:1; 
+  font-size:16px; 
+  font-weight:600; 
+  color:var(--text); 
+  border:none; 
+  padding:8px; 
+  background:transparent;
+  border-radius:6px;
+  transition:background 0.2s;
+}
+.step-title:focus{background:#f9fafb; outline:2px solid var(--accent); outline-offset:2px}
+.step-time{
+  font-size:13px; 
+  color:var(--text-light); 
+  width:70px; 
+  text-align:center;
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:6px;
+}
+.step-time:focus{outline:2px solid var(--accent); border-color:var(--accent)}
 
-.step-completed{background:#ecfdf5 !important; opacity:0.7}
+.step-controls{display:flex; gap:6px; margin-top:12px}
+.btn-icon{
+  width:32px; 
+  height:32px; 
+  padding:0; 
+  font-size:14px; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center; 
+  border-radius:6px; 
+  background:var(--bg); 
+  color:var(--accent); 
+  border:1px solid var(--border); 
+  cursor:pointer;
+  box-shadow:none;
+}
+.btn-icon:hover{background:var(--accent); color:var(--white); transform:scale(1.1)}
+
+.note{
+  font-size:13px; 
+  color:var(--text-light); 
+  margin-top:12px; 
+  padding:12px; 
+  border-radius:8px; 
+  background:#f9fafb; 
+  min-height:32px;
+  border:1px solid var(--border);
+}
+.note:focus{outline:2px solid var(--accent); background:var(--white)}
+.note:empty:before{content:attr(placeholder); color:#9ca3af}
+
+.step-completed{background:#ecfdf5 !important; opacity:0.8; border-left-color:var(--success) !important}
 .step-completed .step-title{text-decoration:line-through; color:#9ca3af}
 
-.sidebar-section{margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--border)}
-.sidebar-section h4{margin:0 0 8px 0; font-size:13px; font-weight:600; color:var(--primary); text-transform:uppercase}
+/* Sidebar */
+.sidebar-section{margin-bottom:24px; padding-bottom:20px; border-bottom:2px solid var(--border)}
+.sidebar-section:last-child{border:none}
+.sidebar-section h4{margin:0 0 12px 0; font-size:14px; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:0.5px}
+.sidebar button{width:100%; margin-bottom:10px; justify-content:center}
+.stat-item{display:flex; justify-content:space-between; padding:10px 0; font-size:14px}
+.stat-label{color:var(--text-light)}
+.stat-value{font-weight:700; color:var(--accent); font-size:18px}
 
-.save-animation{position:fixed; top:20px; right:20px; background:#10b981; color:#fff; padding:10px 14px; border-radius:6px; font-size:13px; animation:fadeInOut 2s ease-in-out; z-index:2000}
-@keyframes fadeInOut{0%{opacity:1; transform:translateY(0)} 90%{opacity:1} 100%{opacity:0; transform:translateY(-10px)}}
+/* Modals */
+.modal{
+  position:fixed; 
+  left:50%; 
+  top:50%; 
+  transform:translate(-50%,-50%); 
+  background:#fff; 
+  box-shadow:0 20px 60px rgba(0,0,0,0.25); 
+  border-radius:16px; 
+  z-index:1400; 
+  padding:32px; 
+  max-width:600px;
+  width:90%;
+  max-height:85vh; 
+  overflow:auto; 
+  display:none;
+  animation:modalSlideIn 0.3s ease;
+}
+@keyframes modalSlideIn{
+  from{opacity:0; transform:translate(-50%,-45%)}
+  to{opacity:1; transform:translate(-50%,-50%)}
+}
+.modal-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:20px}
+.modal-header h3{margin:0; font-size:24px; color:var(--primary); font-weight:700}
+.modal-close{background:transparent; color:var(--text-light); border:none; font-size:28px; cursor:pointer; padding:0; width:32px; height:32px; border-radius:50%; transition:all 0.2s}
+.modal-close:hover{background:var(--bg); color:var(--danger); transform:rotate(90deg)}
 
-.toast{position:fixed; right:20px; bottom:20px; background:#1f2937; color:#fff; padding:12px 16px; border-radius:6px; opacity:0.95; z-index:1600; display:none}
+.modal-overlay{position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:1399; display:none}
 
-.modal{position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:#fff; box-shadow:0 20px 60px rgba(0,0,0,0.15); border-radius:8px; z-index:1400; padding:20px; max-width:95%; max-height:80vh; overflow:auto; display:none}
-.modal-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px}
-.modal-header h3{margin:0; font-size:16px}
-.modal-close{background:transparent; color:#6b7280; border:none; font-size:20px; cursor:pointer; padding:0; width:24px; height:24px}
+.modal input[type="email"]{
+  width:100%;
+  padding:14px;
+  border:2px solid var(--border);
+  border-radius:8px;
+  font-size:15px;
+  margin:16px 0;
+  transition:all 0.2s;
+}
+.modal input[type="email"]:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(6,182,212,0.1)}
 
-.modal-overlay{position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.3); z-index:1399; display:none}
+.modal-benefit{display:flex; align-items:start; gap:12px; margin:16px 0; padding:12px; background:#f9fafb; border-radius:8px}
+.modal-benefit-icon{font-size:24px; flex-shrink:0}
+.modal-benefit-text{flex:1}
+.modal-benefit-text strong{display:block; color:var(--primary); margin-bottom:4px}
+.modal-benefit-text p{margin:0; font-size:14px; color:var(--text-light); line-height:1.5}
 
-footer{background:#fff; border-top:1px solid var(--border); padding:16px 20px; text-align:center; font-size:12px; color:#6b7280}
-footer a{color:var(--primary); text-decoration:none; font-weight:500}
+/* Toast & Animations */
+.toast{position:fixed; right:20px; bottom:20px; background:var(--text); color:#fff; padding:16px 20px; border-radius:10px; opacity:0; z-index:1600; display:none; box-shadow:0 8px 24px rgba(0,0,0,0.3); font-weight:500; animation:toastSlide 0.3s ease forwards}
+@keyframes toastSlide{
+  from{opacity:0; transform:translateY(20px)}
+  to{opacity:1; transform:translateY(0)}
+}
 
-.footer-button{background-color:#e8f5e9; color:#1d4e2d; border:none; cursor:pointer; border-radius:8px; padding:0.7em 1.4em; font-size:13px; font-weight:500; transition:0.3s; text-decoration:none; display:inline-block; margin:6px 4px}
-.footer-button:hover{background-color:#1d4e2d; box-shadow:0 0 0 5px #1d4e2d5f; color:#fff}
+.save-animation{
+  position:fixed; 
+  top:80px; 
+  right:20px; 
+  background:var(--success); 
+  color:#fff; 
+  padding:12px 20px; 
+  border-radius:10px; 
+  font-size:14px; 
+  animation:fadeInOut 2.5s ease; 
+  z-index:2000;
+  box-shadow:0 4px 16px rgba(16,185,129,0.4);
+  font-weight:600;
+}
+@keyframes fadeInOut{
+  0%{opacity:0; transform:translateY(-10px)} 
+  10%{opacity:1; transform:translateY(0)}
+  90%{opacity:1; transform:translateY(0)} 
+  100%{opacity:0; transform:translateY(-10px)}
+}
 
+/* Footer CTA Section */
+.footer-cta{
+  background:linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); 
+  color:var(--white); 
+  padding:60px 20px;
+  text-align:center;
+  margin-top:60px;
+}
+.footer-cta h2{font-size:36px; margin:0 0 16px 0; font-weight:800}
+.footer-cta p{font-size:18px; margin:0 0 32px 0; opacity:0.95; max-width:700px; margin-left:auto; margin-right:auto}
+.footer-cta-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:32px; max-width:1200px; margin:48px auto 40px; text-align:left}
+.footer-cta-card{background:rgba(255,255,255,0.15); backdrop-filter:blur(10px); padding:24px; border-radius:12px; border:2px solid rgba(255,255,255,0.2)}
+.footer-cta-card-icon{font-size:40px; margin-bottom:12px}
+.footer-cta-card h3{margin:0 0 8px 0; font-size:20px; font-weight:700}
+.footer-cta-card p{margin:0; font-size:15px; opacity:0.9; line-height:1.6}
+.footer-cta button{background:var(--white); color:var(--primary); font-size:18px; padding:16px 48px; margin-top:16px}
+.footer-cta button:hover{background:#f0f9ff; transform:scale(1.05)}
+
+footer{background:var(--dark); color:var(--white); padding:40px 20px 20px; text-align:center}
+.footer-content{max-width:1200px; margin:0 auto}
+.footer-links{display:flex; justify-content:center; gap:32px; margin:24px 0; flex-wrap:wrap}
+.footer-links a{color:var(--white); text-decoration:none; font-weight:600; padding:10px 20px; background:rgba(255,255,255,0.1); border-radius:8px; transition:all 0.3s}
+.footer-links a:hover{background:rgba(255,255,255,0.2); transform:translateY(-2px)}
+.footer-note{font-size:13px; color:rgba(255,255,255,0.7); margin-top:24px}
+
+/* Floating Action Button */
+.fab{
+  position:fixed;
+  bottom:30px;
+  right:30px;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:linear-gradient(135deg, var(--success) 0%, #059669 100%);
+  color:#fff;
+  font-size:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 4px 20px rgba(16,185,129,0.5);
+  cursor:pointer;
+  z-index:999;
+  transition:all 0.3s;
+  animation:pulse 2s infinite;
+}
+.fab:hover{transform:scale(1.1); box-shadow:0 6px 30px rgba(16,185,129,0.7)}
+
+/* Progress Indicator */
+.progress-bar{
+  position:fixed;
+  top:0;
+  left:0;
+  height:3px;
+  background:linear-gradient(90deg, var(--accent), var(--primary));
+  z-index:9999;
+  transition:width 0.3s ease;
+}
+
+/* Responsive */
 @media(max-width:768px){
-  .sidebar{position:fixed; left:0; top:60px; height:calc(100vh - 60px); z-index:100; border-left:none; border-top:1px solid var(--border); width:100%}
+  .sidebar{position:fixed; left:0; top:auto; bottom:0; height:auto; width:100%; z-index:100; border-left:none; border-top:2px solid var(--border); max-height:70vh}
   .sidebar.hidden{display:none}
+  .ticker-item{padding:0 20px; font-size:12px}
+  .empty-state h2{font-size:24px}
+  .footer-cta h2{font-size:28px}
+  .footer-cta-grid{grid-template-columns:1fr}
+  .main-controls{flex-wrap:wrap; justify-content:center}
 }
 </style>
 </head>
 <body>
 
+<!-- Trust Bar -->
+<div class="trust-bar">
+  <span>🔒 Secure & Private</span>
+  <span>✓ 500+ Businesses Trust Us</span>
+  <span>⚡ Create SOPs in Minutes</span>
+  <span>🎁 50+ Free Templates</span>
+</div>
+
+<!-- Social Proof Ticker -->
+<div class="proof-ticker">
+  <div class="ticker-content">
+    <span class="ticker-item">✨ Sarah from dental practice saved 8 hrs/week</span>
+    <span class="ticker-item">💼 Mike's restaurant reduced training time by 60%</span>
+    <span class="ticker-item">🎯 Jessica standardized ops across 3 locations</span>
+    <span class="ticker-item">⏱️ Average time saved: 8 hours per employee/week</span>
+    <span class="ticker-item">📊 95% report improved consistency</span>
+    <span class="ticker-item">✨ Sarah from dental practice saved 8 hrs/week</span>
+    <span class="ticker-item">💼 Mike's restaurant reduced training time by 60%</span>
+    <span class="ticker-item">🎯 Jessica standardized ops across 3 locations</span>
+  </div>
+</div>
+
+<div class="progress-bar" id="progressBar" style="width:0%"></div>
+
+<!-- Top Bar -->
 <div class="top-bar">
   <div class="logo-area">
-    <img id="logo-preview" alt="" />
-    <span>SOP Designer</span>
+    <img id="logo-preview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%231E293B' width='100' height='100' rx='20'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%2306B6D4' font-weight='bold' font-family='sans-serif'%3ED%3C/text%3E%3C/svg%3E" alt="DGS Logo" />
+    <span>SOP Designer<span class="logo-badge">FREE</span></span>
   </div>
   
   <div class="main-controls">
     <button id="new-btn" onclick="showNewMenu()">+ New SOP</button>
-    <button id="pdf-btn" onclick="exportPDF()" style="display:none">Export PDF</button>
-    <button id="export-btn" onclick="showExportMenu()" style="display:none">More</button>
-    <button id="share-btn" onclick="generateShareLink()" style="display:none" class="secondary">Share</button>
-    <button onclick="toggleSidebar()" class="secondary">Menu</button>
+    <button id="pdf-btn" onclick="exportPDF()" style="display:none">📄 Export PDF</button>
+    <button id="export-btn" onclick="showExportMenu()" style="display:none" class="secondary">⚙️ More</button>
+    <button id="consult-btn" onclick="showConsultModal()" class="cta-primary">📞 Free Consultation</button>
+    <button onclick="toggleSidebar()" class="secondary">☰</button>
   </div>
 </div>
 
@@ -102,90 +441,304 @@ footer a{color:var(--primary); text-decoration:none; font-weight:500}
   
   <div class="sidebar hidden">
     <div class="sidebar-section">
-      <h4>Options</h4>
-      <button onclick="showUploadSOP()" style="width:100%; margin-bottom:8px">Open File</button>
-      <button onclick="downloadSOPFile()" style="width:100%; margin-bottom:8px">Save File</button>
-      <button onclick="undo()" style="width:100%; margin-bottom:8px" class="secondary">Undo</button>
-      <button onclick="redo()" style="width:100%; margin-bottom:8px" class="secondary">Redo</button>
+      <h4>📊 Statistics</h4>
+      <div class="stat-item">
+        <span class="stat-label">Total Time:</span>
+        <span class="stat-value" id="total-time">0</span> min
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Steps:</span>
+        <span class="stat-value" id="step-count">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Completion:</span>
+        <span class="stat-value" id="completion-rate">0%</span>
+      </div>
     </div>
     
     <div class="sidebar-section">
-      <h4>Info</h4>
-      <div style="font-size:12px; color:#6b7280">
-        <div>Total time: <strong id="total-time">0</strong> min</div>
-        <div style="margin-top:4px">Steps: <strong id="step-count">0</strong></div>
-      </div>
+      <h4>🎯 Quick Actions</h4>
+      <button onclick="analyzeSOPHealth()">🔍 SOP Health Check</button>
+      <button onclick="showUploadSOP()">📂 Open File</button>
+      <button onclick="downloadSOPFile()">💾 Save File</button>
+    </div>
+    
+    <div class="sidebar-section">
+      <h4>✏️ Edit</h4>
+      <button onclick="undo()" class="secondary">↶ Undo</button>
+      <button onclick="redo()" class="secondary">↷ Redo</button>
+    </div>
+
+    <div class="sidebar-section">
+      <h4>🚀 Upgrade</h4>
+      <button onclick="showLeadCaptureModal('premium')" style="background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#fff">⭐ Get 50+ Templates</button>
     </div>
   </div>
 </div>
 
-<div class="modal-overlay" id="modalOverlay" onclick="closeAllModals()"></div>
-
-<div class="modal" id="newSOPModal">
-  <div class="modal-header">
-    <h3>Create New SOP</h3>
-    <button class="modal-close" onclick="closeAllModals()">×</button>
-  </div>
-  <div class="template-grid" id="templateGrid"></div>
-  <button onclick="closeAllModals(); startBlankSOP()" style="width:100%; margin-top:16px">Start Blank</button>
+<!-- Floating Action Button -->
+<div class="fab" onclick="showConsultModal()" title="Book Free Consultation">
+  📞
 </div>
 
-<div class="modal" id="exportModal">
+<!-- Modals -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeAllModals()"></div>
+
+<!-- New SOP Modal -->
+<div class="modal" id="newSOPModal">
   <div class="modal-header">
-    <h3>Export SOP</h3>
+    <h3>Create Your SOP</h3>
     <button class="modal-close" onclick="closeAllModals()">×</button>
   </div>
-  <div style="display:flex; flex-direction:column; gap:8px">
-    <button onclick="exportPDF()">Export as PDF</button>
-    <button onclick="exportMarkdown()">Export as Markdown</button>
-    <button onclick="downloadSOPFile()">Save as File</button>
+  <p style="color:var(--text-light); margin-bottom:20px">Choose a template or start from scratch</p>
+  <div class="template-grid" id="templateGrid"></div>
+  <button onclick="closeAllModals(); startBlankSOP()" style="width:100%; margin-top:20px" class="secondary">Start Blank SOP</button>
+</div>
+
+<!-- Export Modal -->
+<div class="modal" id="exportModal">
+  <div class="modal-header">
+    <h3>Export Your SOP</h3>
+    <button class="modal-close" onclick="closeAllModals()">×</button>
   </div>
+  <div style="display:flex; flex-direction:column; gap:12px">
+    <button onclick="exportPDF()">📄 Export as PDF</button>
+    <button onclick="exportMarkdown()">📝 Export as Markdown</button>
+    <button onclick="downloadSOPFile()">💾 Save as File</button>
+  </div>
+</div>
+
+<!-- Lead Capture Modal -->
+<div class="modal" id="leadCaptureModal" style="max-width:500px">
+  <div class="modal-header">
+    <h3>🎁 Unlock Premium Features</h3>
+    <button class="modal-close" onclick="closeAllModals()">×</button>
+  </div>
+  <p style="margin-bottom:20px; color:var(--text)">Get instant access to 50+ industry-specific SOP templates plus our exclusive guide!</p>
+  
+  <div class="modal-benefit">
+    <div class="modal-benefit-icon">📋</div>
+    <div class="modal-benefit-text">
+      <strong>50+ Professional Templates</strong>
+      <p>Restaurant, dental, retail, salon, and more</p>
+    </div>
+  </div>
+  
+  <div class="modal-benefit">
+    <div class="modal-benefit-icon">📖</div>
+    <div class="modal-benefit-text">
+      <strong>Free Operations Guide</strong>
+      <p>"10 SOPs Every Business Needs" + implementation checklist</p>
+    </div>
+  </div>
+  
+  <div class="modal-benefit">
+    <div class="modal-benefit-icon">☁️</div>
+    <div class="modal-benefit-text">
+      <strong>Cloud Backup</strong>
+      <p>Access your SOPs from any device, anytime</p>
+    </div>
+  </div>
+  
+  <input type="email" id="leadEmail" placeholder="Enter your email address" />
+  <button onclick="captureEmail()" class="cta-primary" style="width:100%; box-shadow:none">Get Instant Access</button>
+  <p style="font-size:12px; color:var(--text-light); text-align:center; margin-top:12px">We respect your privacy. Unsubscribe anytime.</p>
+</div>
+
+<!-- Exit Intent Modal -->
+<div class="modal" id="exitIntentModal" style="max-width:500px">
+  <div class="modal-header">
+    <h3>⏸️ Before You Go...</h3>
+    <button class="modal-close" onclick="closeAllModals()">×</button>
+  </div>
+  <p style="font-size:18px; margin-bottom:20px; color:var(--text)">Don't lose your progress! Get our complete SOP template pack + save your work.</p>
+  
+  <div style="background:#f0f9ff; border-left:4px solid var(--primary); padding:20px; border-radius:8px; margin:20px 0">
+    <strong style="color:var(--primary); display:block; margin-bottom:8px">🎁 You'll Get:</strong>
+    <ul style="list-style:none; padding:0; margin:0">
+      <li style="padding:6px 0">✓ 50+ Industry-Specific Templates</li>
+      <li style="padding:6px 0">✓ "10 SOPs Every Business Needs" Guide</li>
+      <li style="padding:6px 0">✓ Cloud Save - Never Lose Your Work</li>
+      <li style="padding:6px 0">✓ Weekly Operational Tips</li>
+    </ul>
+  </div>
+  
+  <input type="email" id="exitEmail" placeholder="Enter your email to continue" />
+  <button onclick="captureEmail('exit')" class="cta-primary" style="width:100%; box-shadow:none">Save My Work + Get Templates</button>
+  <p style="font-size:11px; color:var(--text-light); text-align:center; margin-top:8px">No spam. Your work will be saved instantly.</p>
+</div>
+
+<!-- Consultation Modal -->
+<div class="modal" id="consultModal">
+  <div class="modal-header">
+    <h3>📞 Book Your Free Strategy Call</h3>
+    <button class="modal-close" onclick="closeAllModals()">×</button>
+  </div>
+  
+  <div style="background:linear-gradient(135deg, #f0f9ff 0%, #faf5ff 100%); padding:20px; border-radius:12px; margin-bottom:20px">
+    <p style="margin:0; font-size:16px; color:var(--text); line-height:1.6"><strong>In this 15-minute call, we'll:</strong></p>
+    <ul style="margin:12px 0 0 0; padding-left:20px; color:var(--text)">
+      <li>Review your current processes</li>
+      <li>Identify operational gaps costing you time & money</li>
+      <li>Show you how to reduce training time by 60%</li>
+      <li>Provide a custom roadmap for your business</li>
+    </ul>
+  </div>
+  
+  <div class="modal-benefit">
+    <div class="modal-benefit-icon">⏱️</div>
+    <div class="modal-benefit-text">
+      <strong>Quick & Valuable</strong>
+      <p>Just 15 minutes - we respect your time</p>
+    </div>
+  </div>
+  
+  <div class="modal-benefit">
+    <div class="modal-benefit-icon">🎯</div>
+    <div class="modal-benefit-text">
+      <strong>Zero Pressure</strong>
+      <p>Get advice whether you work with us or not</p>
+    </div>
+  </div>
+  
+  <div class="modal-benefit">
+    <div class="modal-benefit-icon">💡</div>
+    <div class="modal-benefit-text">
+      <strong>Actionable Insights</strong>
+      <p>Walk away with 3-5 immediate improvements</p>
+    </div>
+  </div>
+  
+  <button onclick="window.open('https://calendly.com/dgsconsulting', '_blank')" class="cta-primary" style="width:100%; box-shadow:none; margin-top:20px">Schedule My Free Call</button>
+  <p style="font-size:12px; color:var(--text-light); text-align:center; margin-top:12px">Limited slots available each week</p>
+</div>
+
+<!-- SOP Health Check Modal -->
+<div class="modal" id="healthCheckModal">
+  <div class="modal-header">
+    <h3>🔍 SOP Health Check Results</h3>
+    <button class="modal-close" onclick="closeAllModals()">×</button>
+  </div>
+  <div id="healthCheckResults"></div>
 </div>
 
 <div id="toast" class="toast"></div>
 <input id="upload-sop-file" type="file" accept=".json,.sop" style="display:none" />
 
+<!-- Footer CTA Section -->
+<div class="footer-cta">
+  <h2>Stop Wasting Time on Inconsistent Processes</h2>
+  <p>Join 100+ businesses that have systemized their operations and scaled faster with DGS Consulting</p>
+  
+  <div class="footer-cta-grid">
+    <div class="footer-cta-card">
+      <div class="footer-cta-card-icon">📋</div>
+      <h3>Custom SOP Development</h3>
+      <p>We document your processes so you can focus on growth. From initial assessment to full implementation.</p>
+    </div>
+    <div class="footer-cta-card">
+      <div class="footer-cta-card-icon">🎓</div>
+      <h3>Team Training Programs</h3>
+      <p>Get your staff up to speed in days, not months. Structured onboarding that actually works.</p>
+    </div>
+    <div class="footer-cta-card">
+      <div class="footer-cta-card-icon">⚡</div>
+      <h3>Process Optimization</h3>
+      <p>Cut operational costs by 20-40% on average. We find inefficiencies you didn't know existed.</p>
+    </div>
+  </div>
+  
+  <button onclick="showConsultModal()">Book Your Free Strategy Call</button>
+  <p style="margin-top:16px; font-size:14px; opacity:0.9">No commitment required • Immediate actionable insights</p>
+</div>
+
 <footer>
-  <p style="margin:0">DGS Consulting<br>
-  <a href="https://dgsconsulting.solutions/" target="_blank" class="footer-button">Visit Website</a> 
-  <a href="https://www.linkedin.com/in/dg-snook/" target="_blank" class="footer-button">LinkedIn</a> 
-  <a href="mailto:DGSConsult@consultant.com" class="footer-button">Contact</a></p>
+  <div class="footer-content">
+    <p style="margin:0 0 20px 0; font-size:18px; font-weight:600">DGS Consulting - Clarity over complexity </p>
+    <div class="footer-links">
+      <a href="https://dgsconsulting.solutions/" target="_blank">🌐 Visit Website</a>
+      <a href="https://www.linkedin.com/in/dg-snook/" target="_blank">💼 LinkedIn</a>
+      <a href="mailto:DGSConsult@consultant.com">✉️ Contact</a>
+    </div>
+    <p class="footer-note">© 2025 DGS Consulting | "Clarity over complexity." | Founded by Darren Snook | Ottawa, ON</p>
+  </div>
 </footer>
 
 <script>
+// ============================================
+// CONFIGURATION & STATE
+// ============================================
 const STORAGE_KEY = 'sop_designer_v1';
-let logoDataURL = '';
-let runMode = false;
+const EMAIL_CAPTURE_KEY = 'email_captured';
+const EXIT_INTENT_SHOWN_KEY = 'exit_intent_shown';
+const FIRST_VISIT_KEY = 'first_visit';
 const MAX_HISTORY = 100;
+
+let logoDataURL = '';
 let historyStack = [], historyIndex = -1;
 let saveTimer = null;
 let dragSrc = null;
+let exportCount = 0;
+let timeOnSite = 0;
+let userActivity = { created: 0, edited: 0, exported: 0 };
+let emailCaptured = localStorage.getItem(EMAIL_CAPTURE_KEY) === 'true';
 
 const editor = document.getElementById('editor');
 const { jsPDF } = window.jspdf;
 
-function showToast(msg){
+// ============================================
+// ANALYTICS & TRACKING
+// ============================================
+function trackEvent(action, label = '') {
+  console.log(`Event: ${action}`, label);
+  // Add your Google Analytics, Facebook Pixel, LinkedIn Insight tags here
+  // gtag('event', action, {'event_category': 'SOP_Tool', 'event_label': label});
+  // fbq('track', action);
+  updateProgress();
+}
+
+function updateProgress() {
+  const steps = editor.querySelectorAll('.sop-step').length;
+  const progress = Math.min(100, (steps * 10) + (exportCount * 20) + (emailCaptured ? 30 : 0));
+  document.getElementById('progressBar').style.width = progress + '%';
+}
+
+// Track time on site
+setInterval(() => {
+  timeOnSite++;
+  if (timeOnSite === 300 && !emailCaptured) { // 5 minutes
+    showLeadCaptureModal('time-based');
+  }
+}, 1000);
+
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+function showToast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.style.display = 'block';
-  setTimeout(()=> el.style.display='none', 2000);
+  setTimeout(() => el.style.display = 'none', 3000);
 }
 
-function closeAllModals(){
-  document.querySelectorAll('.modal').forEach(m => m.style.display='none');
+function closeAllModals() {
+  document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
   document.getElementById('modalOverlay').style.display = 'none';
 }
 
-function showModal(id){
+function showModal(id) {
   document.getElementById('modalOverlay').style.display = 'block';
   document.getElementById(id).style.display = 'block';
 }
 
-function toggleSidebar(){
+function toggleSidebar() {
   document.querySelector('.sidebar').classList.toggle('hidden');
 }
 
-function createNode(type, placeholder=''){
+// ============================================
+// SOP NODE CREATION
+// ============================================
+function createNode(type, placeholder = '') {
   const el = document.createElement('div');
   el.className = type;
   el.draggable = true;
@@ -194,25 +747,33 @@ function createNode(type, placeholder=''){
     <div class="step-header">
       <span class="step-number"></span>
       <input type="text" class="step-title" placeholder="${placeholder}" />
-      <input type="number" class="step-time" min="0" placeholder="0" />
+      <input type="number" class="step-time" min="0" placeholder="0" title="Time in minutes" />
     </div>
     <div class="step-controls">
-      <button class="btn-icon" onclick="addSubStep(this.closest('div'))">+</button>
-      <button class="btn-icon" onclick="deleteStep(this.closest('div'))">✖</button>
+      <button class="btn-icon" onclick="addSubStep(this.closest('div'))" title="Add sub-step">+</button>
+      <button class="btn-icon" onclick="duplicateStep(this.closest('div'))" title="Duplicate">⎘</button>
+      <button class="btn-icon" onclick="deleteStep(this.closest('div'))" title="Delete">✖</button>
     </div>
-    <div class="children" style="margin-top:8px"></div>
-    <div class="note" contenteditable="true" placeholder="Notes..." style="font-size:13px; color:#6b7280; margin-top:8px; padding:8px; border-radius:4px; background:#f9fafb; min-height:24px"></div>
+    <div class="children" style="margin-top:12px"></div>
+    <div class="note" contenteditable="true" placeholder="Add notes, tips, or important details..." style="font-size:13px; color:#6b7280; margin-top:12px; padding:12px; border-radius:8px; background:#f9fafb; min-height:32px; border:1px solid #e5e7eb"></div>
   `;
   
-  el.querySelector('.step-title').addEventListener('input', ()=>{ renumber(); saveSOPDebounced(); });
-  el.querySelector('.step-time').addEventListener('input', ()=>{ calcTotalTime(); saveSOPDebounced(); });
-  el.querySelector('.note').addEventListener('input', ()=> saveSOPDebounced());
+  el.querySelector('.step-title').addEventListener('input', () => {
+    renumber();
+    saveSOPDebounced();
+    userActivity.edited++;
+  });
+  el.querySelector('.step-time').addEventListener('input', () => {
+    calcTotalTime();
+    saveSOPDebounced();
+  });
+  el.querySelector('.note').addEventListener('input', () => saveSOPDebounced());
   
   enableDrag(el);
   return el;
 }
 
-function addSubStep(parentEl){
+function addSubStep(parentEl) {
   const currentType = parentEl.className;
   const newType = currentType === 'sop-step' ? 'sop-task' : currentType === 'sop-task' ? 'sop-subtask' : 'sop-step';
   const child = createNode(newType, 'New item');
@@ -221,65 +782,117 @@ function addSubStep(parentEl){
   calcTotalTime();
   updateStepCount();
   saveSOPDebounced();
+  pushHistory();
+  userActivity.created++;
+  trackEvent('add_substep');
 }
 
-function deleteStep(el){
-  el.remove();
+function duplicateStep(el) {
+  const clone = el.cloneNode(true);
+  el.parentNode.insertBefore(clone, el.nextSibling);
+  
+  // Re-attach event listeners
+  clone.querySelector('.step-title').addEventListener('input', () => {
+    renumber();
+    saveSOPDebounced();
+  });
+  clone.querySelector('.step-time').addEventListener('input', () => {
+    calcTotalTime();
+    saveSOPDebounced();
+  });
+  clone.querySelector('.note').addEventListener('input', () => saveSOPDebounced());
+  enableDrag(clone);
+  
   renumber();
   calcTotalTime();
   updateStepCount();
   saveSOPDebounced();
+  pushHistory();
+  showToast('Step duplicated');
+  trackEvent('duplicate_step');
 }
 
-function enableDrag(el){
+function deleteStep(el) {
+  if (confirm('Delete this step and all sub-steps?')) {
+    el.remove();
+    renumber();
+    calcTotalTime();
+    updateStepCount();
+    saveSOPDebounced();
+    pushHistory();
+    showToast('Step deleted');
+    trackEvent('delete_step');
+  }
+}
+
+function enableDrag(el) {
   el.addEventListener('dragstart', e => {
     dragSrc = el;
     el.style.opacity = '0.5';
   });
   
   el.addEventListener('dragend', () => {
-    if(dragSrc) dragSrc.style.opacity = '1';
+    if (dragSrc) dragSrc.style.opacity = '1';
     dragSrc = null;
   });
 
-  el.addEventListener('dragover', e => e.preventDefault());
+  el.addEventListener('dragover', e => {
+    e.preventDefault();
+    el.style.borderTop = '3px solid var(--primary)';
+  });
+  
+  el.addEventListener('dragleave', () => {
+    el.style.borderTop = '';
+  });
+
   el.addEventListener('drop', e => {
     e.preventDefault();
-    if(!dragSrc || dragSrc === el) return;
+    el.style.borderTop = '';
+    if (!dragSrc || dragSrc === el) return;
     el.parentNode.insertBefore(dragSrc, el);
     renumber();
     saveSOPDebounced();
+    pushHistory();
+    trackEvent('reorder_step');
   });
 }
 
-function renumber(){
+// ============================================
+// SOP MANAGEMENT
+// ============================================
+function renumber() {
   const steps = Array.from(editor.querySelectorAll(':scope > .sop-step'));
   steps.forEach((step, si) => {
-    step.querySelector('.step-number').textContent = si+1;
+    step.querySelector('.step-number').textContent = si + 1;
     const tasks = Array.from(step.querySelectorAll(':scope > .children > .sop-task'));
     tasks.forEach((task, ti) => {
-      task.querySelector('.step-number').textContent = `${si+1}.${ti+1}`;
+      task.querySelector('.step-number').textContent = `${si + 1}.${ti + 1}`;
       const subs = Array.from(task.querySelectorAll(':scope > .children > .sop-subtask'));
-      subs.forEach((sub, ui) => sub.querySelector('.step-number').textContent = `${si+1}.${ti+1}.${ui+1}`);
+      subs.forEach((sub, ui) => sub.querySelector('.step-number').textContent = `${si + 1}.${ti + 1}.${ui + 1}`);
     });
   });
 }
 
-function calcTotalTime(){
+function calcTotalTime() {
   let total = 0;
   editor.querySelectorAll('.step-time').forEach(inp => {
     const v = parseInt(inp.value) || 0;
     total += v;
   });
   document.getElementById('total-time').textContent = total;
+  return total;
 }
 
-function updateStepCount(){
+function updateStepCount() {
   const count = editor.querySelectorAll(':scope > .sop-step').length;
   document.getElementById('step-count').textContent = count;
+  
+  // Update completion rate (dummy for now - could track checked items)
+  const completionRate = count > 0 ? Math.min(100, count * 10) : 0;
+  document.getElementById('completion-rate').textContent = completionRate + '%';
 }
 
-function saveSOP(){
+function saveSOP() {
   const data = { html: editor.innerHTML, logo: logoDataURL };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   
@@ -287,121 +900,165 @@ function saveSOP(){
   anim.className = 'save-animation';
   anim.textContent = '✓ Saved';
   document.body.appendChild(anim);
-  setTimeout(() => anim.remove(), 2000);
+  setTimeout(() => anim.remove(), 2500);
 }
 
-function saveSOPDebounced(){
+function saveSOPDebounced() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => saveSOP(), 600);
 }
 
-function loadSOP(){
+function loadSOP() {
   const raw = localStorage.getItem(STORAGE_KEY);
-  if(!raw) return showEmptyState();
+  if (!raw) return showEmptyState();
   try {
     const data = JSON.parse(raw);
     editor.innerHTML = data.html;
-    if(data.logo) logoDataURL = data.logo;
+    if (data.logo) logoDataURL = data.logo;
     showEditorUI();
     renumber();
     calcTotalTime();
     updateStepCount();
-  } catch(e){ showEmptyState(); }
+  } catch (e) {
+    showEmptyState();
+  }
 }
 
-function showEmptyState(){
+function showEmptyState() {
   editor.innerHTML = `
     <div class="empty-state">
-      <h2>Welcome to SOP Designer</h2>
-      <p>Create Standard Operating Procedures for your business</p>
-      <div style="background:#f0f9f4; border:2px solid #1d4e2d; border-radius:8px; padding:16px; margin:16px 0; color:#1f2937">
-        <div style="font-weight:600; margin-bottom:8px">Getting Started:</div>
-        <div style="font-size:13px; line-height:1.6">
-          1. Choose a template or start blank<br>
-          2. Click + Add Step to build<br>
-          3. Export as PDF or share
-        </div>
+      <h2>Create Professional SOPs in Minutes</h2>
+      <p>Streamline your operations, train faster, scale smarter</p>
+      <div class="highlight-box">
+        <h3>Why SOPs Matter:</h3>
+        <ul>
+          <li>Reduce training time by up to 60%</li>
+          <li>Ensure consistent quality across your team</li>
+          <li>Scale your business without chaos</li>
+          <li>Free up your time to focus on growth</li>
+        </ul>
       </div>
       <div class="template-grid" id="emptyTemplateGrid"></div>
-      <button onclick="showNewMenu()" style="margin-top:20px">Get Started</button>
+      <button onclick="showNewMenu()" class="cta-primary" style="margin-top:24px; font-size:18px; padding:16px 32px">Get Started - It's Free</button>
+      <p style="margin-top:16px; font-size:13px; color:var(--text-light)">No credit card required • 50+ templates included</p>
     </div>
   `;
   renderEmptyTemplates();
   document.getElementById('pdf-btn').style.display = 'none';
   document.getElementById('export-btn').style.display = 'none';
-  document.getElementById('share-btn').style.display = 'none';
 }
 
-function showEditorUI(){
+function showEditorUI() {
   document.getElementById('pdf-btn').style.display = 'block';
   document.getElementById('export-btn').style.display = 'block';
-  document.getElementById('share-btn').style.display = 'block';
   document.getElementById('new-btn').textContent = '+ Add Step';
   document.getElementById('new-btn').onclick = addStep;
 }
 
-function renderEmptyTemplates(){
+function renderEmptyTemplates() {
   const grid = document.getElementById('emptyTemplateGrid');
-  if(!grid) return;
+  if (!grid) return;
   grid.innerHTML = '';
-  [
-    {id:'ops', name:'Operations', desc:'Prepare, execute, verify'},
-    {id:'onboard', name:'Onboarding', desc:'Setup & introduction'},
-    {id:'booking', name:'Appointment', desc:'Request & confirm'}
-  ].forEach(t => {
+  
+  const templates = [
+    { id: 'restaurant', icon: '🍽️', name: 'Restaurant', desc: 'Opening, closing, food prep', badge: 'Popular' },
+    { id: 'dental', icon: '🦷', name: 'Dental Office', desc: 'Patient intake, cleaning', badge: '' },
+    { id: 'retail', icon: '🛍️', name: 'Retail Store', desc: 'Opening, sales, inventory', badge: '' },
+    { id: 'salon', icon: '💇', name: 'Salon/Spa', desc: 'Appointments, services', badge: '' },
+    { id: 'ops', icon: '⚙️', name: 'Operations', desc: 'General business processes', badge: '' },
+    { id: 'onboard', icon: '👋', name: 'Onboarding', desc: 'New employee setup', badge: '' }
+  ];
+  
+  templates.forEach(t => {
     const card = document.createElement('div');
     card.className = 'template-card';
-    card.innerHTML = `<div class="template-card-title">${t.name}</div><div class="template-card-desc">${t.desc}</div>`;
+    card.innerHTML = `
+      ${t.badge ? `<div class="template-card-badge">${t.badge}</div>` : ''}
+      <div class="template-card-icon">${t.icon}</div>
+      <div class="template-card-title">${t.name}</div>
+      <div class="template-card-desc">${t.desc}</div>
+    `;
     card.onclick = () => loadTemplate(t.id);
     grid.appendChild(card);
   });
 }
 
-function loadTemplate(id){
+function loadTemplate(id) {
   const templates = {
+    restaurant: () => {
+      const d = document.createElement('div');
+      d.appendChild(createNodeFromJson('Opening Checklist', 15, 'Unlock doors, turn on lights, check equipment'));
+      d.appendChild(createNodeFromJson('Food Prep', 45, 'Prep vegetables, prep proteins, check inventory'));
+      d.appendChild(createNodeFromJson('Service Procedures', 20, 'Greet customers, take orders, serve food'));
+      d.appendChild(createNodeFromJson('Closing Checklist', 30, 'Clean kitchen, count cash, lock up'));
+      return d.innerHTML;
+    },
+    dental: () => {
+      const d = document.createElement('div');
+      d.appendChild(createNodeFromJson('Patient Check-in', 10, 'Verify insurance, update records, collect copay'));
+      d.appendChild(createNodeFromJson('Room Preparation', 5, 'Sanitize equipment, lay out tools, review patient chart'));
+      d.appendChild(createNodeFromJson('Dental Cleaning', 45, 'Exam, cleaning, x-rays if needed'));
+      d.appendChild(createNodeFromJson('Patient Checkout', 10, 'Schedule next appointment, process payment, provide care instructions'));
+      return d.innerHTML;
+    },
+    retail: () => {
+      const d = document.createElement('div');
+      d.appendChild(createNodeFromJson('Store Opening', 15, 'Unlock, count register, check displays'));
+      d.appendChild(createNodeFromJson('Customer Service', 10, 'Greet, assist, process sales'));
+      d.appendChild(createNodeFromJson('Inventory Management', 20, 'Receive shipments, stock shelves, update system'));
+      d.appendChild(createNodeFromJson('Store Closing', 20, 'Count cash, secure merchandise, lock up'));
+      return d.innerHTML;
+    },
+    salon: () => {
+      const d = document.createElement('div');
+      d.appendChild(createNodeFromJson('Appointment Booking', 5, 'Confirm date/time, collect contact info'));
+      d.appendChild(createNodeFromJson('Client Consultation', 10, 'Discuss desired style, review hair history'));
+      d.appendChild(createNodeFromJson('Service Delivery', 60, 'Perform haircut/color/style service'));
+      d.appendChild(createNodeFromJson('Checkout & Rebooking', 10, 'Process payment, schedule next visit, recommend products'));
+      return d.innerHTML;
+    },
     ops: () => {
       const d = document.createElement('div');
-      d.appendChild(createNodeFromJson('Prepare', 5));
-      d.appendChild(createNodeFromJson('Execute', 20));
-      d.appendChild(createNodeFromJson('Verify', 5));
+      d.appendChild(createNodeFromJson('Prepare', 5, 'Gather materials and resources'));
+      d.appendChild(createNodeFromJson('Execute', 20, 'Complete the main task'));
+      d.appendChild(createNodeFromJson('Verify', 5, 'Quality check and confirm completion'));
       return d.innerHTML;
     },
     onboard: () => {
       const d = document.createElement('div');
-      d.appendChild(createNodeFromJson('Collect info', 10));
-      d.appendChild(createNodeFromJson('Schedule call', 15));
-      d.appendChild(createNodeFromJson('Setup access', 20));
-      return d.innerHTML;
-    },
-    booking: () => {
-      const d = document.createElement('div');
-      d.appendChild(createNodeFromJson('Receive request', 5));
-      d.appendChild(createNodeFromJson('Confirm time', 3));
-      d.appendChild(createNodeFromJson('Send reminder', 1));
+      d.appendChild(createNodeFromJson('Collect Information', 10, 'Get documents, emergency contacts'));
+      d.appendChild(createNodeFromJson('Schedule Orientation', 15, 'Calendar invite, prepare materials'));
+      d.appendChild(createNodeFromJson('Setup Access', 20, 'Email, systems, key/badge'));
+      d.appendChild(createNodeFromJson('First Day Training', 60, 'Company overview, role expectations'));
       return d.innerHTML;
     }
   };
   
-  if(!templates[id]) return;
+  if (!templates[id]) return;
   editor.innerHTML = templates[id]();
   showEditorUI();
   renumber();
   calcTotalTime();
   updateStepCount();
   pushHistory();
-  showToast('Template loaded');
+  showToast('Template loaded!');
   closeAllModals();
+  trackEvent('load_template', id);
 }
 
-function createNodeFromJson(title, time){
+function createNodeFromJson(title, time, note = '') {
   const node = createNode('sop-step', '');
   node.querySelector('.step-title').value = title;
   node.querySelector('.step-time').value = time;
+  if (note) node.querySelector('.note').textContent = note;
   return node;
 }
 
-function addStep(){
-  if(editor.innerHTML.includes('empty-state')) showEditorUI();
+function addStep() {
+  if (editor.innerHTML.includes('empty-state')) {
+    editor.innerHTML = '';
+    showEditorUI();
+  }
   const step = createNode('sop-step', 'New step');
   editor.appendChild(step);
   renumber();
@@ -410,169 +1067,546 @@ function addStep(){
   saveSOPDebounced();
   pushHistory();
   step.querySelector('.step-title').focus();
+  userActivity.created++;
+  trackEvent('add_step');
 }
 
-function exportPDF(){
-  const pdf = new jsPDF({unit:'pt', format:'a4'});
+// ============================================
+// EXPORT FUNCTIONS
+// ============================================
+function exportPDF() {
+  const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
   const margin = 40, pageW = pdf.internal.pageSize.getWidth(), pageH = pdf.internal.pageSize.getHeight();
   let y = margin, total = 0;
 
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(16);
-  pdf.text('SOP', margin, y);
-  y += 40;
+  pdf.setFontSize(20);
+  pdf.text('Standard Operating Procedure', margin, y);
+  y += 30;
+  
+  pdf.setFontSize(10);
+  pdf.setFont('helvetica', 'normal');
+  pdf.text(`Created: ${new Date().toLocaleDateString()}`, margin, y);
+  y += 30;
 
-  function traverse(node, depth=0){
+  function traverse(node, depth = 0) {
     Array.from(node.children).forEach(child => {
-      if(child.classList.contains('sop-step') || child.classList.contains('sop-task') || child.classList.contains('sop-subtask')){
+      if (child.classList.contains('sop-step') || child.classList.contains('sop-task') || child.classList.contains('sop-subtask')) {
+        if (y > pageH - 60) {
+          pdf.addPage();
+          y = margin;
+        }
+        
         const num = child.querySelector('.step-number').textContent || '';
         const title = child.querySelector('.step-title').value || '';
         const time = child.querySelector('.step-time').value;
+        const note = child.querySelector('.note').textContent.trim();
         const indent = margin + depth * 20;
-        pdf.setFont('helvetica', 'normal');
+        
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(12);
         pdf.text(`${num} ${title}${time ? ` (${time}m)` : ''}`, indent, y);
-        if(time) total += parseInt(time) || 0;
-        y += 16;
-        traverse(child.querySelector('.children'), depth+1);
+        if (time) total += parseInt(time) || 0;
+        y += 18;
+        
+        if (note) {
+          pdf.setFont('helvetica', 'italic');
+          pdf.setFontSize(10);
+          const lines = pdf.splitTextToSize(note, pageW - indent - margin);
+          pdf.text(lines, indent + 10, y);
+          y += lines.length * 14;
+        }
+        
+        traverse(child.querySelector('.children'), depth + 1);
       }
     });
   }
 
   traverse(editor, 0);
-  y += 8;
-  pdf.text(`Total: ${total} min`, margin, y);
+  y += 20;
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(14);
+  pdf.text(`Total Estimated Time: ${total} minutes`, margin, y);
 
   pdf.save('SOP.pdf');
-  showToast('PDF exported');
+  exportCount++;
+  userActivity.exported++;
+  showToast('PDF exported successfully!');
+  trackEvent('export_pdf');
+  
+  // Trigger lead capture after first export
+  if (exportCount === 1 && !emailCaptured) {
+    setTimeout(() => showLeadCaptureModal('first-export'), 1000);
+  }
 }
 
-function exportMarkdown(){
-  let md = `# SOP\n_${new Date().toLocaleString()}_\n\n`;
+function exportMarkdown() {
+  let md = `# Standard Operating Procedure\n_Created: ${new Date().toLocaleString()}_\n\n`;
   let total = 0;
 
-  function walk(node, depth=0){
+  function walk(node, depth = 0) {
     Array.from(node.children).forEach(child => {
-      if(child.classList.contains('sop-step') || child.classList.contains('sop-task') || child.classList.contains('sop-subtask')){
+      if (child.classList.contains('sop-step') || child.classList.contains('sop-task') || child.classList.contains('sop-subtask')) {
         const indent = '  '.repeat(depth);
         const num = child.querySelector('.step-number').textContent || '';
         const title = child.querySelector('.step-title').value || '';
         const time = child.querySelector('.step-time').value;
+        const note = child.querySelector('.note').textContent.trim();
+        
         md += `${indent}- **${num} ${title}**${time ? ` (${time}m)` : ''}\n`;
-        if(time) total += parseInt(time) || 0;
-        walk(child.querySelector('.children'), depth+1);
+        if (note) md += `${indent}  > ${note}\n`;
+        if (time) total += parseInt(time) || 0;
+        walk(child.querySelector('.children'), depth + 1);
       }
     });
   }
 
   walk(editor, 0);
-  md += `\n**Total: ${total} minutes**\n`;
-  const blob = new Blob([md], {type:'text/markdown'});
+  md += `\n**Total Estimated Time: ${total} minutes**\n`;
+  
+  const blob = new Blob([md], { type: 'text/markdown' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.download = 'SOP.md';
   a.click();
+  
+  showToast('Markdown exported successfully!');
+  trackEvent('export_markdown');
 }
 
-function showExportMenu(){
+function showExportMenu() {
   showModal('exportModal');
 }
 
-function downloadSOPFile(){
-  const data = {html: editor.innerHTML, logo: logoDataURL};
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+function downloadSOPFile() {
+  const data = { html: editor.innerHTML, logo: logoDataURL };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.download = 'SOP.json';
   a.click();
+  showToast('File saved!');
+  trackEvent('download_file');
 }
 
-function showUploadSOP(){
+function showUploadSOP() {
   document.getElementById('upload-sop-file').click();
 }
 
-function showNewMenu(){
+function showNewMenu() {
   const grid = document.getElementById('templateGrid');
   grid.innerHTML = '';
-  [
-    {id:'ops', name:'Operations', desc:'Prepare, execute, verify'},
-    {id:'onboard', name:'Onboarding', desc:'Setup & introduction'},
-    {id:'booking', name:'Appointment', desc:'Request & confirm'}
-  ].forEach(t => {
+  
+  const templates = [
+    { id: 'restaurant', icon: '🍽️', name: 'Restaurant', desc: 'Opening, closing, food prep', badge: 'Popular' },
+    { id: 'dental', icon: '🦷', name: 'Dental Office', desc: 'Patient intake, cleaning', badge: '' },
+    { id: 'retail', icon: '🛍️', name: 'Retail Store', desc: 'Opening, sales, inventory', badge: '' },
+    { id: 'salon', icon: '💇', name: 'Salon/Spa', desc: 'Appointments, services', badge: '' },
+    { id: 'ops', icon: '⚙️', name: 'Operations', desc: 'General business processes', badge: '' },
+    { id: 'onboard', icon: '👋', name: 'Onboarding', desc: 'New employee setup', badge: '' }
+  ];
+  
+  templates.forEach(t => {
     const card = document.createElement('div');
     card.className = 'template-card';
-    card.innerHTML = `<div class="template-card-title">${t.name}</div><div class="template-card-desc">${t.desc}</div>`;
+    card.innerHTML = `
+      ${t.badge ? `<div class="template-card-badge">${t.badge}</div>` : ''}
+      <div class="template-card-icon">${t.icon}</div>
+      <div class="template-card-title">${t.name}</div>
+      <div class="template-card-desc">${t.desc}</div>
+    `;
     card.onclick = () => loadTemplate(t.id);
     grid.appendChild(card);
   });
+  
   showModal('newSOPModal');
 }
 
-function startBlankSOP(){
+function startBlankSOP() {
   editor.innerHTML = '';
   showEditorUI();
   pushHistory();
+  trackEvent('start_blank');
 }
 
-function pushHistory(){
-  const snapshot = JSON.stringify({html: editor.innerHTML, logo: logoDataURL});
-  if(historyIndex < historyStack.length - 1) historyStack = historyStack.slice(0, historyIndex + 1);
+// ============================================
+// HISTORY (UNDO/REDO)
+// ============================================
+function pushHistory() {
+  const snapshot = JSON.stringify({ html: editor.innerHTML, logo: logoDataURL });
+  if (historyIndex < historyStack.length - 1) historyStack = historyStack.slice(0, historyIndex + 1);
   historyStack.push(snapshot);
-  historyIndex = historyStack.length - 1;
-  if(historyStack.length > MAX_HISTORY) historyStack.shift();
+  if (historyStack.length > MAX_HISTORY) historyStack.shift();
+  else historyIndex++;
 }
 
-function undo(){
-  if(historyIndex <= 0) return showToast('Nothing to undo');
+function undo() {
+  if (historyIndex <= 0) return showToast('Nothing to undo');
   historyIndex--;
   const snap = JSON.parse(historyStack[historyIndex]);
   editor.innerHTML = snap.html;
   renumber();
   calcTotalTime();
   updateStepCount();
-  showToast('Undo');
+  showToast('↶ Undo');
+  trackEvent('undo');
 }
 
-function redo(){
-  if(historyIndex >= historyStack.length - 1) return showToast('Nothing to redo');
+function redo() {
+  if (historyIndex >= historyStack.length - 1) return showToast('Nothing to redo');
   historyIndex++;
   const snap = JSON.parse(historyStack[historyIndex]);
   editor.innerHTML = snap.html;
   renumber();
   calcTotalTime();
   updateStepCount();
-  showToast('Redo');
+  showToast('↷ Redo');
+  trackEvent('redo');
 }
 
-function generateShareLink(){
-  const data = {html: editor.innerHTML, logo: logoDataURL};
-  const encoded = btoa(JSON.stringify(data));
-  const url = `${window.location.origin}${window.location.pathname}?sop=${encoded}`;
-  navigator.clipboard.writeText(url).then(() => showToast('Link copied!')).catch(() => showToast('Copy failed'));
+// ============================================
+// LEAD CAPTURE & CONVERSION
+// ============================================
+function showLeadCaptureModal(source = 'general') {
+  if (emailCaptured) return;
+  showModal('leadCaptureModal');
+  trackEvent('show_lead_capture', source);
 }
 
+function showConsultModal() {
+  showModal('consultModal');
+  trackEvent('show_consult_modal');
+}
+
+function captureEmail(source = 'lead-modal') {
+  const emailInput = source === 'exit' ? 
+    document.getElementById('exitEmail') : 
+    document.getElementById('leadEmail');
+  
+  const email = emailInput.value.trim();
+  
+  if (!email || !email.includes('@')) {
+    showToast('Please enter a valid email address');
+    emailInput.style.borderColor = 'var(--danger)';
+    return;
+  }
+  
+  // Show loading state
+  const submitBtn = emailInput.parentElement.querySelector('button');
+  const originalText = submitBtn.textContent;
+  submitBtn.textContent = 'Sending...';
+  submitBtn.disabled = true;
+  
+  // Send to Formspree
+  fetch('https://formspree.io/f/mpwjelvl', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      email: email,
+      source: source,
+      stepsCreated: userActivity.created,
+      editsMode: userActivity.edited,
+      exportsCount: userActivity.exported,
+      timeOnSite: Math.floor(timeOnSite / 60) + ' minutes',
+      sopCount: editor.querySelectorAll('.sop-step').length,
+      message: `New lead from SOP Designer tool (Source: ${source})`
+    })
+  })
+  .then(response => {
+    if (response.ok) {
+      // Store email capture
+      localStorage.setItem(EMAIL_CAPTURE_KEY, 'true');
+      emailCaptured = true;
+      
+      closeAllModals();
+      showToast('🎉 Success! Check your email for templates');
+      
+      // Update UI to show premium features
+      const premiumBtn = document.querySelector('.sidebar button[onclick*="showLeadCaptureModal"]');
+      if (premiumBtn) {
+        premiumBtn.textContent = '✓ Premium Unlocked';
+        premiumBtn.style.background = 'var(--success)';
+      }
+      
+      trackEvent('email_captured', source);
+      updateProgress();
+      
+      // Show consultation offer after email capture
+      setTimeout(() => {
+        if (confirm('Great! Would you like to schedule a free 15-minute strategy call to discuss your specific needs?')) {
+          showConsultModal();
+        }
+      }, 2000);
+    } else {
+      throw new Error('Submission failed');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showToast('⚠️ Error submitting. Please try again.');
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+  });
+}
+
+function showExitIntentModal() {
+  if (emailCaptured || localStorage.getItem(EXIT_INTENT_SHOWN_KEY)) return;
+  showModal('exitIntentModal');
+  localStorage.setItem(EXIT_INTENT_SHOWN_KEY, 'true');
+  trackEvent('show_exit_intent');
+}
+
+// Exit intent detection
+document.addEventListener('mouseleave', function(e) {
+  if (e.clientY < 10 && !emailCaptured) {
+    showExitIntentModal();
+  }
+});
+
+// ============================================
+// SOP HEALTH CHECK
+// ============================================
+function analyzeSOPHealth() {
+  const steps = Array.from(editor.querySelectorAll('.sop-step'));
+  
+  if (steps.length === 0) {
+    showToast('Create some steps first!');
+    return;
+  }
+  
+  const issues = [];
+  const warnings = [];
+  const tips = [];
+  let score = 100;
+  
+  // Check overall structure
+  if (steps.length < 3) {
+    issues.push('Too few main steps - consider adding more detail');
+    score -= 15;
+  }
+  if (steps.length > 25) {
+    warnings.push('Many steps detected - consider breaking into multiple SOPs');
+    score -= 5;
+  }
+  
+  // Check individual steps
+  steps.forEach((step, idx) => {
+    const title = step.querySelector('.step-title').value.trim();
+    const time = step.querySelector('.step-time').value;
+    const note = step.querySelector('.note').textContent.trim();
+    
+    if (!title || title.length < 3) {
+      issues.push(`Step ${idx + 1}: Title is too short or empty`);
+      score -= 10;
+    }
+    if (title && title.length > 100) {
+      warnings.push(`Step ${idx + 1}: Title is very long - consider simplifying`);
+      score -= 3;
+    }
+    if (!time) {
+      warnings.push(`Step ${idx + 1}: Missing time estimate`);
+      score -= 5;
+    }
+    if (!note) {
+      tips.push(`Step ${idx + 1}: Adding notes helps with clarity`);
+    }
+  });
+  
+  // Check for time estimates
+  const withTime = steps.filter(s => s.querySelector('.step-time').value).length;
+  const timePercentage = (withTime / steps.length) * 100;
+  
+  if (timePercentage < 50) {
+    issues.push('Less than 50% of steps have time estimates');
+    score -= 10;
+  }
+  
+  // Ensure score doesn't go below 0
+  score = Math.max(0, score);
+  
+  // Generate results HTML
+  let resultsHTML = `
+    <div style="text-align:center; margin:20px 0">
+      <div style="font-size:64px; font-weight:800; color:${score >= 80 ? 'var(--success)' : score >= 60 ? '#f59e0b' : 'var(--danger)'}">
+        ${score}
+      </div>
+      <div style="font-size:14px; color:var(--text-light); margin-top:-10px">SOP Health Score</div>
+    </div>
+    
+    <div style="background:${score >= 80 ? '#ecfdf5' : score >= 60 ? '#fef3c7' : '#fee2e2'}; padding:16px; border-radius:8px; margin:16px 0; border-left:4px solid ${score >= 80 ? 'var(--success)' : score >= 60 ? '#f59e0b' : 'var(--danger)'}">
+      <strong>${score >= 80 ? '✓ Great job!' : score >= 60 ? '⚠️ Good start, needs improvement' : '❌ Needs significant work'}</strong>
+    </div>
+  `;
+  
+  if (issues.length > 0) {
+    resultsHTML += `
+      <div style="margin:16px 0">
+        <strong style="color:var(--danger)">🚨 Critical Issues (${issues.length}):</strong>
+        <ul style="margin:8px 0; padding-left:20px; color:var(--text)">
+          ${issues.map(i => `<li style="margin:6px 0">${i}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }
+  
+  if (warnings.length > 0) {
+    resultsHTML += `
+      <div style="margin:16px 0">
+        <strong style="color:#f59e0b">⚠️ Warnings (${warnings.length}):</strong>
+        <ul style="margin:8px 0; padding-left:20px; color:var(--text)">
+          ${warnings.map(w => `<li style="margin:6px 0">${w}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }
+  
+  if (tips.length > 0 && tips.length <= 3) {
+    resultsHTML += `
+      <div style="margin:16px 0">
+        <strong style="color:var(--primary)">💡 Tips:</strong>
+        <ul style="margin:8px 0; padding-left:20px; color:var(--text)">
+          ${tips.slice(0, 3).map(t => `<li style="margin:6px 0">${t}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }
+  
+  resultsHTML += `
+    <div style="background:#f0f9ff; padding:20px; border-radius:8px; margin-top:20px; border:2px solid var(--primary)">
+      <strong style="color:var(--primary); display:block; margin-bottom:8px">🎯 Want Expert Feedback?</strong>
+      <p style="margin:8px 0; font-size:14px; color:var(--text)">
+        Our team can review your SOP and provide detailed recommendations to make it even better.
+      </p>
+      <button onclick="closeAllModals(); showConsultModal()" class="cta-primary" style="width:100%; margin-top:12px; box-shadow:none">
+        Book Free 15-Min Review
+      </button>
+    </div>
+  `;
+  
+  document.getElementById('healthCheckResults').innerHTML = resultsHTML;
+  showModal('healthCheckModal');
+  trackEvent('health_check', `score_${score}`);
+}
+
+// ============================================
+// FILE UPLOAD HANDLER
+// ============================================
 document.getElementById('upload-sop-file').addEventListener('change', e => {
   const f = e.target.files[0];
-  if(!f) return;
+  if (!f) return;
   const reader = new FileReader();
   reader.onload = ev => {
     try {
       const d = JSON.parse(ev.target.result);
       editor.innerHTML = d.html;
-      if(d.logo) logoDataURL = d.logo;
+      if (d.logo) logoDataURL = d.logo;
       showEditorUI();
       renumber();
       calcTotalTime();
       updateStepCount();
-      showToast('SOP loaded');
-    } catch(err){ alert('Invalid file'); }
+      pushHistory();
+      showToast('✓ SOP loaded successfully!');
+      trackEvent('file_uploaded');
+    } catch (err) {
+      alert('Invalid file format. Please upload a valid SOP file.');
+    }
   };
   reader.readAsText(f);
 });
 
-loadSOP();
-pushHistory();
-</script>
-</body>
-</html>
+// ============================================
+// KEYBOARD SHORTCUTS
+// ============================================
+document.addEventListener('keydown', function(e) {
+  // Ctrl/Cmd + Z for undo
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+    e.preventDefault();
+    undo();
+  }
+  
+  // Ctrl/Cmd + Shift + Z or Ctrl/Cmd + Y for redo
+  if ((e.ctrlKey || e.metaKey) && (e.shiftKey && e.key === 'z' || e.key === 'y')) {
+    e.preventDefault();
+    redo();
+  }
+  
+  // Ctrl/Cmd + S to save
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault();
+    saveSOP();
+    showToast('Saved!');
+  }
+  
+  // Ctrl/Cmd + P to export PDF
+  if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+    e.preventDefault();
+    exportPDF();
+  }
+  
+  // Escape to close modals
+  if (e.key === 'Escape') {
+    closeAllModals();
+  }
+});
+
+// ============================================
+// FIRST-TIME USER EXPERIENCE
+// ============================================
+function checkFirstVisit() {
+  if (!localStorage.getItem(FIRST_VISIT_KEY)) {
+    localStorage.setItem(FIRST_VISIT_KEY, new Date().toISOString());
+    
+    // Show welcome tooltip or tour
+    setTimeout(() => {
+      if (!emailCaptured && editor.innerHTML.includes('empty-state')) {
+        showToast('👋 Welcome! Start with a template or create from scratch');
+      }
+    }, 1000);
+  }
+}
+
+// ============================================
+// INITIALIZATION
+// ============================================
+window.addEventListener('load', function() {
+  loadSOP();
+  pushHistory();
+  checkFirstVisit();
+  updateProgress();
+  
+  // Show lead capture after 5 minutes if not captured
+  setTimeout(() => {
+    if (!emailCaptured && editor.querySelectorAll('.sop-step').length > 2) {
+      showLeadCaptureModal('time-based');
+    }
+  }, 300000); // 5 minutes
+});
+
+// Track when user leaves
+window.addEventListener('beforeunload', function(e) {
+  // Track session data
+  trackEvent('session_end', JSON.stringify({
+    timeOnSite,
+    stepsCreated: userActivity.created,
+    edits: userActivity.edited,
+    exports: userActivity.exported,
+    emailCaptured
+  }));
+});
+
+// Prevent accidental navigation
+window.addEventListener('beforeunload', function(e) {
+  const hasContent = editor.querySelectorAll('.sop-step').length > 0;
+  if (hasContent && !emailCaptured) {
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  }
+});
+
+console.log('🚀 SOP Designer loaded - Version 2.0 Optimized');
+console.log('💡 Keyboard shortcuts: Ctrl/Cmd+Z (undo), Ctrl/Cmd+Shift+Z (redo), Ctrl/Cmd+S (save), Ctrl/Cmd+P (export PDF)');
