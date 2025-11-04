@@ -7,88 +7,82 @@
 <meta name="description" content="Create professional Standard Operating Procedures in minutes. Free tool with 50+ templates. Trusted by 500+ businesses.">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-/* --- CORRECTED AND COMPLETE COLOR VARIABLE SETUP --- */
-:root {
-  /* Brand & Utility Colors */
-  --primary: #1E293B;     /* Dark Blue/Primary Text */
-  --accent: #06B6D4;      /* Cyan/Primary CTA */
-  --success: #10B981;     /* Green */
-  --danger: #EF4444;      /* Red */
-
-  /* Background & Border Colors */
-  --light: #F9FAFB;       /* Lightest background */
-  --lighter: #FFFFFF;     /* Pure white */
-  --border: #E5E7EB;      /* Light gray for borders */
-  --bg: #F3F4F6;          /* Light gray for secondary button background */
-  --dark: #1e1e1e;        /* For general dark elements */
-  --white: #ffffff;
-
-  /* Text Colors */
-  --text: var(--primary);         /* Default text color (set to primary dark blue) */
-  --text-light: #6B7280;       /* Lighter gray for secondary text/labels */
+:root{
+  --primary:#1E293B; 
+  --accent:#06B6D4; 
+  --light:#F9FAFB; 
+  --lighter:#FFFFFF; 
+  --dark:#1e1e1e; 
+  --white:#ffffff;
+  --success:#10b981; 
+  --danger:#ef4444; 
+  --warning:#f59e0b; 
+  --bg:#F9FAFB; 
+  --border:#e5e7eb; 
+  --text:#1f2937; 
+  --text-light:#6b7280
 }
-/* ------------------------------------------------ */
-
 *{box-sizing:border-box; margin:0; padding:0}
 body{
-  font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; 
-  background: linear-gradient(rgba(249, 250, 251, 0.95), rgba(249, 250, 251, 0.95)),
-    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(99, 102, 241, 0.02) 10px, rgba(99, 102, 241, 0.02) 20px);
-  color:var(--text);
-  overflow-x:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; 
+  background: linear-gradient(rgba(249, 250, 251, 0.95), rgba(249, 250, 251, 0.95)),
+    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(99, 102, 241, 0.02) 10px, rgba(99, 102, 241, 0.02) 20px);
+  color:var(--text);
+  overflow-x:hidden;
 }
 
-.trust-bar{background:linear-gradient(90deg, var(--success) 0%, #059669 100%); color:#fff; padding:10px 20px; text-align:center; font-size:13px; font-weight:500; box-shadow:0 2px 8px rgba(16,185,129,0.2)}
+.trust-bar{background:linear-gradient(90deg, var(--success) 0%, #059669 100%); color:var(--white); padding:10px 20px; text-align:center; font-size:13px; font-weight:500; box-shadow:0 2px 8px rgba(16,185,129,0.2)}
 .trust-bar span{margin:0 20px; display:inline-block}
 
-.top-bar{background:#fff; border-bottom:2px solid var(--border); padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px; box-shadow:0 2px 12px rgba(0,0,0,0.08); position:sticky; top:0; z-index:100}
+.top-bar{background:var(--white); border-bottom:2px solid var(--border); padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px; box-shadow:0 2px 12px rgba(0,0,0,0.08); position:sticky; top:0; z-index:100}
 .logo-area{font-size:20px; font-weight:700; color:var(--primary); display:flex; align-items:center; gap:10px}
 .logo-area img{height:32px; object-fit:contain}
-.logo-badge{background:var(--success); color:#fff; font-size:10px; padding:3px 8px; border-radius:12px; font-weight:600; margin-left:8px}
+.logo-badge{background:var(--success); color:var(--white); font-size:10px; padding:3px 8px; border-radius:12px; font-weight:600; margin-left:8px}
 
 .main-controls{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
 button{
-  background:var(--accent); 
-  color:#fff; 
-  border:none; 
-  cursor:pointer; 
-  border-radius:8px; 
-  padding:10px 18px; 
-  font-size:14px; 
-  font-weight:600; 
-  transition:all 0.3s ease;
-  box-shadow:0 2px 8px rgba(6,182,212,0.25);
+  background:var(--accent); 
+  color:var(--white); 
+  border:none; 
+  cursor:pointer; 
+  border-radius:8px; 
+  padding:10px 18px; 
+  font-size:14px; 
+  font-weight:600; 
+  transition:all 0.3s ease;
+  box-shadow:0 2px 8px rgba(6,182,212,0.25);
 }
 button:hover{
-  background:#0891b2; 
-  transform:translateY(-2px);
-  box-shadow:0 4px 16px rgba(6,182,212,0.4);
+  background:#0891b2; 
+  transform:translateY(-2px);
+  box-shadow:0 4px 16px rgba(6,182,212,0.4);
 }
 button:disabled{opacity:0.5; cursor:not-allowed; transform:none}
-button.secondary{background:#f3f4f6; color:var(--text-light); box-shadow:0 2px 6px rgba(0,0,0,0.1)}
-button.secondary:hover{background:var(--text-light); color:#fff}
+button.secondary{background:var(--light); color:var(--text); box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+button.secondary:hover{background:var(--text-light); color:var(--white)}
 button.cta-primary{
-  background:linear-gradient(135deg, var(--success) 0%, #059669 100%);
-  font-size:15px;
-  padding:12px 24px;
-  box-shadow:0 4px 14px rgba(16,185,129,0.4);
+  background:linear-gradient(135deg, var(--success) 0%, #059669 100%);
+  color:var(--white);
+  font-size:15px;
+  padding:12px 24px;
+  box-shadow:0 4px 14px rgba(16,185,129,0.4);
 }
-button.danger{background:var(--danger); box-shadow:0 2px 8px rgba(239,68,68,0.25)}
+button.danger{background:var(--danger); color:var(--white); box-shadow:0 2px 8px rgba(239,68,68,0.25)}
 button.danger:hover{background:#dc2626}
 
 .container{display:flex; min-height:calc(100vh - 200px); margin-top:20px}
 .editor-panel{flex:1; padding:20px; overflow:auto; max-width:1200px; margin:0 auto; width:100%}
-.sidebar{width:340px; background:#fff; border-left:2px solid var(--border); padding:20px; overflow:auto; box-shadow:-2px 0 12px rgba(0,0,0,0.05)}
+.sidebar{width:340px; background:var(--white); border-left:2px solid var(--border); padding:20px; overflow:auto; box-shadow:-2px 0 12px rgba(0,0,0,0.05)}
 .sidebar.hidden{display:none}
 
-.sop-header{background:#fff; border-radius:12px; padding:20px; margin-bottom:20px; border:2px solid var(--border); box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+.sop-header{background:var(--white); border-radius:12px; padding:20px; margin-bottom:20px; border:2px solid var(--border); box-shadow:0 4px 20px rgba(0,0,0,0.08)}
 .sop-title{font-size:24px; font-weight:700; color:var(--primary); border:none; width:100%; padding:8px; background:transparent; margin-bottom:12px; border-radius:6px}
 .sop-title:focus{background:#f9fafb; outline:2px solid var(--accent)}
 .sop-meta{display:flex; gap:16px; flex-wrap:wrap; align-items:center}
 .meta-item{display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text-light)}
-.meta-item select{padding:6px 10px; border:1px solid var(--border); border-radius:6px; background:#fff; color:var(--text); font-size:14px}
+.meta-item select{padding:6px 10px; border:1px solid var(--border); border-radius:6px; background:var(--white); color:var(--text); font-size:14px}
 
-#editor{background:#fff; border-radius:12px; min-height:400px; border:2px solid var(--border); padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+#editor{background:var(--white); border-radius:12px; min-height:400px; border:2px solid var(--border); padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.08)}
 
 .empty-state{text-align:center; padding:60px 20px; color:var(--text-light); max-width:800px; margin:0 auto}
 .empty-state h2{color:var(--primary); font-size:32px; margin:0 0 16px 0; font-weight:700}
@@ -96,42 +90,42 @@ button.danger:hover{background:#dc2626}
 
 .template-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-top:24px}
 .template-card{
-  padding:20px; 
-  border:2px solid var(--border); 
-  border-radius:12px; 
-  cursor:pointer; 
-  transition:all 0.3s ease;
-  background:#fff;
-  position:relative;
+  padding:20px; 
+  border:2px solid var(--border); 
+  border-radius:12px; 
+  cursor:pointer; 
+  transition:all 0.3s ease;
+  background:var(--white);
+  position:relative;
 }
 .template-card:hover{
-  border-color:var(--accent); 
-  background:linear-gradient(135deg, #f0f9ff 0%, #cffafe 100%);
-  transform:translateY(-4px);
-  box-shadow:0 8px 24px rgba(6,182,212,0.2);
+  border-color:var(--accent); 
+  background:linear-gradient(135deg, #f0f9ff 0%, #cffafe 100%);
+  transform:translateY(-4px);
+  box-shadow:0 8px 24px rgba(6,182,212,0.2);
 }
 .template-card.custom-template{border-color:var(--success)}
 .template-card-icon{font-size:32px; margin-bottom:12px}
 .template-card-title{font-weight:700; color:var(--primary); margin:0 0 8px 0; font-size:16px}
 .template-card-desc{font-size:13px; color:var(--text-light); margin:0 0 8px 0; line-height:1.5}
 .template-card-steps{font-size:12px; color:var(--accent); font-weight:600}
-.template-delete{position:absolute; top:8px; right:8px; background:var(--danger); color:#fff; border:none; width:24px; height:24px; border-radius:50%; font-size:12px; cursor:pointer; opacity:0; transition:opacity 0.2s}
+.template-delete{position:absolute; top:8px; right:8px; background:var(--danger); color:var(--white); border:none; width:24px; height:24px; border-radius:50%; font-size:12px; cursor:pointer; opacity:0; transition:opacity 0.2s}
 .template-card:hover .template-delete{opacity:1}
 
 .sop-step{
-  position:relative; 
-  margin:12px 0; 
-  padding:16px; 
-  border-radius:10px; 
-  border-left:4px solid var(--primary); 
-  background:#fff;
-  border:2px solid var(--border);
-  transition:all 0.2s ease;
-  box-shadow:0 2px 8px rgba(0,0,0,0.05);
-  cursor:move;
+  position:relative; 
+  margin:12px 0; 
+  padding:16px; 
+  border-radius:10px; 
+  border-left:4px solid var(--primary); 
+  background:var(--white);
+  border:2px solid var(--border);
+  transition:all 0.2s ease;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  cursor:move;
 }
 .sop-step:hover{
-  box-shadow:0 4px 16px rgba(0,0,0,0.1);
+  box-shadow:0 4px 16px rgba(0,0,0,0.1);
 }
 .sop-step.dragging{opacity:0.5; transform:scale(0.95)}
 .sop-step.drag-over{border-color:var(--accent); border-width:3px}
@@ -141,68 +135,68 @@ button.danger:hover{background:#dc2626}
 .drag-handle{cursor:grab; color:var(--text-light); font-size:18px; user-select:none}
 .drag-handle:active{cursor:grabbing}
 .step-title{
-  flex:1; 
-  font-size:16px; 
-  font-weight:600; 
-  color:var(--text); 
-  border:none; 
-  padding:8px; 
-  background:transparent;
-  border-radius:6px;
-  transition:background 0.2s;
-  min-width:200px;
+  flex:1; 
+  font-size:16px; 
+  font-weight:600; 
+  color:var(--text); 
+  border:none; 
+  padding:8px; 
+  background:transparent;
+  border-radius:6px;
+  transition:background 0.2s;
+  min-width:200px;
 }
-.step-title:focus{background:#f9fafb; outline:2px solid var(--accent); outline-offset:2px}
+.step-title:focus{background:var(--light); outline:2px solid var(--accent); outline-offset:2px}
 .step-time{
-  font-size:13px; 
-  color:var(--text-light); 
-  width:70px; 
-  text-align:center;
-  border:1px solid var(--border);
-  border-radius:6px;
-  padding:6px;
+  font-size:13px; 
+  color:var(--text-light); 
+  width:70px; 
+  text-align:center;
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:6px;
 }
 .step-dependency{
-  font-size:12px;
-  padding:4px 8px;
-  background:#fef3c7;
-  color:#92400e;
-  border-radius:6px;
-  border:1px solid #fbbf24;
-  cursor:pointer;
+  font-size:12px;
+  padding:4px 8px;
+  background:#fef3c7;
+  color:#92400e;
+  border-radius:6px;
+  border:1px solid #fbbf24;
+  cursor:pointer;
 }
 
 .step-controls{display:flex; gap:6px; margin-top:12px; flex-wrap:wrap}
 .btn-icon{
-  width:32px; 
-  height:32px; 
-  padding:0; 
-  font-size:14px; 
-  display:flex; 
-  align-items:center; 
-  justify-content:center; 
-  border-radius:6px; 
-  background:var(--bg); 
-  color:var(--accent); 
-  border:1px solid var(--border); 
-  cursor:pointer;
-  box-shadow:none;
+  width:32px; 
+  height:32px; 
+  padding:0; 
+  font-size:14px; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center; 
+  border-radius:6px; 
+  background:var(--bg); 
+  color:var(--accent); 
+  border:1px solid var(--border); 
+  cursor:pointer;
+  box-shadow:none;
 }
 .btn-icon:hover{background:var(--accent); color:#fff; transform:scale(1.1)}
 .btn-icon.danger{color:var(--danger)}
 .btn-icon.danger:hover{background:var(--danger)}
 
 .note{
-  font-size:13px; 
-  color:var(--text-light); 
-  margin-top:12px; 
-  padding:12px; 
-  border-radius:8px; 
-  background:#f9fafb; 
-  min-height:32px;
-  border:1px solid var(--border);
+  font-size:13px; 
+  color:var(--text-light); 
+  margin-top:12px; 
+  padding:12px; 
+  border-radius:8px; 
+  background:#f9fafb; 
+  min-height:32px;
+  border:1px solid var(--border);
 }
-.note:focus{outline:2px solid var(--accent); background:#fff}
+.note:focus{outline:2px solid var(--accent); background:var(--white)}
 .note:empty:before{content:attr(data-placeholder); color:#9ca3af}
 
 .step-image{margin-top:12px; position:relative}
@@ -211,7 +205,7 @@ button.danger:hover{background:#dc2626}
 
 .approval-section{margin-top:12px; padding:12px; background:#fef3c7; border-radius:8px; border:1px solid #fbbf24}
 .approval-section label{display:block; font-size:12px; font-weight:600; color:#92400e; margin-bottom:8px}
-.approval-section select{width:100%; padding:6px; border:1px solid #fbbf24; border-radius:6px; background:#fff}
+.approval-section select{width:100%; padding:6px; border:1px solid #fbbf24; border-radius:6px; background:var(--white)}
 .approval-status{display:inline-block; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:600; margin-top:8px}
 .approval-status.pending{background:#fef3c7; color:#92400e}
 .approval-status.approved{background:#d1fae5; color:#065f46}
@@ -230,7 +224,7 @@ button.danger:hover{background:#dc2626}
 .version-date{font-size:12px; color:var(--text-light)}
 .version-note{font-size:13px; color:var(--text); margin-top:4px}
 
-.sop-list-item{padding:12px; border:2px solid var(--border); border-radius:8px; margin-bottom:10px; cursor:pointer; transition:all 0.2s; background:#fff}
+.sop-list-item{padding:12px; border:2px solid var(--border); border-radius:8px; margin-bottom:10px; cursor:pointer; transition:all 0.2s; background:var(--white)}
 .sop-list-item:hover{border-color:var(--accent); background:#f0f9ff}
 .sop-list-title{font-weight:600; color:var(--primary); margin-bottom:4px}
 .sop-list-meta{font-size:12px; color:var(--text-light)}
@@ -241,20 +235,20 @@ button.danger:hover{background:#dc2626}
 .search-box:focus{outline:none; border-color:var(--accent)}
 
 .modal{
-  position:fixed; 
-  left:50%; 
-  top:50%; 
-  transform:translate(-50%,-50%); 
-  background:#fff; 
-  box-shadow:0 20px 60px rgba(0,0,0,0.25); 
-  border-radius:16px; 
-  z-index:1400; 
-  padding:32px; 
-  max-width:700px;
-  width:90%;
-  max-height:85vh; 
-  overflow:auto; 
-  display:none;
+  position:fixed; 
+  left:50%; 
+  top:50%; 
+  transform:translate(-50%,-50%); 
+  background:var(--white); 
+  box-shadow:0 20px 60px rgba(0,0,0,0.25); 
+  border-radius:16px; 
+  z-index:1400; 
+  padding:32px; 
+  max-width:700px;
+  width:90%;
+  max-height:85vh; 
+  overflow:auto; 
+  display:none;
 }
 .modal-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:20px}
 .modal-header h3{margin:0; font-size:24px; color:var(--primary); font-weight:700}
@@ -265,28 +259,28 @@ button.danger:hover{background:#dc2626}
 
 .form-group{margin-bottom:16px}
 .form-group label{display:block; font-size:14px; font-weight:600; color:var(--text); margin-bottom:8px}
-.form-group input, .form-group select, .form-group textarea{width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-size:14px; font-family:inherit}
+.form-group input, .form-group select, .form-group textarea{width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-size:14px; font-family:inherit; background:var(--white)}
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus{outline:none; border-color:var(--accent)}
 
-.toast{position:fixed; right:20px; bottom:20px; background:var(--text); color:#fff; padding:16px 20px; border-radius:10px; opacity:0; z-index:1600; display:none; box-shadow:0 8px 24px rgba(0,0,0,0.3); font-weight:500; transition:opacity 0.3s}
+.toast{position:fixed; right:20px; bottom:20px; background:var(--text); color:var(--white); padding:16px 20px; border-radius:10px; opacity:0; z-index:1600; display:none; box-shadow:0 8px 24px rgba(0,0,0,0.3); font-weight:500; transition:opacity 0.3s}
 .toast.show{opacity:1; display:block}
 .toast.success{background:var(--success)}
 .toast.error{background:var(--danger)}
 
 .save-animation{
-  position:fixed; 
-  top:80px; 
-  right:20px; 
-  background:var(--success); 
-  color:#fff; 
-  padding:12px 20px; 
-  border-radius:10px; 
-  font-size:14px; 
-  z-index:2000;
-  box-shadow:0 4px 16px rgba(16,185,129,0.4);
-  font-weight:600;
-  opacity:0;
-  transition:opacity 0.3s;
+  position:fixed; 
+  top:80px; 
+  right:20px; 
+  background:var(--success); 
+  color:var(--white); 
+  padding:12px 20px; 
+  border-radius:10px; 
+  font-size:14px; 
+  z-index:2000;
+  box-shadow:0 4px 16px rgba(16,185,129,0.4);
+  font-weight:600;
+  opacity:0;
+  transition:opacity 0.3s;
 }
 .save-animation.show{opacity:1}
 
@@ -294,207 +288,253 @@ button.danger:hover{background:#dc2626}
 .checkbox-group input[type="checkbox"]{width:auto; margin:0}
 
 @media print{
-  .top-bar, .sidebar, .trust-bar, button, .step-controls{display:none !important}
-  .editor-panel{max-width:100%; padding:20px}
-  .sop-step{break-inside:avoid; page-break-inside:avoid}
+  .top-bar, .sidebar, .trust-bar, button, .step-controls{display:none !important}
+  .editor-panel{max-width:100%; padding:20px}
+  .sop-step{break-inside:avoid; page-break-inside:avoid}
 }
 
 @media(max-width:768px){
-  .sidebar{position:fixed; left:0; top:auto; bottom:0; height:auto; width:100%; z-index:100; border-left:none; border-top:2px solid var(--border); max-height:70vh}
-  .main-controls{flex-wrap:wrap; justify-content:center}
-  .step-header{flex-wrap:wrap}
+  .sidebar{position:fixed; left:0; top:auto; bottom:0; height:auto; width:100%; z-index:100; border-left:none; border-top:2px solid var(--border); max-height:70vh}
+  .main-controls{flex-wrap:wrap; justify-content:center}
+  .step-header{flex-wrap:wrap}
 }
 </style>
 </head>
 <body>
 
 <div class="trust-bar">
-  <span>● Secure & Private</span>
-  <span>✓ 100+ Businesses Trust Us</span>
-  <span>● Create SOPs in Minutes</span>
+  <span>● Secure & Private</span>
+  <span>✓ 100+ Businesses Trust Us</span>
+  <span>● Create SOPs in Minutes</span>
 </div>
 
 <div class="top-bar">
-  <div class="logo-area">
-    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%231E293B' width='100' height='100' rx='20'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%2306B6D4' font-weight='bold' font-family='sans-serif'%3ED%3C/text%3E%3C/svg%3E" alt="DGS Logo" />
-    <span>SOP Designer Pro<span class="logo-badge">FREE</span></span>
-  </div>
-  
-  <div class="main-controls">
-    <button id="sop-list-btn" class="secondary" aria-label="View all SOPs">📋 My SOPs</button>
-    <button id="new-btn" aria-label="Add new step">+ Add Step</button>
-    <button id="export-menu-btn" style="display:none" class="secondary" aria-label="Export options">⬇ Export</button>
-    <button id="version-btn" style="display:none" class="secondary" aria-label="Version history">🕐 History</button>
-    <button id="consult-btn" class="cta-primary" aria-label="Book free consultation">Free Consultation</button>
-    <button id="toggle-sidebar" class="secondary" aria-label="Toggle sidebar">☰</button>
-  </div>
+  <div class="logo-area">
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%231E293B' width='100' height='100' rx='20'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%2306B6D4' font-weight='bold' font-family='sans-serif'%3ED%3C/text%3E%3C/svg%3E" alt="DGS Logo" />
+    <span>SOP Designer Pro<span class="logo-badge">FREE</span></span>
+  </div>
+  
+  <div class="main-controls">
+    <button id="sop-list-btn" class="secondary" aria-label="View all SOPs">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-right:6px">
+        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+      </svg>
+      My SOPs
+    </button>
+    <button id="new-btn" aria-label="Add new step">+ Add Step</button>
+    <button id="export-menu-btn" style="display:none" class="secondary" aria-label="Export options">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-right:6px">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+      </svg>
+      Export
+    </button>
+    <button id="version-btn" style="display:none" class="secondary" aria-label="Version history">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-right:6px">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+      History
+    </button>
+    <button id="consult-btn" class="cta-primary" aria-label="Book free consultation">Free Consultation</button>
+    <button id="toggle-sidebar" class="secondary" aria-label="Toggle sidebar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
 </div>
 
 <div class="container">
-  <div class="editor-panel">
-    <div id="sop-header" style="display:none" class="sop-header">
-      <input type="text" id="sop-title-input" class="sop-title" placeholder="SOP Title..." aria-label="SOP Title" />
-      <div class="sop-meta">
-        <div class="meta-item">
-          <span>Department:</span>
-          <select id="department-select" aria-label="Department">
-            <option>General</option>
-            <option>Operations</option>
-            <option>Sales</option>
-            <option>Customer Service</option>
-            <option>HR</option>
-            <option>Finance</option>
-            <option>IT</option>
-          </select>
-        </div>
-        <div class="meta-item">
-          <span>Priority:</span>
-          <select id="priority-select" aria-label="Priority">
-            <option>Low</option>
-            <option selected>Medium</option>
-            <option>High</option>
-            <option>Critical</option>
-          </select>
-        </div>
-        <div class="meta-item">
-          <span>Last Modified: <strong id="last-modified">Just now</strong></span>
-        </div>
-      </div>
-    </div>
-    <div id="editor" role="main" aria-label="SOP Editor"></div>
-  </div>
-  
-  <div class="sidebar hidden" role="complementary" aria-label="Sidebar">
-    <div class="sidebar-section">
-      <h4>Statistics</h4>
-      <div class="stat-item">
-        <span class="stat-label">Total Time:</span>
-        <span class="stat-value" id="total-time" aria-label="Total time in minutes">0</span> min
-      </div>
-      <div class="stat-item">
-        <span class="stat-label">Steps:</span>
-        <span class="stat-value" id="step-count" aria-label="Number of steps">0</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-label">Approvals:</span>
-        <span class="stat-value" id="approval-count" aria-label="Pending approvals">0</span>
-      </div>
-    </div>
-    
-    <div class="sidebar-section">
-      <h4>Quick Actions</h4>
-      <button id="save-template-btn" aria-label="Save as template">💾 Save as Template</button>
-      <button id="import-btn" aria-label="Import SOP">📥 Import SOP</button>
-      <button id="print-btn" aria-label="Print SOP">🖨️ Print</button>
-      <button id="email-btn" aria-label="Share via email">✉️ Email</button>
-    </div>
-  </div>
+  <div class="editor-panel">
+    <div id="sop-header" style="display:none" class="sop-header">
+      <input type="text" id="sop-title-input" class="sop-title" placeholder="SOP Title..." aria-label="SOP Title" />
+      <div class="sop-meta">
+        <div class="meta-item">
+          <span>Department:</span>
+          <select id="department-select" aria-label="Department">
+            <option>General</option>
+            <option>Operations</option>
+            <option>Sales</option>
+            <option>Customer Service</option>
+            <option>HR</option>
+            <option>Finance</option>
+            <option>IT</option>
+          </select>
+        </div>
+        <div class="meta-item">
+          <span>Priority:</span>
+          <select id="priority-select" aria-label="Priority">
+            <option>Low</option>
+            <option selected>Medium</option>
+            <option>High</option>
+            <option>Critical</option>
+          </select>
+        </div>
+        <div class="meta-item">
+          <span>Last Modified: <strong id="last-modified">Just now</strong></span>
+        </div>
+      </div>
+    </div>
+    <div id="editor" role="main" aria-label="SOP Editor"></div>
+  </div>
+  
+  <div class="sidebar hidden" role="complementary" aria-label="Sidebar">
+    <div class="sidebar-section">
+      <h4>Statistics</h4>
+      <div class="stat-item">
+        <span class="stat-label">Total Time:</span>
+        <span class="stat-value" id="total-time" aria-label="Total time in minutes">0</span> min
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Steps:</span>
+        <span class="stat-value" id="step-count" aria-label="Number of steps">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Approvals:</span>
+        <span class="stat-value" id="approval-count" aria-label="Pending approvals">0</span>
+      </div>
+    </div>
+    
+    <div class="sidebar-section">
+      <h4>Quick Actions</h4>
+      <button id="save-template-btn" aria-label="Save as template">💾 Save as Template</button>
+      <button id="import-btn" aria-label="Import SOP">📥 Import SOP</button>
+      <button id="print-btn" aria-label="Print SOP">🖨️ Print</button>
+      <button id="email-btn" aria-label="Share via email">✉️ Email</button>
+    </div>
+  </div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay"></div>
 
+<!-- SOP List Modal -->
 <div class="modal" id="sopListModal" role="dialog" aria-labelledby="sopListTitle">
-  <div class="modal-header">
-    <h3 id="sopListTitle">My SOPs</h3>
-    <button class="modal-close" aria-label="Close modal">×</button>
-  </div>
-  <input type="text" id="sop-search" class="search-box" placeholder="Search SOPs..." aria-label="Search SOPs" />
-  <button id="create-new-sop-btn" class="cta-primary" style="width:100%; margin-bottom:16px">+ Create New SOP</button>
-  <div id="sop-list" role="list"></div>
+  <div class="modal-header">
+    <h3 id="sopListTitle">My SOPs</h3>
+    <button class="modal-close" aria-label="Close modal">×</button>
+  </div>
+  <input type="text" id="sop-search" class="search-box" placeholder="Search SOPs..." aria-label="Search SOPs" />
+  <button id="create-new-sop-btn" class="cta-primary" style="width:100%; margin-bottom:16px">+ Create New SOP</button>
+  <div id="sop-list" role="list"></div>
 </div>
 
+<!-- Template Modal -->
 <div class="modal" id="templateModal" role="dialog" aria-labelledby="templateTitle">
-  <div class="modal-header">
-    <h3 id="templateTitle">Choose a Template</h3>
-    <button class="modal-close" aria-label="Close modal">×</button>
-  </div>
-  <p style="color:var(--text-light); margin-bottom:20px">Start with a pre-built template or create from scratch</p>
-  <div class="template-grid" id="templateGrid"></div>
-  <button id="blank-sop-btn" style="width:100%; margin-top:20px" class="secondary">Start Blank SOP</button>
+  <div class="modal-header">
+    <h3 id="templateTitle">Choose a Template</h3>
+    <button class="modal-close" aria-label="Close modal">×</button>
+  </div>
+  <p style="color:var(--text-light); margin-bottom:20px">Start with a pre-built template or create from scratch</p>
+  <div class="template-grid" id="templateGrid"></div>
+  <button id="blank-sop-btn" style="width:100%; margin-top:20px" class="secondary">Start Blank SOP</button>
 </div>
 
+<!-- Export Modal -->
 <div class="modal" id="exportModal" role="dialog" aria-labelledby="exportTitle">
-  <div class="modal-header">
-    <h3 id="exportTitle">Export Options</h3>
-    <button class="modal-close" aria-label="Close modal">×</button>
-  </div>
-  <div style="display:grid; gap:12px">
-    <button id="pdf-btn" aria-label="Export as PDF">📄 Export as PDF</button>
-    <button id="html-btn" aria-label="Export as HTML">🌐 Export as HTML</button>
-    <button id="markdown-btn" aria-label="Export as Markdown">📝 Export as Markdown</button>
-    <button id="json-btn" aria-label="Export as JSON">💾 Export as JSON</button>
-    <button id="csv-btn" aria-label="Export as CSV">📊 Export as CSV</button>
-  </div>
+  <div class="modal-header">
+    <h3 id="exportTitle">Export Options</h3>
+    <button class="modal-close" aria-label="Close modal">×</button>
+  </div>
+  <div style="display:grid; gap:12px">
+    <button id="pdf-btn" aria-label="Export as PDF">📄 Export as PDF</button>
+    <button id="html-btn" aria-label="Export as HTML">🌐 Export as HTML</button>
+    <button id="markdown-btn" aria-label="Export as Markdown">📝 Export as Markdown</button>
+    <button id="json-btn" aria-label="Export as JSON">💾 Export as JSON</button>
+    <button id="csv-btn" aria-label="Export as CSV">📊 Export as CSV</button>
+  </div>
 </div>
 
+<!-- Version History Modal -->
 <div class="modal" id="versionModal" role="dialog" aria-labelledby="versionTitle">
-  <div class="modal-header">
-    <h3 id="versionTitle">Version History</h3>
-    <button class="modal-close" aria-label="Close modal">×</button>
-  </div>
-  <div id="version-list" role="list"></div>
+  <div class="modal-header">
+    <h3 id="versionTitle">Version History</h3>
+    <button class="modal-close" aria-label="Close modal">×</button>
+  </div>
+  <div id="version-list" role="list"></div>
 </div>
 
+<!-- Save Template Modal -->
 <div class="modal" id="saveTemplateModal" role="dialog" aria-labelledby="saveTemplateTitle">
-  <div class="modal-header">
-    <h3 id="saveTemplateTitle">Save as Template</h3>
-    <button class="modal-close" aria-label="Close modal">×</button>
-  </div>
-  <div class="form-group">
-    <label for="template-name">Template Name</label>
-    <input type="text" id="template-name" placeholder="e.g., Opening Procedure" required />
-  </div>
-  <div class="form-group">
-    <label for="template-desc">Description</label>
-    <textarea id="template-desc" rows="3" placeholder="Brief description of this template"></textarea>
-  </div>
-  <button id="save-template-confirm" class="cta-primary" style="width:100%">Save Template</button>
+  <div class="modal-header">
+    <h3 id="saveTemplateTitle">Save as Template</h3>
+    <button class="modal-close" aria-label="Close modal">×</button>
+  </div>
+  <div class="form-group">
+    <label for="template-name">Template Name</label>
+    <input type="text" id="template-name" placeholder="e.g., Opening Procedure" required />
+  </div>
+  <div class="form-group">
+    <label for="template-desc">Description</label>
+    <textarea id="template-desc" rows="3" placeholder="Brief description of this template"></textarea>
+  </div>
+  <button id="save-template-confirm" class="cta-primary" style="width:100%">Save Template</button>
 </div>
 
+<!-- Dependency Modal -->
 <div class="modal" id="dependencyModal" role="dialog" aria-labelledby="dependencyTitle">
-  <div class="modal-header">
-    <h3 id="dependencyTitle">Set Prerequisite Steps</h3>
-    <button class="modal-close" aria-label="Close modal">×</button>
-  </div>
-  <p style="color:var(--text-light); margin-bottom:16px">Select which steps must be completed before this one</p>
-  <div id="dependency-list"></div>
-  <button id="save-dependency-btn" class="cta-primary" style="width:100%; margin-top:16px">Save</button>
+  <div class="modal-header">
+    <h3 id="dependencyTitle">Set Prerequisite Steps</h3>
+    <button class="modal-close" aria-label="Close modal">×</button>
+  </div>
+  <p style="color:var(--text-light); margin-bottom:16px">Select which steps must be completed before this one</p>
+  <div id="dependency-list"></div>
+  <button id="save-dependency-btn" class="cta-primary" style="width:100%; margin-top:16px">Save</button>
 </div>
 
+<!-- Email Modal -->
 <div class="modal" id="emailModal" role="dialog" aria-labelledby="emailTitle">
-  <div class="modal-header">
-    <h3 id="emailTitle">Share via Email</h3>
-    <button class="modal-close" aria-label="Close modal">×</button>
-  </div>
-  <div class="form-group">
-    <label for="email-to">To (comma-separated emails)</label>
-    <input type="text" id="email-to" placeholder="email1@example.com, email2@example.com" />
-  </div>
-  <div class="form-group">
-    <label for="email-message">Message (optional)</label>
-    <textarea id="email-message" rows="4" placeholder="Add a personal message..."></textarea>
-  </div>
-  <button id="send-email-btn" class="cta-primary" style="width:100%">Generate Email</button>
+  <div class="modal-header">
+    <h3 id="emailTitle">Share via Email</h3>
+    <button class="modal-close" aria-label="Close modal">×</button>
+  </div>
+  <div class="form-group">
+    <label for="email-to">To (comma-separated emails)</label>
+    <input type="text" id="email-to" placeholder="email1@example.com, email2@example.com" />
+  </div>
+  <div class="form-group">
+    <label for="email-message">Message (optional)</label>
+    <textarea id="email-message" rows="4" placeholder="Add a personal message..."></textarea>
+  </div>
+  <button id="send-email-btn" class="cta-primary" style="width:100%">Generate Email</button>
 </div>
 
+<!-- Consultation Modal -->
 <div class="modal" id="consultModal" role="dialog" aria-labelledby="consultTitle">
-  <div class="modal-header">
-    <h3 id="consultTitle">Book Your Free Strategy Call</h3>
-    <button class="modal-close" aria-label="Close modal">×</button>
-  </div>
-  
-  <div style="background:linear-gradient(135deg, #f0f9ff 0%, #faf5ff 100%); padding:20px; border-radius:12px; margin-bottom:20px">
-    <p style="margin:0; font-size:16px; color:var(--text); line-height:1.6"><strong>In this 15-minute call, we'll:</strong></p>
-    <ul style="margin:12px 0 0 0; padding-left:20px; color:var(--text)">
-      <li>Review your current processes</li>
-      <li>Identify operational gaps</li>
-      <li>Show you how to reduce training time by 60%</li>
-      <li>Provide a custom roadmap</li>
-    </ul>
-  </div>
-  
-  <button id="schedule-call-btn" class="cta-primary" style="width:100%; box-shadow:none; margin-top:20px">Schedule My Free Call</button>
+  <div class="modal-header">
+    <h3 id="consultTitle">Book Your Free Strategy Call</h3>
+    <button class="modal-close" aria-label="Close modal">×</button>
+  </div>
+  
+  <div style="background:linear-gradient(135deg, #f0f9ff 0%, #faf5ff 100%); padding:20px; border-radius:12px; margin-bottom:20px">
+    <p style="margin:0; font-size:16px; color:var(--text); line-height:1.6"><strong>In this 15-minute call, we'll:</strong></p>
+    <ul style="margin:12px 0 0 0; padding-left:20px; color:var(--text)">
+      <li>Review your current processes</li>
+      <li>Identify operational gaps</li>
+      <li>Show you how to reduce training time by 60%</li>
+      <li>Provide a custom roadmap</li>
+    </ul>
+  </div>
+  
+  <button id="schedule-call-btn" class="cta-primary" style="width:100%; box-shadow:none; margin-top:20px">Schedule My Free Call</button>
 </div>
+
+<!-- Contact Section -->
+<section id="contact" class="contact" style="background:linear-gradient(135deg, var(--primary) 0%, #0f172a 100%); color:var(--white); padding:60px 20px; text-align:center; margin-top:40px">
+  <div style="max-width:800px; margin:0 auto">
+    <h2 style="font-size:36px; margin:0 0 20px 0; color:var(--white)">Let's simplify your systems.</h2>
+    <p style="font-size:18px; line-height:1.6; margin:0 0 30px 0; color:#e2e8f0">Ready to see where your tools are costing you time and profit? Start with the $99 Tech Stack Red Flag Audit — fast, practical, and focused on measurable wins.</p>
+    <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top:30px">
+      <a href="/Services/index.html" class="tool-btn" style="background:var(--accent); color:var(--white); padding:14px 28px; text-decoration:none; border-radius:8px; font-weight:600; transition:all 0.3s; display:inline-block">See Services</a>
+      <a href="mailto:DGSConsult@consultant.com" style="background:transparent; color:var(--white); padding:14px 28px; text-decoration:none; border-radius:8px; font-weight:600; border:2px solid var(--white); transition:all 0.3s; display:inline-block">Email Us</a>
+      <a href="https://www.linkedin.com/in/dg-snook/" target="_blank" rel="noopener noreferrer" style="background:transparent; color:var(--white); padding:14px 28px; text-decoration:none; border-radius:8px; font-weight:600; border:2px solid var(--white); transition:all 0.3s; display:inline-block">LinkedIn</a>
+    </div>
+  </div>
+</section>
+
+<footer style="background:var(--dark); color:#9ca3af; padding:30px 20px; text-align:center; font-size:14px; line-height:1.8">
+  <div style="max-width:800px; margin:0 auto">
+    &copy; 2025 DGS Consulting | "Clarity over complexity." | Founded by Darren Snook | Ottawa, ON
+  </div>
+</footer>
 
 <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 <div id="saveAnim" class="save-animation" role="status" aria-live="polite">✓ Saved</div>
@@ -515,740 +555,1299 @@ const editor = document.getElementById('editor');
 
 // Utility Functions
 function showToast(msg, type = 'success') {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.className = 'toast show ' + type;
-  setTimeout(() => toast.classList.remove('show'), 3000);
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast show ' + type;
+  setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
 function closeAllModals() {
-  document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-  document.getElementById('modalOverlay').style.display = 'none';
+  document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+  document.getElementById('modalOverlay').style.display = 'none';
 }
 
 function showModal(id) {
-  document.getElementById('modalOverlay').style.display = 'block';
-  document.getElementById(id).style.display = 'block';
+  document.getElementById('modalOverlay').style.display = 'block';
+  document.getElementById(id).style.display = 'block';
 }
 
 function generateId() {
-  return 'sop_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  return 'sop_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 }
 
 // SOP Step Creation with Drag & Drop
 function createStep(title = '', time = '', note = '', dependencies = [], imageUrl = '', approver = '', approvalStatus = 'pending') {
-  const step = document.createElement('div');
-  step.className = 'sop-step';
-  step.draggable = true;
-  step.setAttribute('role', 'article');
-  
-  const depText = dependencies.length > 0 ? `<span class="step-dependency" role="button" tabindex="0" aria-label="Has ${dependencies.length} prerequisite steps">⚠ ${dependencies.length} Prerequisites</span>` : '';
-  
-  step.innerHTML = `
-    <div class="step-header">
-      <span class="drag-handle" aria-label="Drag to reorder">⋮⋮</span>
-      <span class="step-number">1</span>
-      <input type="text" class="step-title" placeholder="Step title..." value="${title}" aria-label="Step title" />
-      <input type="number" class="step-time" min="0" placeholder="0" value="${time}" aria-label="Time in minutes" />
-      ${depText}
-    </div>
-    <div class="step-controls">
-      <button class="btn-icon" title="Add Image" data-action="image" aria-label="Add image">🖼️</button>
-      <button class="btn-icon" title="Add Prerequisite" data-action="dependency" aria-label="Add prerequisite">🔗</button>
-      <button class="btn-icon" title="Add Approval" data-action="approval" aria-label="Add approval workflow">✓</button>
-      <button class="btn-icon danger delete-btn" title="Delete" aria-label="Delete step">✖</button>
-    </div>
-    <div class="note" contenteditable="true" data-placeholder="Add notes, instructions, or details..." role="textbox" aria-label="Step notes">${note}</div>
-    ${imageUrl ? `<div class="step-image"><img src="${imageUrl}" alt="Step illustration" /><button class="remove-image" aria-label="Remove image">✖</button></div>` : ''}
-    ${approver ? `<div class="approval-section">
-      <label>Approval Required</label>
-      <select class="approval-select" aria-label="Approver">
-        <option ${approver === 'Manager' ? 'selected' : ''}>Manager</option>
-        <option ${approver === 'Supervisor' ? 'selected' : ''}>Supervisor</option>
-        <option ${approver === 'Team Lead' ? 'selected' : ''}>Team Lead</option>
-        <option ${approver === 'Director' ? 'selected' : ''}>Director</option>
-      </select>
-      <span class="approval-status ${approvalStatus}">${approvalStatus.toUpperCase()}</span>
-    </div>` : ''}
-  `;
-  
-  // Store dependencies
-  step.dataset.dependencies = JSON.stringify(dependencies);
-  
-  // Event Listeners
-  step.querySelector('.delete-btn').addEventListener('click', () => deleteStep(step));
-  step.querySelector('.step-title').addEventListener('input', () => saveSOP());
-  step.querySelector('.step-time').addEventListener('input', () => { updateStats(); saveSOP(); });
-  step.querySelector('.note').addEventListener('input', () => saveSOP());
-  
-  // Action buttons
-  step.querySelectorAll('[data-action]').forEach(btn => {
-    btn.addEventListener('click', (e) => handleStepAction(e.target.dataset.action, step));
-  });
-  
-  // Dependency click
-  const depSpan = step.querySelector('.step-dependency');
-  if (depSpan) {
-    depSpan.addEventListener('click', () => handleStepAction('dependency', step));
-    depSpan.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') handleStepAction('dependency', step);
-    });
-  }
-  
-  // Remove image
-  const removeImg = step.querySelector('.remove-image');
-  if (removeImg) {
-    removeImg.addEventListener('click', () => {
-      step.querySelector('.step-image').remove();
-      saveSOP();
-    });
-  }
-  
-  // Approval select
-  const approvalSelect = step.querySelector('.approval-select');
-  if (approvalSelect) {
-    approvalSelect.addEventListener('change', () => saveSOP());
-  }
-  
-  // Drag events
-  step.addEventListener('dragstart', handleDragStart);
-  step.addEventListener('dragend', handleDragEnd);
-  step.addEventListener('dragover', handleDragOver);
-  step.addEventListener('drop', handleDrop);
-  step.addEventListener('dragleave', handleDragLeave);
-  
-  return step;
+  const step = document.createElement('div');
+  step.className = 'sop-step';
+  step.draggable = true;
+  step.setAttribute('role', 'article');
+  
+  const depText = dependencies.length > 0 ? `<span class="step-dependency" role="button" tabindex="0" aria-label="Has ${dependencies.length} prerequisite steps">⚠ ${dependencies.length} Prerequisites</span>` : '';
+  
+  step.innerHTML = `
+    <div class="step-header">
+      <span class="drag-handle" aria-label="Drag to reorder">⋮⋮</span>
+      <span class="step-number">1</span>
+      <input type="text" class="step-title" placeholder="Step title..." value="${title}" aria-label="Step title" />
+      <input type="number" class="step-time" min="0" placeholder="0" value="${time}" aria-label="Time in minutes" />
+      ${depText}
+    </div>
+    <div class="step-controls">
+      <button class="btn-icon" title="Add Image" data-action="image" aria-label="Add image">🖼️</button>
+      <button class="btn-icon" title="Add Prerequisite" data-action="dependency" aria-label="Add prerequisite">🔗</button>
+      <button class="btn-icon" title="Add Approval" data-action="approval" aria-label="Add approval workflow">✓</button>
+      <button class="btn-icon danger delete-btn" title="Delete" aria-label="Delete step">✖</button>
+    </div>
+    <div class="note" contenteditable="true" data-placeholder="Add notes, instructions, or details..." role="textbox" aria-label="Step notes">${note}</div>
+    ${imageUrl ? `<div class="step-image"><img src="${imageUrl}" alt="Step illustration" /><button class="remove-image" aria-label="Remove image">✖</button></div>` : ''}
+    ${approver ? `<div class="approval-section">
+      <label>Approval Required</label>
+      <select class="approval-select" aria-label="Approver">
+        <option ${approver === 'Manager' ? 'selected' : ''}>Manager</option>
+        <option ${approver === 'Supervisor' ? 'selected' : ''}>Supervisor</option>
+        <option ${approver === 'Team Lead' ? 'selected' : ''}>Team Lead</option>
+        <option ${approver === 'Director' ? 'selected' : ''}>Director</option>
+      </select>
+      <span class="approval-status ${approvalStatus}">${approvalStatus.toUpperCase()}</span>
+    </div>` : ''}
+  `;
+  
+  // Store dependencies
+  step.dataset.dependencies = JSON.stringify(dependencies);
+  
+  // Event Listeners
+  step.querySelector('.delete-btn').addEventListener('click', () => deleteStep(step));
+  step.querySelector('.step-title').addEventListener('input', () => saveSOP());
+  step.querySelector('.step-time').addEventListener('input', () => { updateStats(); saveSOP(); });
+  step.querySelector('.note').addEventListener('input', () => saveSOP());
+  
+  // Action buttons
+  step.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', (e) => handleStepAction(e.target.dataset.action, step));
+  });
+  
+  // Dependency click
+  const depSpan = step.querySelector('.step-dependency');
+  if (depSpan) {
+    depSpan.addEventListener('click', () => handleStepAction('dependency', step));
+    depSpan.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') handleStepAction('dependency', step);
+    });
+  }
+  
+  // Remove image
+  const removeImg = step.querySelector('.remove-image');
+  if (removeImg) {
+    removeImg.addEventListener('click', () => {
+      step.querySelector('.step-image').remove();
+      saveSOP();
+    });
+  }
+  
+  // Approval select
+  const approvalSelect = step.querySelector('.approval-select');
+  if (approvalSelect) {
+    approvalSelect.addEventListener('change', () => saveSOP());
+  }
+  
+  // Drag events
+  step.addEventListener('dragstart', handleDragStart);
+  step.addEventListener('dragend', handleDragEnd);
+  step.addEventListener('dragover', handleDragOver);
+  step.addEventListener('drop', handleDrop);
+  step.addEventListener('dragleave', handleDragLeave);
+  
+  return step;
 }
 
 // Drag and Drop Handlers
 function handleDragStart(e) {
-  draggedElement = this;
-  this.classList.add('dragging');
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/html', this.innerHTML);
+  draggedElement = this;
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/html', this.innerHTML);
 }
 
 function handleDragEnd(e) {
-  this.classList.remove('dragging');
-  document.querySelectorAll('.sop-step').forEach(step => {
-    step.classList.remove('drag-over');
-  });
+  this.classList.remove('dragging');
+  document.querySelectorAll('.sop-step').forEach(step => {
+    step.classList.remove('drag-over');
+  });
 }
 
 function handleDragOver(e) {
-  if (e.preventDefault) e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  
-  const afterElement = getDragAfterElement(editor, e.clientY);
-  if (afterElement == null) {
-    editor.appendChild(draggedElement);
-  } else {
-    editor.insertBefore(draggedElement, afterElement);
-  }
-  
-  return false;
+  if (e.preventDefault) e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  
+  const afterElement = getDragAfterElement(editor, e.clientY);
+  if (afterElement == null) {
+    editor.appendChild(draggedElement);
+  } else {
+    editor.insertBefore(draggedElement, afterElement);
+  }
+  
+  return false;
 }
 
 function handleDrop(e) {
-  if (e.stopPropagation) e.stopPropagation();
-  renumber();
-  updateStats();
-  saveSOP();
-  return false;
+  if (e.stopPropagation) e.stopPropagation();
+  renumber();
+  updateStats();
+  saveSOP();
+  return false;
 }
 
 function handleDragLeave(e) {
-  this.classList.remove('drag-over');
+  this.classList.remove('drag-over');
 }
 
 function getDragAfterElement(container, y) {
-  const draggableElements = [...container.querySelectorAll('.sop-step:not(.dragging)')];
-  
-  return draggableElements.reduce((closest, child) => {
-    const box = child.getBoundingClientRect();
-    const offset = y - box.top - box.height / 2;
-    
-    if (offset < 0 && offset > closest.offset) {
-      return { offset: offset, element: child };
-    } else {
-      return closest;
-    }
-  }, { offset: Number.NEGATIVE_INFINITY }).element;
+  const draggableElements = [...container.querySelectorAll('.sop-step:not(.dragging)')];
+  
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    
+    if (offset < 0 && offset > closest.offset) {
+      return { offset: offset, element: child };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
 // Step Actions
 function handleStepAction(action, step) {
-  switch(action) {
-    case 'image':
-      currentStepForDependency = step;
-      document.getElementById('image-input').click();
-      break;
-    case 'dependency':
-      openDependencyModal(step);
-      break;
-    case 'approval':
-      addApproval(step);
-      break;
-  }
+  switch(action) {
+    case 'image':
+      currentStepForDependency = step;
+      document.getElementById('image-input').click();
+      break;
+    case 'dependency':
+      openDependencyModal(step);
+      break;
+    case 'approval':
+      addApproval(step);
+      break;
+  }
 }
 
 function addApproval(step) {
-  if (step.querySelector('.approval-section')) {
-    showToast('Approval already added', 'error');
-    return;
-  }
-  
-  const approvalHTML = `<div class="approval-section">
-    <label>Approval Required</label>
-    <select class="approval-select" aria-label="Approver">
-      <option>Manager</option>
-      <option>Supervisor</option>
-      <option>Team Lead</option>
-      <option>Director</option>
-    </select>
-    <span class="approval-status pending">PENDING</span>
-  </div>`;
-  
-  step.querySelector('.note').insertAdjacentHTML('afterend', approvalHTML);
-  step.querySelector('.approval-select').addEventListener('change', () => saveSOP());
-  updateStats();
-  saveSOP();
-  showToast('Approval workflow added');
+  if (step.querySelector('.approval-section')) {
+    showToast('Approval already added', 'error');
+    return;
+  }
+  
+  const approvalHTML = `<div class="approval-section">
+    <label>Approval Required</label>
+    <select class="approval-select" aria-label="Approver">
+      <option>Manager</option>
+      <option>Supervisor</option>
+      <option>Team Lead</option>
+      <option>Director</option>
+    </select>
+    <span class="approval-status pending">PENDING</span>
+  </div>`;
+  
+  step.querySelector('.note').insertAdjacentHTML('afterend', approvalHTML);
+  step.querySelector('.approval-select').addEventListener('change', () => saveSOP());
+  updateStats();
+  saveSOP();
+  showToast('Approval workflow added');
 }
 
 function openDependencyModal(step) {
-  currentStepForDependency = step;
-  const depList = document.getElementById('dependency-list');
-  depList.innerHTML = '';
-  
-  const steps = editor.querySelectorAll('.sop-step');
-  const currentDeps = JSON.parse(step.dataset.dependencies || '[]');
-  
-  steps.forEach((s, idx) => {
-    if (s === step) return;
-    
-    const title = s.querySelector('.step-title').value || `Step ${idx + 1}`;
-    const checked = currentDeps.includes(idx) ? 'checked' : '';
-    
-    depList.innerHTML += `
-      <div class="checkbox-group">
-        <input type="checkbox" id="dep-${idx}" value="${idx}" ${checked} />
-        <label for="dep-${idx}">${idx + 1}. ${title}</label>
-      </div>
-    `;
-  });
-  
-  showModal('dependencyModal');
+  currentStepForDependency = step;
+  const depList = document.getElementById('dependency-list');
+  depList.innerHTML = '';
+  
+  const steps = editor.querySelectorAll('.sop-step');
+  const currentDeps = JSON.parse(step.dataset.dependencies || '[]');
+  
+  steps.forEach((s, idx) => {
+    if (s === step) return;
+    
+    const title = s.querySelector('.step-title').value || `Step ${idx + 1}`;
+    const checked = currentDeps.includes(idx) ? 'checked' : '';
+    
+    depList.innerHTML += `
+      <div class="checkbox-group">
+        <input type="checkbox" id="dep-${idx}" value="${idx}" ${checked} />
+        <label for="dep-${idx}">${idx + 1}. ${title}</label>
+      </div>
+    `;
+  });
+  
+  showModal('dependencyModal');
 }
 
 function saveDependencies() {
-  if (!currentStepForDependency) return;
-  
-  const checkboxes = document.querySelectorAll('#dependency-list input:checked');
-  const dependencies = Array.from(checkboxes).map(cb => parseInt(cb.value));
-  
-  currentStepForDependency.dataset.dependencies = JSON.stringify(dependencies);
-  
-  // Update UI
-  const existingDep = currentStepForDependency.querySelector('.step-dependency');
-  if (dependencies.length > 0) {
-    const depHTML = `<span class="step-dependency" role="button" tabindex="0" aria-label="Has ${dependencies.length} prerequisite steps">⚠ ${dependencies.length} Prerequisites</span>`;
-    if (existingDep) {
-      existingDep.outerHTML = depHTML;
-    } else {
-      currentStepForDependency.querySelector('.step-header').insertAdjacentHTML('beforeend', depHTML);
-    }
-    const newDep = currentStepForDependency.querySelector('.step-dependency');
-    newDep.addEventListener('click', () => handleStepAction('dependency', currentStepForDependency));
-  } else if (existingDep) {
-    existingDep.remove();
-  }
-  
-  saveSOP();
-  closeAllModals();
-  showToast('Prerequisites updated');
+  if (!currentStepForDependency) return;
+  
+  const checkboxes = document.querySelectorAll('#dependency-list input:checked');
+  const dependencies = Array.from(checkboxes).map(cb => parseInt(cb.value));
+  
+  currentStepForDependency.dataset.dependencies = JSON.stringify(dependencies);
+  
+  // Update UI
+  const existingDep = currentStepForDependency.querySelector('.step-dependency');
+  if (dependencies.length > 0) {
+    const depHTML = `<span class="step-dependency" role="button" tabindex="0" aria-label="Has ${dependencies.length} prerequisite steps">⚠ ${dependencies.length} Prerequisites</span>`;
+    if (existingDep) {
+      existingDep.outerHTML = depHTML;
+    } else {
+      currentStepForDependency.querySelector('.step-header').insertAdjacentHTML('beforeend', depHTML);
+    }
+    const newDep = currentStepForDependency.querySelector('.step-dependency');
+    newDep.addEventListener('click', () => handleStepAction('dependency', currentStepForDependency));
+  } else if (existingDep) {
+    existingDep.remove();
+  }
+  
+  saveSOP();
+  closeAllModals();
+  showToast('Prerequisites updated');
 }
 
 // Image Upload
 document.getElementById('image-input').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file || !currentStepForDependency) return;
-  
-  const reader = new FileReader();
-  reader.onload = (event) => {
-    const existingImg = currentStepForDependency.querySelector('.step-image');
-    if (existingImg) existingImg.remove();
-    
-    const imgHTML = `<div class="step-image"><img src="${event.target.result}" alt="Step illustration" /><button class="remove-image" aria-label="Remove image">✖</button></div>`;
-    currentStepForDependency.querySelector('.note').insertAdjacentHTML('afterend', imgHTML);
-    
-    currentStepForDependency.querySelector('.remove-image').addEventListener('click', () => {
-      currentStepForDependency.querySelector('.step-image').remove();
-      saveSOP();
-    });
-    
-    saveSOP();
-    showToast('Image added');
-  };
-  reader.readAsDataURL(file);
+  const file = e.target.files[0];
+  if (!file || !currentStepForDependency) return;
+  
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    const existingImg = currentStepForDependency.querySelector('.step-image');
+    if (existingImg) existingImg.remove();
+    
+    const imgHTML = `<div class="step-image"><img src="${event.target.result}" alt="Step illustration" /><button class="remove-image" aria-label="Remove image">✖</button></div>`;
+    currentStepForDependency.querySelector('.note').insertAdjacentHTML('afterend', imgHTML);
+    
+    currentStepForDependency.querySelector('.remove-image').addEventListener('click', () => {
+      currentStepForDependency.querySelector('.step-image').remove();
+      saveSOP();
+    });
+    
+    saveSOP();
+    showToast('Image added');
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
 });
 
-// Main SOP Logic
-function newSOP(templateData = null) {
-  currentSOPId = generateId();
-  document.getElementById('sop-header').style.display = 'block';
-  document.getElementById('export-menu-btn').style.display = 'inline-block';
-  document.getElementById('version-btn').style.display = 'inline-block';
-  editor.innerHTML = '';
-  
-  const now = new Date().toLocaleString();
-  document.getElementById('last-modified').textContent = now;
-
-  if (templateData) {
-    document.getElementById('sop-title-input').value = templateData.title || 'New SOP from Template';
-    document.getElementById('department-select').value = templateData.department || 'General';
-    document.getElementById('priority-select').value = templateData.priority || 'Medium';
-    
-    templateData.steps.forEach(step => {
-      editor.appendChild(createStep(
-        step.title, 
-        step.time, 
-        step.note, 
-        step.dependencies, 
-        step.imageUrl, 
-        step.approver,
-        step.approvalStatus
-      ));
-    });
-    showToast(`SOP created from '${templateData.title}' template`);
-  } else {
-    document.getElementById('sop-title-input').value = 'New Blank SOP';
-    document.getElementById('department-select').value = 'General';
-    document.getElementById('priority-select').value = 'Medium';
-    editor.appendChild(createStep('Initial Step'));
-    showToast('New blank SOP created');
-  }
-  
-  updateStats();
-  renumber();
-  saveSOP();
-  closeAllModals();
+function deleteStep(step) {
+  if (confirm('Delete this step?')) {
+    step.remove();
+    renumber();
+    updateStats();
+    saveSOP();
+    showToast('Step deleted');
+  }
 }
 
-function deleteStep(step) {
-  const title = step.querySelector('.step-title').value;
-  if (confirm(`Are you sure you want to delete the step: "${title}"?`)) {
-    step.remove();
-    renumber();
-    updateStats();
-    saveSOP();
-    showToast('Step deleted', 'error');
-  }
+function addStep() {
+  if (editor.innerHTML.includes('empty-state')) {
+    editor.innerHTML = '';
+    showEditorUI();
+  }
+  const step = createStep();
+  editor.appendChild(step);
+  renumber();
+  updateStats();
+  saveSOP();
+  step.querySelector('.step-title').focus();
 }
 
 function renumber() {
-  editor.querySelectorAll('.sop-step').forEach((step, index) => {
-    step.querySelector('.step-number').textContent = index + 1;
-  });
+  const steps = editor.querySelectorAll('.sop-step');
+  steps.forEach((step, i) => {
+    step.querySelector('.step-number').textContent = i + 1;
+  });
 }
 
 function updateStats() {
-  let totalTime = 0;
-  let approvalCount = 0;
-  const steps = editor.querySelectorAll('.sop-step');
-  
-  steps.forEach(step => {
-    const timeInput = step.querySelector('.step-time');
-    totalTime += parseInt(timeInput.value || 0);
-    
-    if (step.querySelector('.approval-section')) {
-      approvalCount++;
-    }
-  });
-  
-  document.getElementById('total-time').textContent = totalTime;
-  document.getElementById('step-count').textContent = steps.length;
-  document.getElementById('approval-count').textContent = approvalCount;
+  const steps = editor.querySelectorAll('.sop-step');
+  let totalTime = 0;
+  let approvalCount = 0;
+  
+  steps.forEach(step => {
+    const time = parseInt(step.querySelector('.step-time').value) || 0;
+    totalTime += time;
+    if (step.querySelector('.approval-section')) approvalCount++;
+  });
+  
+  document.getElementById('total-time').textContent = totalTime;
+  document.getElementById('step-count').textContent = steps.length;
+  document.getElementById('approval-count').textContent = approvalCount;
 }
 
-function collectSOPData() {
-  const steps = Array.from(editor.querySelectorAll('.sop-step')).map(step => ({
-    title: step.querySelector('.step-title').value,
-    time: step.querySelector('.step-time').value,
-    note: step.querySelector('.note').innerHTML,
-    dependencies: JSON.parse(step.dataset.dependencies || '[]'),
-    imageUrl: step.querySelector('.step-image img')?.src || '',
-    approver: step.querySelector('.approval-select')?.value || '',
-    approvalStatus: step.querySelector('.approval-status')?.classList.contains('approved') ? 'approved' : step.querySelector('.approval-status')?.classList.contains('rejected') ? 'rejected' : 'pending'
-  }));
-  
-  return {
-    id: currentSOPId,
-    title: document.getElementById('sop-title-input').value,
-    department: document.getElementById('department-select').value,
-    priority: document.getElementById('priority-select').value,
-    lastModified: new Date().toISOString(),
-    steps: steps
-  };
+// SOP Management
+function saveSOP() {
+  if (!currentSOPId) return;
+  
+  const steps = [];
+  editor.querySelectorAll('.sop-step').forEach(step => {
+    const imgEl = step.querySelector('.step-image img');
+    const approvalEl = step.querySelector('.approval-select');
+    const approvalStatusEl = step.querySelector('.approval-status');
+    
+    steps.push({
+      title: step.querySelector('.step-title').value,
+      time: step.querySelector('.step-time').value,
+      note: step.querySelector('.note').textContent,
+      dependencies: JSON.parse(step.dataset.dependencies || '[]'),
+      imageUrl: imgEl ? imgEl.src : '',
+      approver: approvalEl ? approvalEl.value : '',
+      approvalStatus: approvalStatusEl ? approvalStatusEl.classList[1] : 'pending'
+    });
+  });
+  
+  allSOPs[currentSOPId] = {
+    id: currentSOPId,
+    title: document.getElementById('sop-title-input').value || 'Untitled SOP',
+    department: document.getElementById('department-select').value,
+    priority: document.getElementById('priority-select').value,
+    steps: steps,
+    lastModified: new Date().toISOString()
+  };
+  
+  localStorage.setItem('all_sops', JSON.stringify(allSOPs));
+  updateLastModified();
+  
+  const anim = document.getElementById('saveAnim');
+  anim.classList.add('show');
+  setTimeout(() => anim.classList.remove('show'), 2000);
+  
+  saveVersion();
 }
 
-// Data Persistence (Using simplified local storage)
-function saveSOP(isVersion = true) {
-  if (!currentSOPId) return;
-  
-  const sopData = collectSOPData();
-  allSOPs[currentSOPId] = sopData;
-  
-  // Update last modified
-  const now = new Date().toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-  document.getElementById('last-modified').textContent = now;
-
-  // Simple versioning (only save if a major change or explicit save)
-  if (isVersion) {
-    const currentVersion = {
-      date: sopData.lastModified,
-      note: `Auto-saved. Steps: ${sopData.steps.length}, Time: ${document.getElementById('total-time').textContent} min`
-    };
-    if (versionHistory.length === 0 || new Date(versionHistory[0].date).getTime() < (Date.now() - 30000)) { // Save new version every 30s
-      versionHistory.unshift(currentVersion);
-      if (versionHistory.length > 10) versionHistory.pop();
-    } else {
-      versionHistory[0] = currentVersion; // Update the last auto-save
-    }
-  }
-  
-  localStorage.setItem('allSOPs', JSON.stringify(allSOPs));
-  localStorage.setItem('customTemplates', JSON.stringify(customTemplates));
-  localStorage.setItem(`versionHistory_${currentSOPId}`, JSON.stringify(versionHistory));
-  
-  // Show a quick save animation
-  const saveAnim = document.getElementById('saveAnim');
-  saveAnim.classList.add('show');
-  setTimeout(() => saveAnim.classList.remove('show'), 1500);
+function saveVersion() {
+  if (!currentSOPId || !allSOPs[currentSOPId]) return;
+  
+  const version = {
+    id: generateId(),
+    sopId: currentSOPId,
+    timestamp: new Date().toISOString(),
+    data: JSON.parse(JSON.stringify(allSOPs[currentSOPId])),
+    note: 'Auto-saved version'
+  };
+  
+  versionHistory = versionHistory.filter(v => v.sopId === currentSOPId).slice(-9);
+  versionHistory.push(version);
+  localStorage.setItem('version_history', JSON.stringify(versionHistory));
 }
 
-function loadSOP(id) {
-  if (!allSOPs[id]) return;
-  
-  currentSOPId = id;
-  const sopData = allSOPs[id];
-  versionHistory = JSON.parse(localStorage.getItem(`versionHistory_${id}`) || '[]');
-
-  editor.innerHTML = '';
-  document.getElementById('sop-header').style.display = 'block';
-  document.getElementById('export-menu-btn').style.display = 'inline-block';
-  document.getElementById('version-btn').style.display = 'inline-block';
-  
-  document.getElementById('sop-title-input').value = sopData.title;
-  document.getElementById('department-select').value = sopData.department;
-  document.getElementById('priority-select').value = sopData.priority;
-  document.getElementById('last-modified').textContent = new Date(sopData.lastModified).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-
-  sopData.steps.forEach(step => {
-    editor.appendChild(createStep(
-      step.title, 
-      step.time, 
-      step.note, 
-      step.dependencies, 
-      step.imageUrl, 
-      step.approver,
-      step.approvalStatus
-    ));
-  });
-  
-  updateStats();
-  renumber();
-  closeAllModals();
-  showToast(`Loaded SOP: ${sopData.title}`);
+function loadSOP(sopId) {
+  currentSOPId = sopId;
+  const sop = allSOPs[sopId];
+  
+  if (!sop) {
+    showEmptyState();
+    return;
+  }
+  
+  editor.innerHTML = '';
+  document.getElementById('sop-title-input').value = sop.title || '';
+  document.getElementById('department-select').value = sop.department || 'General';
+  document.getElementById('priority-select').value = sop.priority || 'Medium';
+  
+  if (sop.steps && sop.steps.length > 0) {
+    sop.steps.forEach(s => {
+      editor.appendChild(createStep(s.title, s.time, s.note, s.dependencies || [], s.imageUrl || '', s.approver || '', s.approvalStatus || 'pending'));
+    });
+  }
+  
+  showEditorUI();
+  renumber();
+  updateStats();
+  updateLastModified();
+  closeAllModals();
 }
 
-function loadInitialData() {
-  allSOPs = JSON.parse(localStorage.getItem('allSOPs') || '{}');
-  customTemplates = JSON.parse(localStorage.getItem('customTemplates') || '{}');
-  
-  if (Object.keys(allSOPs).length > 0) {
-    const latestId = Object.keys(allSOPs).sort((a, b) => new Date(allSOPs[b].lastModified) - new Date(allSOPs[a].lastModified))[0];
-    loadSOP(latestId);
-  } else {
-    // Show empty state if no SOPs exist
-    editor.innerHTML = `
-      <div class="empty-state">
-        <h2>Design Your SOP in Minutes</h2>
-        <p>Get started by choosing a template or creating a new SOP from scratch.</p>
-        <button id="open-template-btn" class="cta-primary">🚀 Start with a Template</button>
-      </div>
-    `;
-    document.getElementById('open-template-btn').addEventListener('click', () => showModal('templateModal'));
-    updateStats(); // Reset stats to 0
-  }
+function createNewSOP() {
+  currentSOPId = generateId();
+  editor.innerHTML = '';
+  document.getElementById('sop-title-input').value = 'New SOP';
+  document.getElementById('department-select').value = 'General';
+  document.getElementById('priority-select').value = 'Medium';
+  
+  allSOPs[currentSOPId] = {
+    id: currentSOPId,
+    title: 'New SOP',
+    department: 'General',
+    priority: 'Medium',
+    steps: [],
+    lastModified: new Date().toISOString()
+  };
+  
+  showEditorUI();
+  addStep();
+  saveSOP();
+  closeAllModals();
 }
 
-// Modal Content Renderers
-function renderTemplateGrid() {
-  const grid = document.getElementById('templateGrid');
-  grid.innerHTML = '';
-  
-  // Pre-defined templates
-  const defaultTemplates = {
-    'onboarding': { title: 'Employee Onboarding', steps: 6, desc: 'A step-by-step guide for new hires.', department: 'HR' },
-    'sales-call': { title: 'Sales Discovery Call', steps: 5, desc: 'Structured approach for first sales contact.', department: 'Sales' },
-    'incident-response': { title: 'IT Incident Response', steps: 8, desc: 'Protocol for critical system failures.', department: 'IT' },
-    'cash-close': { title: 'Daily Cash Closing', steps: 4, desc: 'End-of-day reconciliation procedure.', department: 'Finance' }
-  };
-  
-  // Function to create template card HTML
-  const createCard = (key, data, isCustom = false) => {
-    const card = document.createElement('div');
-    card.className = `template-card ${isCustom ? 'custom-template' : ''}`;
-    card.dataset.key = key;
-    card.innerHTML = `
-      <h5 class="template-card-title">${data.title}</h5>
-      <p class="template-card-desc">${data.desc}</p>
-      <span class="template-card-steps">${data.steps} Steps</span>
-      ${isCustom ? `<button class="template-delete" aria-label="Delete template" data-key="${key}">✖</button>` : ''}
-    `;
-    card.addEventListener('click', (e) => {
-      if (e.target.classList.contains('template-delete')) return;
-      const template = isCustom ? customTemplates[key] : defaultTemplates[key];
-      newSOP(template);
-    });
-    grid.appendChild(card);
-    
-    if (isCustom) {
-      card.querySelector('.template-delete').addEventListener('click', (e) => {
-        e.stopPropagation();
-        delete customTemplates[key];
-        localStorage.setItem('customTemplates', JSON.stringify(customTemplates));
-        renderTemplateGrid();
-        showToast('Custom template deleted', 'error');
-      });
-    }
-  };
-
-  // Add custom templates first
-  for (const key in customTemplates) {
-    createCard(key, customTemplates[key], true);
-  }
-
-  // Add default templates
-  for (const key in defaultTemplates) {
-    createCard(key, defaultTemplates[key]);
-  }
+function deleteSOP(sopId) {
+  if (confirm('Delete this SOP? This cannot be undone.')) {
+    delete allSOPs[sopId];
+    localStorage.setItem('all_sops', JSON.stringify(allSOPs));
+    versionHistory = versionHistory.filter(v => v.sopId !== sopId);
+    localStorage.setItem('version_history', JSON.stringify(versionHistory));
+    
+    if (currentSOPId === sopId) {
+      currentSOPId = null;
+      showEmptyState();
+    }
+    
+    showToast('SOP deleted');
+    renderSOPList();
+  }
 }
 
-function renderSOPList(filter = '') {
-  const list = document.getElementById('sop-list');
-  list.innerHTML = '';
-  
-  const sortedSOPs = Object.values(allSOPs).sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
-  
-  sortedSOPs.filter(sop => sop.title.toLowerCase().includes(filter.toLowerCase())).forEach(sop => {
-    const listItem = document.createElement('div');
-    listItem.className = 'sop-list-item';
-    listItem.setAttribute('role', 'listitem');
-    listItem.innerHTML = `
-      <div class="sop-list-title">${sop.title}</div>
-      <div class="sop-list-meta">
-        ${sop.department} | Priority: ${sop.priority} | Steps: ${sop.steps.length} | Last Edit: ${new Date(sop.lastModified).toLocaleDateString()}
-      </div>
-      <div class="sop-list-actions">
-        <button class="secondary load-sop-btn" data-id="${sop.id}">Open</button>
-        <button class="danger delete-sop-btn" data-id="${sop.id}">Delete</button>
-      </div>
-    `;
-    list.appendChild(listItem);
-  });
-
-  document.querySelectorAll('.load-sop-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => loadSOP(e.target.dataset.id));
-  });
-  
-  document.querySelectorAll('.delete-sop-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const id = e.target.dataset.id;
-      if (confirm(`Are you sure you want to permanently delete SOP: "${allSOPs[id].title}"?`)) {
-        delete allSOPs[id];
-        localStorage.setItem('allSOPs', JSON.stringify(allSOPs));
-        if (currentSOPId === id) {
-          newSOP(null); // Load a blank SOP if current one is deleted
-        }
-        renderSOPList();
-        showToast('SOP Deleted', 'error');
-      }
-    });
-  });
+function updateLastModified() {
+  if (!currentSOPId || !allSOPs[currentSOPId]) return;
+  const date = new Date(allSOPs[currentSOPId].lastModified);
+  const now = new Date();
+  const diff = Math.floor((now - date) / 1000);
+  
+  let text;
+  if (diff < 60) text = 'Just now';
+  else if (diff < 3600) text = Math.floor(diff / 60) + ' min ago';
+  else if (diff < 86400) text = Math.floor(diff / 3600) + ' hours ago';
+  else text = date.toLocaleDateString();
+  
+  document.getElementById('last-modified').textContent = text;
 }
 
-function renderVersionHistory() {
-  const list = document.getElementById('version-list');
-  list.innerHTML = '';
-  
-  if (versionHistory.length === 0) {
-    list.innerHTML = `<p style="color:var(--text-light)">No version history available for this SOP yet.</p>`;
-    return;
-  }
-
-  versionHistory.forEach((version, index) => {
-    const item = document.createElement('div');
-    item.className = 'version-item';
-    item.setAttribute('role', 'listitem');
-    item.innerHTML = `
-      <div>Version ${versionHistory.length - index} ${index === 0 ? '(Current)' : ''}</div>
-      <div class="version-date">${new Date(version.date).toLocaleString()}</div>
-      <div class="version-note">${version.note}</div>
-    `;
-    // Add functionality to revert/view history if needed
-    list.appendChild(item);
-  });
+function showEmptyState() {
+  document.getElementById('sop-header').style.display = 'none';
+  editor.innerHTML = `
+    <div class="empty-state">
+      <h2>Create Professional SOPs in Minutes</h2>
+      <p>Streamline your operations, train faster, scale smarter</p>
+      <button id="empty-start-btn" class="cta-primary" style="margin-top:24px; font-size:18px; padding:16px 32px">Get Started - It's Free</button>
+    </div>
+  `;
+  
+  document.getElementById('empty-start-btn').addEventListener('click', () => {
+    showModal('templateModal');
+  });
+  
+  document.getElementById('export-menu-btn').style.display = 'none';
+  document.getElementById('version-btn').style.display = 'none';
 }
 
-
-// Export Logic
-function exportAsPDF() {
-  showToast('Generating PDF...', 'success');
-  setTimeout(() => {
-    // Simple print for PDF in browser
-    window.print();
-    closeAllModals();
-    showToast('PDF generated (using browser print)');
-  }, 500);
+function showEditorUI() {
+  document.getElementById('sop-header').style.display = 'block';
+  document.getElementById('export-menu-btn').style.display = 'inline-block';
+  document.getElementById('version-btn').style.display = 'inline-block';
 }
 
-function exportAsJSON() {
-  const sopData = collectSOPData();
-  const dataStr = JSON.stringify(sopData, null, 2);
-  const blob = new Blob([dataStr], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${sopData.title.replace(/\s/g, '_')}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  closeAllModals();
-  showToast('Exported as JSON');
+// SOP List
+function renderSOPList() {
+  const list = document.getElementById('sop-list');
+  list.innerHTML = '';
+  
+  const searchTerm = document.getElementById('sop-search').value.toLowerCase();
+  const filtered = Object.values(allSOPs).filter(sop => 
+    sop.title.toLowerCase().includes(searchTerm) ||
+    sop.department.toLowerCase().includes(searchTerm)
+  );
+  
+  if (filtered.length === 0) {
+    list.innerHTML = '<p style="text-align:center; color:var(--text-light); padding:20px">No SOPs found</p>';
+    return;
+  }
+  
+  filtered.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
+  
+  filtered.forEach(sop => {
+    const date = new Date(sop.lastModified).toLocaleDateString();
+    const item = document.createElement('div');
+    item.className = 'sop-list-item';
+    item.setAttribute('role', 'listitem');
+    item.innerHTML = `
+      <div class="sop-list-title">${sop.title}</div>
+      <div class="sop-list-meta">${sop.department} • ${sop.steps.length} steps • ${date}</div>
+      <div class="sop-list-actions">
+        <button class="secondary" data-action="load" aria-label="Load SOP">Open</button>
+        <button class="secondary" data-action="duplicate" aria-label="Duplicate SOP">Duplicate</button>
+        <button class="danger" data-action="delete" aria-label="Delete SOP">Delete</button>
+      </div>
+    `;
+    
+    item.querySelector('[data-action="load"]').addEventListener('click', () => loadSOP(sop.id));
+    item.querySelector('[data-action="duplicate"]').addEventListener('click', () => duplicateSOP(sop.id));
+    item.querySelector('[data-action="delete"]').addEventListener('click', () => deleteSOP(sop.id));
+    
+    list.appendChild(item);
+  });
 }
 
-// Event Listeners Initialization
-document.addEventListener('DOMContentLoaded', () => {
-  loadInitialData();
-  
-  // Top Bar Controls
-  document.getElementById('new-btn').addEventListener('click', () => editor.appendChild(createStep()));
-  document.getElementById('sop-list-btn').addEventListener('click', () => {
-    renderSOPList();
-    showModal('sopListModal');
-  });
-  document.getElementById('export-menu-btn').addEventListener('click', () => showModal('exportModal'));
-  document.getElementById('version-btn').addEventListener('click', () => {
-    renderVersionHistory();
-    showModal('versionModal');
-  });
-  document.getElementById('consult-btn').addEventListener('click', () => showModal('consultModal'));
-  document.getElementById('toggle-sidebar').addEventListener('click', () => {
-    document.querySelector('.sidebar').classList.toggle('hidden');
-  });
+function duplicateSOP(sopId) {
+  const original = allSOPs[sopId];
+  if (!original) return;
+  
+  const newId = generateId();
+  allSOPs[newId] = {
+    ...JSON.parse(JSON.stringify(original)),
+    id: newId,
+    title: original.title + ' (Copy)',
+    lastModified: new Date().toISOString()
+  };
+  
+  localStorage.setItem('all_sops', JSON.stringify(allSOPs));
+  showToast('SOP duplicated');
+  renderSOPList();
+}
 
-  // Header Inputs
-  document.getElementById('sop-title-input').addEventListener('input', () => saveSOP());
-  document.getElementById('department-select').addEventListener('change', () => saveSOP());
-  document.getElementById('priority-select').addEventListener('change', () => saveSOP());
-  
-  // Modals
-  document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', closeAllModals));
-  document.getElementById('modalOverlay').addEventListener('click', closeAllModals);
+// Templates
+function renderTemplates() {
+  const grid = document.getElementById('templateGrid');
+  if (!grid) return;
+  
+  const templates = [
+    { id: 'restaurant-opening', icon: '🍽️', name: 'Restaurant Opening', desc: 'Complete morning setup', steps: 8 },
+    { id: 'restaurant-closing', icon: '🔒', name: 'Restaurant Closing', desc: 'End of day procedures', steps: 10 },
+    { id: 'retail-opening', icon: '🏪', name: 'Retail Store Opening', desc: 'Store preparation', steps: 7 },
+    { id: 'retail-sale', icon: '💳', name: 'Point of Sale', desc: 'Customer transactions', steps: 6 },
+    { id: 'office-onboarding', icon: '👤', name: 'Employee Onboarding', desc: 'New hire process', steps: 12 },
+    { id: 'customer-complaint', icon: '📞', name: 'Handle Complaint', desc: 'Customer service', steps: 8 },
+    { id: 'inventory-count', icon: '📦', name: 'Inventory Count', desc: 'Stock management', steps: 9 },
+    { id: 'safety-incident', icon: '⚠️', name: 'Safety Incident', desc: 'Emergency response', steps: 11 }
+  ];
+  
+  grid.innerHTML = '';
+  
+  // Add custom templates
+  Object.values(customTemplates).forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'template-card custom-template';
+    card.innerHTML = `
+      <button class="template-delete" data-id="${t.id}" aria-label="Delete template">×</button>
+      <div class="template-card-icon">⭐</div>
+      <div class="template-card-title">${t.name}</div>
+      <div class="template-card-desc">${t.desc}</div>
+      <div class="template-card-steps">${t.steps.length} steps</div>
+    `;
+    card.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('template-delete')) {
+        loadCustomTemplate(t.id);
+      }
+    });
+    card.querySelector('.template-delete').addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteCustomTemplate(t.id);
+    });
+    grid.appendChild(card);
+  });
+  
+  // Add built-in templates
+  templates.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'template-card';
+    card.innerHTML = `
+      <div class="template-card-icon">${t.icon}</div>
+      <div class="template-card-title">${t.name}</div>
+      <div class="template-card-desc">${t.desc}</div>
+      <div class="template-card-steps">${t.steps} steps</div>
+    `;
+    card.addEventListener('click', () => loadTemplate(t.id));
+    grid.appendChild(card);
+  });
+}
 
-  // SOP List Modal
-  document.getElementById('create-new-sop-btn').addEventListener('click', () => showModal('templateModal'));
-  document.getElementById('sop-search').addEventListener('input', (e) => renderSOPList(e.target.value));
+function loadTemplate(id) {
+  const templates = {
+    'restaurant-opening': [
+      { title: 'Unlock and secure entry', time: '5', note: 'Disarm alarm, check for overnight issues' },
+      { title: 'Turn on all equipment', time: '10', note: 'Ovens, grills, fryers, refrigeration' },
+      { title: 'Verify temperature logs', time: '5', note: 'Check all cooler/freezer temps' },
+      { title: 'Prep vegetables and proteins', time: '45', note: 'Follow daily prep sheet' },
+      { title: 'Set up dining area', time: '20', note: 'Tables, chairs, condiments, menus' },
+      { title: 'Fill ice bins and beverage stations', time: '15', note: 'Check all drink supplies' },
+      { title: 'Count register and prepare POS', time: '10', note: 'Verify opening cash amount' },
+      { title: 'Final walkthrough and unlock doors', time: '5', note: 'Check restrooms, lighting, music' }
+    ],
+    'restaurant-closing': [
+      { title: 'Stop seating new customers', time: '5', note: '30 minutes before close' },
+      { title: 'Begin cleaning stations', time: '30', note: 'Wipe down surfaces, organize' },
+      { title: 'Shut down cooking equipment', time: '15', note: 'Turn off in proper sequence' },
+      { title: 'Deep clean kitchen', time: '45', note: 'Floors, equipment, walls' },
+      { title: 'Take out all trash', time: '10', note: 'Replace liners, clean bins' },
+      { title: 'Count register and prepare deposit', time: '20', note: 'Complete cash reports' },
+      { title: 'Restock for tomorrow', time: '25', note: 'Check par levels, make prep list' },
+      { title: 'Check and record temps', time: '10', note: 'All coolers and freezers' },
+      { title: 'Secure building', time: '10', note: 'Lock doors, set alarm, verify all off' },
+      { title: 'Complete closing checklist', time: '5', note: 'Sign off and submit' }
+    ],
+    'retail-opening': [
+      { title: 'Unlock store and disarm alarm', time: '5', note: 'Visual check for issues' },
+      { title: 'Turn on lights and systems', time: '5', note: 'POS, music, displays' },
+      { title: 'Count register', time: '10', note: 'Verify starting cash' },
+      { title: 'Check inventory alerts', time: '10', note: 'Low stock notifications' },
+      { title: 'Straighten displays', time: '20', note: 'Face products, clean mirrors' },
+      { title: 'Check fitting rooms', time: '5', note: 'Clean and organize' },
+      { title: 'Unlock entrance', time: '2', note: 'Put out welcome sign' }
+    ],
+    'retail-sale': [
+      { title: 'Greet customer warmly', time: '1', note: 'Make eye contact, smile' },
+      { title: 'Scan or enter items', time: '5', note: 'Check for sale prices' },
+      { title: 'Offer loyalty program', time: '2', note: 'If not already member' },
+      { title: 'Process payment', time: '3', note: 'Cash, card, or mobile' },
+      { title: 'Bag items carefully', time: '2', note: 'Heavy items on bottom' },
+      { title: 'Thank customer and invite return', time: '1', note: 'Hand them receipt' }
+    ],
+    'office-onboarding': [
+      { title: 'Welcome and orientation', time: '30', note: 'Company history, mission, values' },
+      { title: 'Tour of facilities', time: '20', note: 'Restrooms, kitchen, emergency exits' },
+      { title: 'IT setup', time: '45', note: 'Email, computer, phone, badges' },
+      { title: 'HR paperwork', time: '60', note: 'Tax forms, benefits, policies' },
+      { title: 'Review job description', time: '30', note: 'Expectations and goals' },
+      { title: 'Introduce to team', time: '30', note: 'Team members and managers' },
+      { title: 'Assign mentor/buddy', time: '15', note: 'Point person for questions' },
+      { title: 'Review first week schedule', time: '20', note: 'Training sessions planned' },
+      { title: 'Set up workspace', time: '30', note: 'Supplies, equipment' },
+      { title: 'System training', time: '90', note: 'Core tools and software' },
+      { title: 'Review communication channels', time: '15', note: 'Email, chat, meetings' },
+      { title: 'Schedule 30-day check-in', time: '10', note: 'Calendar first review' }
+    ],
+    'customer-complaint': [
+      { title: 'Listen actively', time: '5', note: 'Do not interrupt, take notes' },
+      { title: 'Express empathy', time: '2', note: 'Acknowledge their frustration' },
+      { title: 'Apologize sincerely', time: '2', note: 'Even if not at fault' },
+      { title: 'Ask clarifying questions', time: '5', note: 'Get full understanding' },
+      { title: 'Propose solution', time: '10', note: 'Within authority limits' },
+      { title: 'Escalate if needed', time: '5', note: 'Get manager approval' },
+      { title: 'Implement resolution', time: '15', note: 'Execute agreed solution' },
+      { title: 'Document interaction', time: '10', note: 'Log in CRM system' }
+    ],
+    'inventory-count': [
+      { title: 'Print count sheets', time: '10', note: 'Organize by category' },
+      { title: 'Assign zones to counters', time: '5', note: 'Balance workload' },
+      { title: 'Count physical inventory', time: '120', note: 'Be thorough and accurate' },
+      { title: 'Enter counts into system', time: '45', note: 'Double-check entries' },
+      { title: 'Identify discrepancies', time: '30', note: 'Compare to system' },
+      { title: 'Recount problem areas', time: '30', note: 'Verify large differences' },
+      { title: 'Adjust inventory records', time: '20', note: 'Get manager approval' },
+      { title: 'Analyze variances', time: '25', note: 'Look for patterns' },
+      { title: 'Generate count report', time: '15', note: 'Submit to management' }
+    ],
+    'safety-incident': [
+      { title: 'Ensure scene is safe', time: '2', note: 'Remove immediate dangers' },
+      { title: 'Assess injuries', time: '5', note: 'Determine severity' },
+      { title: 'Call emergency services if needed', time: '3', note: '911 for serious injuries' },
+      { title: 'Provide first aid', time: '15', note: 'Only if trained' },
+      { title: 'Notify supervisor immediately', time: '5', note: 'Use emergency contact' },
+      { title: 'Secure the area', time: '10', note: 'Prevent further incidents' },
+      { title: 'Document incident details', time: '20', note: 'Photos, witness statements' },
+      { title: 'Complete incident report', time: '30', note: 'Be thorough and factual' },
+      { title: 'Preserve evidence', time: '10', note: 'Do not clean or move items' },
+      { title: 'Follow up with involved parties', time: '15', note: 'Check on wellbeing' },
+      { title: 'Submit report to HR/Safety', time: '10', note: 'Within required timeframe' }
+    ]
+  };
+  
+  const template = templates[id];
+  if (!template) {
+    showToast('Template not found', 'error');
+    return;
+  }
+  
+  createNewSOP();
+  editor.innerHTML = '';
+  template.forEach(s => editor.appendChild(createStep(s.title, s.time, s.note)));
+  
+  const templateNames = {
+    'restaurant-opening': 'Restaurant Opening Procedure',
+    'restaurant-closing': 'Restaurant Closing Procedure',
+    'retail-opening': 'Retail Store Opening',
+    'retail-sale': 'Point of Sale Transaction',
+    'office-onboarding': 'Employee Onboarding',
+    'customer-complaint': 'Customer Complaint Resolution',
+    'inventory-count': 'Inventory Count Process',
+    'safety-incident': 'Safety Incident Response'
+  };
+  
+  document.getElementById('sop-title-input').value = templateNames[id] || 'New SOP';
+  
+  renumber();
+  updateStats();
+  saveSOP();
+  closeAllModals();
+  showToast('Template loaded!');
+}
 
-  // Template Modal
-  document.getElementById('blank-sop-btn').addEventListener('click', () => newSOP(null));
-  document.getElementById('open-template-btn')?.addEventListener('click', () => showModal('templateModal'));
+function saveAsTemplate() {
+  const steps = editor.querySelectorAll('.sop-step');
+  if (steps.length === 0) {
+    showToast('Add steps before saving template', 'error');
+    return;
+  }
+  showModal('saveTemplateModal');
+}
 
-  // Dependency Modal
-  document.getElementById('save-dependency-btn').addEventListener('click', saveDependencies);
-  
-  // Export Modal
-  document.getElementById('pdf-btn').addEventListener('click', exportAsPDF);
-  document.getElementById('json-btn').addEventListener('click', exportAsJSON);
-  document.getElementById('html-btn').addEventListener('click', () => showToast('HTML Export not yet implemented', 'error'));
-  document.getElementById('markdown-btn').addEventListener('click', () => showToast('Markdown Export not yet implemented', 'error'));
-  document.getElementById('csv-btn').addEventListener('click', () => showToast('CSV Export not yet implemented', 'error'));
-  
-  // Sidebar Actions
-  document.getElementById('print-btn').addEventListener('click', () => window.print());
-  document.getElementById('email-btn').addEventListener('click', () => showModal('emailModal'));
-  document.getElementById('import-btn').addEventListener('click', () => document.getElementById('import-input').click());
-  
-  // Save Template Modal
-  document.getElementById('save-template-btn').addEventListener('click', () => {
-    const currentTitle = document.getElementById('sop-title-input').value;
-    document.getElementById('template-name').value = currentTitle;
-    showModal('saveTemplateModal');
-  });
+function saveCustomTemplate() {
+  const name = document.getElementById('template-name').value.trim();
+  const desc = document.getElementById('template-desc').value.trim();
+  
+  if (!name) {
+    showToast('Please enter a template name', 'error');
+    return;
+  }
+  
+  const steps = [];
+  editor.querySelectorAll('.sop-step').forEach(step => {
+    steps.push({
+      title: step.querySelector('.step-title').value,
+      time: step.querySelector('.step-time').value,
+      note: step.querySelector('.note').textContent,
+      dependencies: JSON.parse(step.dataset.dependencies || '[]')
+    });
+  });
+  
+  const templateId = 'custom_' + generateId();
+  customTemplates[templateId] = {
+    id: templateId,
+    name: name,
+    desc: desc || 'Custom template',
+    steps: steps
+  };
+  
+  localStorage.setItem('custom_templates', JSON.stringify(customTemplates));
+  
+  document.getElementById('template-name').value = '';
+  document.getElementById('template-desc').value = '';
+  
+  closeAllModals();
+  showToast('Template saved!');
+  renderTemplates();
+}
 
-  document.getElementById('save-template-confirm').addEventListener('click', () => {
-    const templateName = document.getElementById('template-name').value;
-    const templateDesc = document.getElementById('template-desc').value;
-    
-    if (!templateName) {
-      showToast('Template name is required', 'error');
-      return;
-    }
-    
-    const templateData = collectSOPData();
-    templateData.title = templateName;
-    templateData.desc = templateDesc;
-    templateData.steps = templateData.steps.map(step => ({
-      title: step.title,
-      time: step.time,
-      note: step.note,
-      dependencies: step.dependencies,
-      imageUrl: '', // Clear images for templates
-      approver: step.approver
-    }));
-    templateData.steps = templateData.steps.length; // Save step count for display
-    
-    customTemplates['custom_' + generateId()] = templateData;
-    localStorage.setItem('customTemplates', JSON.stringify(customTemplates));
-    closeAllModals();
-    showToast(`Template "${templateName}" saved!`);
-  });
-  
-  // Consult Modal
-  document.getElementById('schedule-call-btn').addEventListener('click', () => {
-    // In a real app, this would redirect to a scheduling link (e.g., Calendly)
-    showToast('Redirecting to scheduling page...', 'success');
-    window.open('https://example.com/schedule-consultation', '_blank');
-    closeAllModals();
-  });
+function loadCustomTemplate(id) {
+  const template = customTemplates[id];
+  if (!template) return;
+  
+  createNewSOP();
+  editor.innerHTML = '';
+  template.steps.forEach(s => editor.appendChild(createStep(s.title, s.time, s.note, s.dependencies || [])));
+  
+  document.getElementById('sop-title-input').value = template.name;
+  
+  renumber();
+  updateStats();
+  saveSOP();
+  closeAllModals();
+  showToast('Custom template loaded!');
+}
 
-  // Import Logic
-  document.getElementById('import-input').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+function deleteCustomTemplate(id) {
+  if (confirm('Delete this template?')) {
+    delete customTemplates[id];
+    localStorage.setItem('custom_templates', JSON.stringify(customTemplates));
+    showToast('Template deleted');
+    renderTemplates();
+  }
+}
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const importedData = JSON.parse(event.target.result);
-        if (importedData && importedData.title && importedData.steps) {
-          // Assign a new ID to prevent overwriting
-          importedData.id = generateId(); 
-          allSOPs[importedData.id] = importedData;
-          loadSOP(importedData.id);
-          showToast(`SOP "${importedData.title}" imported successfully!`);
-        } else {
-          throw new Error("Invalid SOP format");
-        }
-      } catch (error) {
-        showToast('Error importing file: Invalid JSON or format.', 'error');
-      }
-    };
-    reader.readAsText(file);
-  });
+// Version History
+function showVersionHistory() {
+  if (!currentSOPId) {
+    showToast('No SOP loaded', 'error');
+    return;
+  }
+  
+  const versions = versionHistory.filter(v => v.sopId === currentSOPId);
+  const list = document.getElementById('version-list');
+  list.innerHTML = '';
+  
+  if (versions.length === 0) {
+    list.innerHTML = '<p style="text-align:center; color:var(--text-light); padding:20px">No version history</p>';
+  } else {
+    versions.reverse().forEach(v => {
+      const date = new Date(v.timestamp);
+      const item = document.createElement('div');
+      item.className = 'version-item';
+      item.setAttribute('role', 'button');
+      item.innerHTML = `
+        <div style="font-weight:600; color:var(--primary)">${date.toLocaleString()}</div>
+        <div class="version-date">${v.data.steps.length} steps</div>
+        <div class="version-note">${v.note}</div>
+      `;
+      item.addEventListener('click', () => restoreVersion(v));
+      list.appendChild(item);
+    });
+  }
+  
+  showModal('versionModal');
+}
+
+function restoreVersion(version) {
+  if (confirm('Restore this version? Current changes will be saved as a new version.')) {
+    saveVersion();
+    allSOPs[currentSOPId] = version.data;
+    localStorage.setItem('all_sops', JSON.stringify(allSOPs));
+    loadSOP(currentSOPId);
+    closeAllModals();
+    showToast('Version restored');
+  }
+}
+
+// Export Functions
+function exportPDF() {
+  if (typeof jsPDF === 'undefined') {
+    showToast('PDF export not available', 'error');
+    return;
+  }
+  
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+  let y = 20;
+  
+  const title = document.getElementById('sop-title-input').value || 'Standard Operating Procedure';
+  pdf.setFontSize(18);
+  pdf.setFont(undefined, 'bold');
+  pdf.text(title, 20, y);
+  y += 10;
+  
+  pdf.setFontSize(10);
+  pdf.setFont(undefined, 'normal');
+  const dept = document.getElementById('department-select').value;
+  const priority = document.getElementById('priority-select').value;
+  pdf.text(`Department: ${dept} | Priority: ${priority}`, 20, y);
+  y += 15;
+  
+  const steps = editor.querySelectorAll('.sop-step');
+  steps.forEach((step, i) => {
+    const num = step.querySelector('.step-number').textContent;
+    const stepTitle = step.querySelector('.step-title').value || 'Untitled';
+    const time = step.querySelector('.step-time').value;
+    const note = step.querySelector('.note').textContent.trim();
+    const deps = JSON.parse(step.dataset.dependencies || '[]');
+    
+    if (y > 260) {
+      pdf.addPage();
+      y = 20;
+    }
+    
+    pdf.setFontSize(12);
+    pdf.setFont(undefined, 'bold');
+    pdf.text(`${num}. ${stepTitle}${time ? ` (${time} min)` : ''}`, 20, y);
+    y += 7;
+    
+    if (deps.length > 0) {
+      pdf.setFontSize(9);
+      pdf.setFont(undefined, 'italic');
+      pdf.text(`Prerequisites: Step ${deps.map(d => d + 1).join(', ')}`, 25, y);
+      y += 6;
+    }
+    
+    if (note) {
+      pdf.setFontSize(10);
+      pdf.setFont(undefined, 'normal');
+      const lines = pdf.splitTextToSize(note, 170);
+      pdf.text(lines, 25, y);
+      y += lines.length * 5 + 3;
+    }
+    
+    y += 5;
+  });
+  
+  const fileName = (document.getElementById('sop-title-input').value || 'SOP').replace(/[^a-z0-9]/gi, '_') + '.pdf';
+  pdf.save(fileName);
+  showToast('PDF exported!');
+  closeAllModals();
+}
+
+function exportHTML() {
+  const title = document.getElementById('sop-title-input').value || 'Standard Operating Procedure';
+  const dept = document.getElementById('department-select').value;
+  const priority = document.getElementById('priority-select').value;
+  
+  let html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+    h1 { color: #1E293B; border-bottom: 3px solid #06B6D4; padding-bottom: 10px; }
+    .meta { color: #6b7280; margin-bottom: 30px; }
+    .step { margin: 20px 0; padding: 15px; border-left: 4px solid #1E293B; background: #f9fafb; }
+    .step-header { font-weight: bold; color: #1E293B; margin-bottom: 10px; }
+    .step-note { color: #4b5563; margin-top: 8px; line-height: 1.6; }
+    .step-meta { color: #6b7280; font-size: 14px; margin-top: 5px; }
+    img { max-width: 100%; margin-top: 10px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>${title}</h1>
+  <div class="meta">Department: ${dept} | Priority: ${priority}</div>
+`;
+  
+  const steps = editor.querySelectorAll('.sop-step');
+  steps.forEach(step => {
+    const num = step.querySelector('.step-number').textContent;
+    const stepTitle = step.querySelector('.step-title').value || 'Untitled';
+    const time = step.querySelector('.step-time').value;
+    const note = step.querySelector('.note').textContent.trim();
+    const deps = JSON.parse(step.dataset.dependencies || '[]');
+    const imgEl = step.querySelector('.step-image img');
+    
+    html += `  <div class="step">
+    <div class="step-header">${num}. ${stepTitle}</div>
+    <div class="step-meta">`;
+    
+    if (time) html += `Time: ${time} minutes`;
+    if (deps.length > 0) {
+      if (time) html += ' | ';
+      html += `Prerequisites: Step ${deps.map(d => d + 1).join(', ')}`;
+    }
+    
+    html += `</div>`;
+    
+    if (note) html += `
+    <div class="step-note">${note}</div>`;
+    
+    if (imgEl) html += `
+    <img src="${imgEl.src}" alt="Step illustration" />`;
+    
+    html += `
+  </div>
+`;
+  });
+  
+  html += `</body>
+</html>`;
+  
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (document.getElementById('sop-title-input').value || 'SOP').replace(/[^a-z0-9]/gi, '_') + '.html';
+  a.click();
+  showToast('HTML exported!');
+  closeAllModals();
+}
+
+function exportMarkdown() {
+  const title = document.getElementById('sop-title-input').value || 'Standard Operating Procedure';
+  const dept = document.getElementById('department-select').value;
+  const priority = document.getElementById('priority-select').value;
+  
+  let md = `# ${title}\n\n`;
+  md += `**Department:** ${dept} | **Priority:** ${priority}\n\n`;
+  md += `---\n\n`;
+  
+  const steps = editor.querySelectorAll('.sop-step');
+  
+  steps.forEach(step => {
+    const num = step.querySelector('.step-number').textContent;
+    const stepTitle = step.querySelector('.step-title').value || 'Untitled';
+    const time = step.querySelector('.step-time').value;
+    const note = step.querySelector('.note').textContent.trim();
+    const deps = JSON.parse(step.dataset.dependencies || '[]');
+    
+    md += `## ${num}. ${stepTitle}`;
+    if (time) md += ` (${time} min)`;
+    md += '\n\n';
+    
+    if (deps.length > 0) {
+      md += `**Prerequisites:** Step ${deps.map(d => d + 1).join(', ')}\n\n`;
+    }
+    
+    if (note) md += `${note}\n\n`;
+    md += '---\n\n';
+  });
+  
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (document.getElementById('sop-title-input').value || 'SOP').replace(/[^a-z0-9]/gi, '_') + '.md';
+  a.click();
+  showToast('Markdown exported!');
+  closeAllModals();
+}
+
+function exportJSON() {
+  if (!currentSOPId || !allSOPs[currentSOPId]) {
+    showToast('No SOP to export', 'error');
+    return;
+  }
+  
+  const blob = new Blob([JSON.stringify(allSOPs[currentSOPId], null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (document.getElementById('sop-title-input').value || 'SOP').replace(/[^a-z0-9]/gi, '_') + '.json';
+  a.click();
+  showToast('JSON exported!');
+  closeAllModals();
+}
+
+function exportCSV() {
+  let csv = 'Step,Title,Time (min),Notes,Prerequisites\n';
+  
+  const steps = editor.querySelectorAll('.sop-step');
+  steps.forEach(step => {
+    const num = step.querySelector('.step-number').textContent;
+    const title = (step.querySelector('.step-title').value || '').replace(/"/g, '""');
+    const time = step.querySelector('.step-time').value || '0';
+    const note = (step.querySelector('.note').textContent.trim() || '').replace(/"/g, '""');
+    const deps = JSON.parse(step.dataset.dependencies || '[]').map(d => d + 1).join('; ');
+    
+    csv += `${num},"${title}",${time},"${note}","${deps}"\n`;
+  });
+  
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (document.getElementById('sop-title-input').value || 'SOP').replace(/[^a-z0-9]/gi, '_') + '.csv';
+  a.click();
+  showToast('CSV exported!');
+  closeAllModals();
+}
+
+function printSOP() {
+  window.print();
+}
+
+// Import Functions
+function handleImport() {
+  document.getElementById('import-input').click();
+}
+
+document.getElementById('import-input').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      if (file.name.endsWith('.json')) {
+        importJSON(event.target.result);
+      } else if (file.name.endsWith('.csv')) {
+        importCSV(event.target.result);
+      } else {
+        showToast('Unsupported file format', 'error');
+      }
+    } catch (error) {
+      showToast('Import failed: ' + error.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
 });
+
+function importJSON(content) {
+  const data = JSON.parse(content);
+  
+  if (data.steps && Array.isArray(data.steps)) {
+    createNewSOP();
+    editor.innerHTML = '';
+    
+    if (data.title) document.getElementById('sop-title-input').value = data.title;
+    if (data.department) document.getElementById('department-select').value = data.department;
+    if (data.priority) document.getElementById('priority-select').value = data.priority;
+    
+    data.steps.forEach(s => {
+      editor.appendChild(createStep(
+        s.title || '',
+        s.time || '',
+        s.note || '',
+        s.dependencies || [],
+        s.imageUrl || '',
+        s.approver || '',
+        s.approvalStatus || 'pending'
+      ));
+    });
+    
+    renumber();
+    updateStats();
+    saveSOP();
+    showToast('JSON imported successfully!');
+  } else {
+    showToast('Invalid JSON format', 'error');
+  }
+}
+
+function importCSV(content) {
+  const lines = content.split('\n').filter(line => line.trim());
+  if (lines.length < 2) {
+    showToast('CSV file is empty', 'error');
+    return;
+  }
+  
+  createNewSOP();
+  editor.innerHTML = '';
+  
+  // Skip header row
+  for (let i = 1; i < lines.length; i++) {
+    const parts = lines[i].split(',');
+    if (parts.length >= 3) {
+      const title = parts[1]?.replace(/^"|"$/g, '').trim() || '';
+      const time = parts[2]?.trim() || '';
+      const note = parts[3]?.replace(/^"|"$/g, '').trim() || '';
+      
+      editor.appendChild(createStep(title, time, note));
+    }
+  }
+  
+  renumber();
+  updateStats();
+  saveSOP();
+  showToast('CSV imported successfully!');
+}
+
+// Email Function
+function generateEmail() {
+  const emails = document.getElementById('email-to').value.trim();
+  const message = document.getElementById('email-message').value.trim();
+  
+  if (!emails) {
+    showToast('Please enter email addresses', 'error');
+    return;
+  }
+  
+  const title = document.getElementById('sop-title-input').value || 'Standard Operating Procedure';
+  const subject = encodeURIComponent(`SOP: ${title}`);
+  
+  let body = message ? encodeURIComponent(message + '\n\n---\n\n') : '';
+  body += encodeURIComponent(`${title}\n\n`);
+  
+  const steps = editor.querySelectorAll('.sop-step');
+  steps.forEach(step => {
+    const num = step.querySelector('.step-number').textContent;
+    const stepTitle = step.querySelector('.step-title').value || 'Untitled';
+    const time = step.querySelector('.step-time').value;
+    const note = step.querySelector('.note').textContent.trim();
+    
+    body += encodeURIComponent(`${num}. ${stepTitle}`);
+    if (time) body += encodeURIComponent(` (${time} min)`);
+    body += encodeURIComponent('\n');
+    if (note) body += encodeURIComponent(`   ${note}\n`);
+    body += encodeURIComponent('\n');
+  });
+  
+  const mailto = `mailto:${emails}?subject=${subject}&body=${body}`;
+  window.open(mailto, '_blank');
+  
+  closeAllModals();
+  showToast('Email client opened');
+}
+
+// Initialize
+function initialize() {
+  // Load data from localStorage
+  const savedSOPs = localStorage.getItem('all_sops');
+  if (savedSOPs) {
+    try {
+      allSOPs = JSON.parse(savedSOPs);
+    } catch (e) {
+      console.error('Error loading SOPs:', e);
+    }
+  }
+  
+  const savedTemplates = localStorage.getItem('custom_templates');
+  if (savedTemplates) {
+    try {
+      customTemplates = JSON.parse(savedTemplates);
+    } catch (e) {
+      console.error('Error loading templates:', e);
+    }
+  }
+  
+  const savedVersions = localStorage.getItem('version_history');
+  if (savedVersions) {
+    try {
+      versionHistory = JSON.parse(savedVersions);
+    } catch (e) {
+      console.error('Error loading versions:', e);
+    }
+  }
+  
+  // Show SOP list or empty state
+  if (Object.keys(allSOPs).length > 0) {
+    showModal('sopListModal');
+    renderSOPList();
+  } else {
+    showEmptyState();
+  }
+  
+  renderTemplates();
+}
+
+// Event Listeners
+document.getElementById('new-btn').addEventListener('click', addStep);
+document.getElementById('sop-list-btn').addEventListener('click', () => {
+  showModal('sopListModal');
+  renderSOPList();
+});
+document.getElementById('export-menu-btn').addEventListener('click', () => showModal('exportModal'));
+document.getElementById('version-btn').addEventListener('click', showVersionHistory);
+document.getElementById('consult-btn').addEventListener('click', () => showModal('consultModal'));
+document.getElementById('toggle-sidebar').addEventListener('click', () => {
+  document.querySelector('.sidebar').classList.toggle('hidden');
+});
+
+document.getElementById('create-new-sop-btn').addEventListener('click', () => {
+  closeAllModals();
+  showModal('templateModal');
+});
+document.getElementById('blank-sop-btn').addEventListener('click', createNewSOP);
+
+document.getElementById('pdf-btn').addEventListener('click', exportPDF);
+document.getElementById('html-btn').addEventListener('click', exportHTML);
+document.getElementById('markdown-btn').addEventListener('click', exportMarkdown);
+document.getElementById('json-btn').addEventListener('click', exportJSON);
+document.getElementById('csv-btn').addEventListener('click', exportCSV);
+
+document.getElementById('save-template-btn').addEventListener('click', saveAsTemplate);
+document.getElementById('save-template-confirm').addEventListener('click', saveCustomTemplate);
+document.getElementById('import-btn').addEventListener('click', handleImport);
+document.getElementById('print-btn').addEventListener('click', printSOP);
+document.getElementById('email-btn').addEventListener('click', () => showModal('emailModal'));
+document.getElementById('send-email-btn').addEventListener('click', generateEmail);
+
+document.getElementById('save-dependency-btn').addEventListener('click', saveDependencies);
+
+document.getElementById('schedule-call-btn').addEventListener('click', () => {
+  window.open('https://calendly.com/dgsconsulting', '_blank');
+});
+
+document.getElementById('sop-search').addEventListener('input', renderSOPList);
+
+document.getElementById('sop-title-input').addEventListener('input', saveSOP);
+document.getElementById('department-select').addEventListener('change', saveSOP);
+document.getElementById('priority-select').addEventListener('change', saveSOP);
+
+document.querySelectorAll('.modal-close').forEach(btn => {
+  btn.addEventListener('click', closeAllModals);
+});
+
+document.getElementById('modalOverlay').addEventListener('click', closeAllModals);
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey || e.metaKey) {
+    if (e.key === 's') {
+      e.preventDefault();
+      saveSOP();
+      showToast('Saved!');
+    } else if (e.key === 'n') {
+      e.preventDefault();
+      addStep();
+    } else if (e.key === 'p') {
+      e.preventDefault();
+      printSOP();
+    }
+  }
+});
+
+// Initialize app
+initialize();
 </script>
+
 </body>
 </html>
