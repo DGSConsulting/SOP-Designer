@@ -3,10 +3,11 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Professional SOP Designer | DGS Consulting</title>
+<title>SOP Designer - Operations Tool</title>
 <link rel="icon" type="image/png" href="assets/logo-icon-t.png" />
-<meta name="description" content="Create professional Standard Operating Procedures in minutes. Free tool with 50+ templates. Trusted by 500+ businesses.">
+<meta name="description" content="Create professional Standard Operating Procedures in minutes. Personal workflow tool for operations professionals.">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{
   --primary:#1E293B; 
@@ -303,16 +304,10 @@ button.danger:hover{background:#dc2626}
 </head>
 <body>
 
-<div class="trust-bar">
-  <span>● Secure & Private</span>
-  <span>✓ 100+ Businesses Trust Us</span>
-  <span>● Create SOPs in Minutes</span>
-</div>
-
 <div class="top-bar">
   <div class="logo-area">
-    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%231E293B' width='100' height='100' rx='20'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%2306B6D4' font-weight='bold' font-family='sans-serif'%3ED%3C/text%3E%3C/svg%3E" alt="DGS Logo" />
-    <span>SOP Designer Pro<span class="logo-badge">FREE</span></span>
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%231E293B' width='100' height='100' rx='20'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%2306B6D4' font-weight='bold' font-family='sans-serif'%3ES%3C/text%3E%3C/svg%3E" alt="SOP Logo" />
+    <span>SOP Designer<span class="logo-badge">PERSONAL TOOL</span></span>
   </div>
   
   <div class="main-controls">
@@ -335,7 +330,7 @@ button.danger:hover{background:#dc2626}
       </svg>
       History
     </button>
-    <button id="consult-btn" class="cta-primary" aria-label="Book free consultation">Free Consultation</button>
+    <button id="backup-all-btn" class="cta-primary" aria-label="Download backup of all SOPs">💾 Backup All</button>
     <button id="toggle-sidebar" class="secondary" aria-label="Toggle sidebar">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
@@ -436,10 +431,11 @@ button.danger:hover{background:#dc2626}
     <button class="modal-close" aria-label="Close modal">×</button>
   </div>
   <div style="display:grid; gap:12px">
-    <button id="pdf-btn" aria-label="Export as PDF">📄 Export as PDF</button>
+    <button id="pdf-btn" aria-label="Export as PDF">📄 Export as Professional PDF</button>
+    <button id="docx-btn" aria-label="Export as Word">📝 Export as Word Document</button>
     <button id="html-btn" aria-label="Export as HTML">🌐 Export as HTML</button>
-    <button id="markdown-btn" aria-label="Export as Markdown">📝 Export as Markdown</button>
-    <button id="json-btn" aria-label="Export as JSON">💾 Export as JSON</button>
+    <button id="markdown-btn" aria-label="Export as Markdown">📋 Export as Markdown</button>
+    <button id="json-btn" aria-label="Export as JSON">💾 Export as JSON (Backup)</button>
     <button id="csv-btn" aria-label="Export as CSV">📊 Export as CSV</button>
   </div>
 </div>
@@ -525,7 +521,7 @@ button.danger:hover{background:#dc2626}
     <p style="font-size:18px; line-height:1.6; margin:0 0 30px 0; color:#e2e8f0">Ready to see where your tools are costing you time and profit? Start with the $99 Tech Stack Red Flag Audit — fast, practical, and focused on measurable wins.</p>
     <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top:30px">
       <a href="https://dgsconsulting.solutions/Services/index.html" class="tool-btn" style="background:var(--accent); color:var(--white); padding:14px 28px; text-decoration:none; border-radius:8px; font-weight:600; transition:all 0.3s; display:inline-block">See Services</a>
-      <a href="mailto:DGSConsult@consultant.com" style="background:transparent; color:var(--white); padding:14px 28px; text-decoration:none; border-radius:8px; font-weight:600; border:2px solid var(--white); transition:all 0.3s; display:inline-block">Email Us</a>
+      <a href="/cdn-cgi/l/email-protection#3b7f7c68785455484e574f7b585455484e574f5a554f15585456" style="background:transparent; color:var(--white); padding:14px 28px; text-decoration:none; border-radius:8px; font-weight:600; border:2px solid var(--white); transition:all 0.3s; display:inline-block">Email Us</a>
       <a href="https://www.linkedin.com/in/dg-snook/" target="_blank" rel="noopener noreferrer" style="background:transparent; color:var(--white); padding:14px 28px; text-decoration:none; border-radius:8px; font-weight:600; border:2px solid var(--white); transition:all 0.3s; display:inline-block">LinkedIn</a>
     </div>
   </div>
@@ -543,7 +539,7 @@ button.danger:hover{background:#dc2626}
 <input type="file" id="image-input" accept="image/*" style="display:none" aria-label="Upload image" />
 <input type="file" id="import-input" accept=".json,.csv" style="display:none" aria-label="Import file" />
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // State Management
 currentSOPId = null;
 let allSOPs = {};
@@ -919,6 +915,15 @@ function saveSOP() {
   setTimeout(() => anim.classList.remove('show'), 2000);
   
   saveVersion();
+  
+  // Auto-backup every 5 saves
+  let saveCount = parseInt(localStorage.getItem('save_count') || '0');
+  saveCount++;
+  localStorage.setItem('save_count', saveCount.toString());
+  
+  if (saveCount % 5 === 0) {
+    autoBackupReminder();
+  }
 }
 
 function saveVersion() {
@@ -1394,68 +1399,82 @@ function restoreVersion(version) {
 
 // Export Functions
 function exportPDF() {
-  if (typeof jsPDF === 'undefined') {
-    showToast('PDF export not available', 'error');
+  if (editor.querySelectorAll('.sop-step').length === 0) {
+    showToast('Add steps before exporting', 'error');
     return;
   }
   
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF();
-  let y = 20;
-  
   const title = document.getElementById('sop-title-input').value || 'Standard Operating Procedure';
-  pdf.setFontSize(18);
-  pdf.setFont(undefined, 'bold');
-  pdf.text(title, 20, y);
-  y += 10;
-  
-  pdf.setFontSize(10);
-  pdf.setFont(undefined, 'normal');
   const dept = document.getElementById('department-select').value;
   const priority = document.getElementById('priority-select').value;
-  pdf.text(`Department: ${dept} | Priority: ${priority}`, 20, y);
-  y += 15;
+  const date = new Date().toLocaleDateString();
   
+  // Generate professional HTML for PDF
+  let stepsHTML = '';
   const steps = editor.querySelectorAll('.sop-step');
-  steps.forEach((step, i) => {
-    const num = step.querySelector('.step-number').textContent;
+  
+  steps.forEach((step, idx) => {
     const stepTitle = step.querySelector('.step-title').value || 'Untitled';
     const time = step.querySelector('.step-time').value;
     const note = step.querySelector('.note').textContent.trim();
     const deps = JSON.parse(step.dataset.dependencies || '[]');
     
-    if (y > 260) {
-      pdf.addPage();
-      y = 20;
-    }
-    
-    pdf.setFontSize(12);
-    pdf.setFont(undefined, 'bold');
-    pdf.text(`${num}. ${stepTitle}${time ? ` (${time} min)` : ''}`, 20, y);
-    y += 7;
-    
-    if (deps.length > 0) {
-      pdf.setFontSize(9);
-      pdf.setFont(undefined, 'italic');
-      pdf.text(`Prerequisites: Step ${deps.map(d => d + 1).join(', ')}`, 25, y);
-      y += 6;
-    }
-    
-    if (note) {
-      pdf.setFontSize(10);
-      pdf.setFont(undefined, 'normal');
-      const lines = pdf.splitTextToSize(note, 170);
-      pdf.text(lines, 25, y);
-      y += lines.length * 5 + 3;
-    }
-    
-    y += 5;
+    stepsHTML += `
+      <div style="margin-bottom: 25px; page-break-inside: avoid;">
+        <div style="display: flex; align-items: flex-start; margin-bottom: 10px;">
+          <div style="background: #06B6D4; color: white; min-width: 40px; height: 40px; 
+                      border-radius: 50%; display: flex; align-items: center; 
+                      justify-content: center; font-weight: bold; margin-right: 15px; 
+                      font-size: 18px; flex-shrink: 0;">
+            ${idx + 1}
+          </div>
+          <div style="flex: 1;">
+            <h3 style="margin: 0 0 5px 0; color: #1E293B; font-size: 16px; font-weight: 600;">${stepTitle}</h3>
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+              ${time ? `<span style="color: #6b7280; font-size: 13px;">⏱️ ${time} minutes</span>` : ''}
+              ${deps.length > 0 ? `<span style="color: #f59e0b; font-size: 12px; background: #fef3c7; padding: 3px 8px; border-radius: 4px;">⚠️ Requires Step ${deps.map(d => d + 1).join(', ')}</span>` : ''}
+            </div>
+          </div>
+        </div>
+        ${note ? `<div style="margin-left: 55px; color: #4b5563; line-height: 1.6; font-size: 14px; background: #f9fafb; padding: 12px; border-radius: 6px; border-left: 3px solid #e5e7eb;">${note}</div>` : ''}
+      </div>
+    `;
   });
   
-  const fileName = (document.getElementById('sop-title-input').value || 'SOP').replace(/[^a-z0-9]/gi, '_') + '.pdf';
-  pdf.save(fileName);
-  showToast('PDF exported!');
-  closeAllModals();
+  const content = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto;">
+      <div style="border-bottom: 4px solid #06B6D4; padding-bottom: 20px; margin-bottom: 30px;">
+        <h1 style="color: #1E293B; margin: 0 0 10px 0; font-size: 28px; font-weight: 700;">${title}</h1>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; color: #6b7280; font-size: 14px;">
+          <span><strong>Department:</strong> ${dept}</span>
+          <span><strong>Priority:</strong> ${priority}</span>
+          <span><strong>Date:</strong> ${date}</span>
+        </div>
+      </div>
+      ${stepsHTML}
+      <div style="margin-top: 50px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; color: #9ca3af; font-size: 11px;">
+        <p style="margin: 0;">Created with SOP Designer • ${date}</p>
+      </div>
+    </div>
+  `;
+  
+  const opt = {
+    margin: [0.5, 0.5, 0.5, 0.5],
+    filename: `${title.replace(/[^a-z0-9]/gi, '_')}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+  };
+  
+  showToast('Generating professional PDF...', 'success');
+  
+  html2pdf().set(opt).from(content).save().then(() => {
+    showToast('Professional PDF exported!', 'success');
+    closeAllModals();
+  }).catch(err => {
+    console.error('PDF generation error:', err);
+    showToast('PDF export failed', 'error');
+  });
 }
 
 function exportHTML() {
@@ -1607,6 +1626,82 @@ function exportCSV() {
   a.download = (document.getElementById('sop-title-input').value || 'SOP').replace(/[^a-z0-9]/gi, '_') + '.csv';
   a.click();
   showToast('CSV exported!');
+  closeAllModals();
+}
+
+function exportDOCX() {
+  const title = document.getElementById('sop-title-input').value || 'Standard Operating Procedure';
+  const dept = document.getElementById('department-select').value;
+  const priority = document.getElementById('priority-select').value;
+  const date = new Date().toLocaleDateString();
+  
+  let html = `
+    <!DOCTYPE html>
+    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
+    <head>
+      <meta charset='utf-8'>
+      <title>${title}</title>
+    </head>
+    <body style="font-family: Calibri, Arial, sans-serif; font-size: 11pt; line-height: 1.5;">
+      <div style="border-bottom: 3px solid #06B6D4; padding-bottom: 15px; margin-bottom: 20px;">
+        <h1 style="font-size: 20pt; color: #1E293B; margin: 0 0 10px 0;">${title}</h1>
+        <p style="margin: 0; color: #666;">
+          <strong>Department:</strong> ${dept} | 
+          <strong>Priority:</strong> ${priority} | 
+          <strong>Date:</strong> ${date}
+        </p>
+      </div>
+  `;
+  
+  const steps = editor.querySelectorAll('.sop-step');
+  steps.forEach(step => {
+    const num = step.querySelector('.step-number').textContent;
+    const stepTitle = step.querySelector('.step-title').value || 'Untitled';
+    const time = step.querySelector('.step-time').value;
+    const note = step.querySelector('.note').textContent.trim();
+    const deps = JSON.parse(step.dataset.dependencies || '[]');
+    
+    html += `
+      <div style="margin-bottom: 20px;">
+        <h3 style="color: #1E293B; margin: 0 0 5px 0; font-size: 14pt;">
+          ${num}. ${stepTitle}
+        </h3>
+        <p style="margin: 0 0 8px 0; color: #666; font-size: 10pt;">`;
+    
+    if (time) html += `<em>⏱️ ${time} minutes</em>`;
+    if (deps.length > 0) {
+      if (time) html += ' | ';
+      html += `<em>Prerequisites: Step ${deps.map(d => d + 1).join(', ')}</em>`;
+    }
+    
+    html += `</p>`;
+    
+    if (note) {
+      html += `
+        <p style="margin: 0 0 0 20px; padding: 10px; background: #f9f9f9; border-left: 3px solid #e5e7eb;">
+          ${note}
+        </p>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `
+      <div style="margin-top: 30px; padding-top: 15px; border-top: 2px solid #e5e7eb; text-align: center; color: #999; font-size: 9pt;">
+        <p>Created with SOP Designer • ${date}</p>
+      </div>
+    </body>
+    </html>
+  `;
+  
+  const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${title.replace(/[^a-z0-9]/gi, '_')}.doc`;
+  a.click();
+  
+  showToast('Word document exported!');
   closeAllModals();
 }
 
@@ -1779,6 +1874,45 @@ function initialize() {
   renderTemplates();
 }
 
+// Backup Functions
+function autoBackupReminder() {
+  const lastReminder = localStorage.getItem('last_backup_reminder');
+  const now = Date.now();
+  
+  // Only show reminder once per day
+  if (lastReminder && (now - parseInt(lastReminder)) < 86400000) {
+    return;
+  }
+  
+  localStorage.setItem('last_backup_reminder', now.toString());
+  
+  if (confirm('💾 Backup Reminder!\n\nYou\'ve made 5 recent changes. Would you like to download a backup of all your SOPs now?\n\n(Recommended to prevent data loss)')) {
+    backupAllSOPs();
+  }
+}
+
+function backupAllSOPs() {
+  const backup = {
+    sops: allSOPs,
+    customTemplates: customTemplates,
+    versionHistory: versionHistory,
+    exportDate: new Date().toISOString(),
+    version: '1.0'
+  };
+  
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `SOP_Backup_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  
+  showToast('Backup downloaded successfully! 💾', 'success');
+  
+  // Reset save count after successful backup
+  localStorage.setItem('save_count', '0');
+}
+
 // Event Listeners
 document.getElementById('new-btn').addEventListener('click', addStep);
 document.getElementById('sop-list-btn').addEventListener('click', () => {
@@ -1787,7 +1921,7 @@ document.getElementById('sop-list-btn').addEventListener('click', () => {
 });
 document.getElementById('export-menu-btn').addEventListener('click', () => showModal('exportModal'));
 document.getElementById('version-btn').addEventListener('click', showVersionHistory);
-document.getElementById('consult-btn').addEventListener('click', () => showModal('consultModal'));
+document.getElementById('backup-all-btn').addEventListener('click', backupAllSOPs);
 document.getElementById('toggle-sidebar').addEventListener('click', () => {
   document.querySelector('.sidebar').classList.toggle('hidden');
 });
@@ -1799,6 +1933,7 @@ document.getElementById('create-new-sop-btn').addEventListener('click', () => {
 document.getElementById('blank-sop-btn').addEventListener('click', createNewSOP);
 
 document.getElementById('pdf-btn').addEventListener('click', exportPDF);
+document.getElementById('docx-btn').addEventListener('click', exportDOCX);
 document.getElementById('html-btn').addEventListener('click', exportHTML);
 document.getElementById('markdown-btn').addEventListener('click', exportMarkdown);
 document.getElementById('json-btn').addEventListener('click', exportJSON);
@@ -1812,10 +1947,6 @@ document.getElementById('email-btn').addEventListener('click', () => showModal('
 document.getElementById('send-email-btn').addEventListener('click', generateEmail);
 
 document.getElementById('save-dependency-btn').addEventListener('click', saveDependencies);
-
-document.getElementById('schedule-call-btn').addEventListener('click', () => {
-  window.open('https://calendly.com/dgsconsulting', '_blank');
-});
 
 document.getElementById('sop-search').addEventListener('input', renderSOPList);
 
@@ -1838,17 +1969,4 @@ document.addEventListener('keydown', (e) => {
       showToast('Saved!');
     } else if (e.key === 'n') {
       e.preventDefault();
-      addStep();
-    } else if (e.key === 'p') {
-      e.preventDefault();
-      printSOP();
-    }
-  }
-});
-
-// Initialize app
-initialize();
-</script>
-
-</body>
-</html>
+      addSt
