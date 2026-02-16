@@ -305,6 +305,7 @@ button.danger:hover{background:#dc2626}
 
 <div class="trust-bar">
   <span>● Secure & Private</span>
+  <span>✓ 100+ Businesses Trust Us</span>
   <span>● Create SOPs in Minutes</span>
 </div>
 
@@ -313,7 +314,7 @@ button.danger:hover{background:#dc2626}
     <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%231E293B' width='100' height='100' rx='20'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%2306B6D4' font-weight='bold' font-family='sans-serif'%3ED%3C/text%3E%3C/svg%3E" alt="DGS Logo" />
     <span>SOP Designer Pro<span class="logo-badge">FREE</span></span>
   </div>
-  
+
   <div class="main-controls">
     <button id="sop-list-btn" class="secondary" aria-label="View all SOPs">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-right:6px">
@@ -333,7 +334,14 @@ button.danger:hover{background:#dc2626}
         <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
       </svg>
       History
-     </div>
+    </button>
+    <button id="consult-btn" class="cta-primary" aria-label="Book free consultation">Free Consultation</button>
+    <button id="toggle-sidebar" class="secondary" aria-label="Toggle sidebar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
 </div>
 
 <div class="container">
@@ -369,7 +377,7 @@ button.danger:hover{background:#dc2626}
     </div>
     <div id="editor" role="main" aria-label="SOP Editor"></div>
   </div>
-  
+
   <div class="sidebar hidden" role="complementary" aria-label="Sidebar">
     <div class="sidebar-section">
       <h4>Statistics</h4>
@@ -386,7 +394,7 @@ button.danger:hover{background:#dc2626}
         <span class="stat-value" id="approval-count" aria-label="Pending approvals">0</span>
       </div>
     </div>
-    
+
     <div class="sidebar-section">
       <h4>Quick Actions</h4>
       <button id="save-template-btn" aria-label="Save as template">💾 Save as Template</button>
@@ -490,53 +498,39 @@ button.danger:hover{background:#dc2626}
   <button id="send-email-btn" class="cta-primary" style="width:100%">Generate Email</button>
 </div>
 
+<!-- Consultation Modal -->
+<div class="modal" id="consultModal" role="dialog" aria-labelledby="consultTitle">
+  <div class="modal-header">
+    <h3 id="consultTitle">Book Your Free Strategy Call</h3>
+    <button class="modal-close" aria-label="Close modal">×</button>
+  </div>
+
+  <div style="background:linear-gradient(135deg, #f0f9ff 0%, #faf5ff 100%); padding:20px; border-radius:12px; margin-bottom:20px">
+    <p style="margin:0; font-size:16px; color:var(--text); line-height:1.6"><strong>In this 15-minute call, we'll:</strong></p>
+    <ul style="margin:12px 0 0 0; padding-left:20px; color:var(--text)">
+      <li>Review your current processes</li>
+      <li>Identify operational gaps</li>
+      <li>Show you how to reduce training time by 60%</li>
+      <li>Provide a custom roadmap</li>
+    </ul>
+  </div>
+
+  <button id="schedule-call-btn" class="cta-primary" style="width:100%; box-shadow:none; margin-top:20px">Schedule My Free Call</button>
+</div>
+
 <!-- Contact Section -->
-// CRASH RECOVERY - Add at start of initialize() function
+<section id="contact" class="contact" style="background:linear-gradient(135deg, var(--primary) 0%, #0f172a 100%); color:var(--white); padding:60px 20px; text-align:center; margin-top:40px">
+  <div style="max-width:800px; margin:0 auto">
+    <h2 style="font-size:36px; margin:0 0 20px 0; color:var(--white)">Let's simplify your systems.</h2>
+    <p style="font-size:18px; line-height:1.6; margin:0 0 30px 0; color:#e2e8f0">Ready to see where your tools are costing you time and profit? Start with the $99 Tech Stack Red Flag Audit — fast, practical, and focused on measurable wins.</p>
+    <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top:30px">
+      <a href="https://dgsconsulting.solutions/Services/index.html" class="tool-btn" style="background:var(--accent); color:var(--white); padding:14px 28px; text-decoration:none; border-radius:8px; font-weight:600; transition:all 0.3s; display:inline-block">See Services</a>
+      <a href="mailto:DGSConsult@consultant.com" style="background:transparent; color:var(--white); padding:14px 28px; text-decoration:none; border-radius:8px; font-weight:600; border:2px solid var(--white); transition:all 0.3s; display:inline-block">Email Us</a>
+      <a href="https://www.linkedin.com/in/dg-snook/" target="_blank" rel="noopener noreferrer" style="background:transparent; color:var(--white); padding:14px 28px; text-decoration:none; border-radius:8px; font-weight:600; border:2px solid var(--white); transition:all 0.3s; display:inline-block">LinkedIn</a>
+    </div>
+  </div>
+</section>
 
-function checkForCrash() {
-  const inProgress = localStorage.getItem('editing_in_progress');
-  const crashData = localStorage.getItem('crash_recovery_data');
-  
-  if (inProgress === 'true' && crashData) {
-    const data = JSON.parse(crashData);
-    const crashTime = new Date(data.timestamp);
-    const minutesAgo = Math.floor((new Date() - crashTime) / 60000);
-    
-    if (confirm(`⚠️ Looks like the app closed unexpectedly ${minutesAgo} min ago.\n\nRecover unsaved work on "${data.title}"?`)) {
-      // Restore the data
-      currentSOPId = data.sopId;
-      allSOPs[currentSOPId] = data.sopData;
-      localStorage.setItem('all_sops', JSON.stringify(allSOPs));
-      loadSOP(currentSOPId);
-      showToast('✅ Work recovered!', 'success');
-    }
-    
-    localStorage.removeItem('crash_recovery_data');
-  }
-  
-  localStorage.setItem('editing_in_progress', 'true');
-}
-
-// Call this at the start of initialize()
-checkForCrash();
-
-// Save crash recovery data every 30 seconds
-setInterval(() => {
-  if (currentSOPId && allSOPs[currentSOPId]) {
-    const crashData = {
-      timestamp: new Date().toISOString(),
-      sopId: currentSOPId,
-      title: document.getElementById('sop-title-input').value,
-      sopData: allSOPs[currentSOPId]
-    };
-    localStorage.setItem('crash_recovery_data', JSON.stringify(crashData));
-  }
-}, 30000); // Every 30 seconds
-
-// Clean up on proper exit
-window.addEventListener('beforeunload', () => {
-  localStorage.setItem('editing_in_progress', 'false');
-});
 <footer style="background:var(--dark); color:#9ca3af; padding:30px 20px; text-align:center; font-size:14px; line-height:1.8">
   <div style="max-width:800px; margin:0 auto">
     &copy; 2025 DGS Consulting | "Clarity over complexity." | Founded by Darren Snook | Ottawa, ON
@@ -588,9 +582,9 @@ function createStep(title = '', time = '', note = '', dependencies = [], imageUr
   step.className = 'sop-step';
   step.draggable = true;
   step.setAttribute('role', 'article');
-  
+
   const depText = dependencies.length > 0 ? `<span class="step-dependency" role="button" tabindex="0" aria-label="Has ${dependencies.length} prerequisite steps">⚠ ${dependencies.length} Prerequisites</span>` : '';
-  
+
   step.innerHTML = `
     <div class="step-header">
       <span class="drag-handle" aria-label="Drag to reorder">⋮⋮</span>
@@ -618,21 +612,21 @@ function createStep(title = '', time = '', note = '', dependencies = [], imageUr
       <span class="approval-status ${approvalStatus}">${approvalStatus.toUpperCase()}</span>
     </div>` : ''}
   `;
-  
+
   // Store dependencies
   step.dataset.dependencies = JSON.stringify(dependencies);
-  
+
   // Event Listeners
   step.querySelector('.delete-btn').addEventListener('click', () => deleteStep(step));
   step.querySelector('.step-title').addEventListener('input', () => saveSOP());
   step.querySelector('.step-time').addEventListener('input', () => { updateStats(); saveSOP(); });
   step.querySelector('.note').addEventListener('input', () => saveSOP());
-  
+
   // Action buttons
   step.querySelectorAll('[data-action]').forEach(btn => {
     btn.addEventListener('click', (e) => handleStepAction(e.target.dataset.action, step));
   });
-  
+
   // Dependency click
   const depSpan = step.querySelector('.step-dependency');
   if (depSpan) {
@@ -641,7 +635,7 @@ function createStep(title = '', time = '', note = '', dependencies = [], imageUr
       if (e.key === 'Enter' || e.key === ' ') handleStepAction('dependency', step);
     });
   }
-  
+
   // Remove image
   const removeImg = step.querySelector('.remove-image');
   if (removeImg) {
@@ -650,20 +644,20 @@ function createStep(title = '', time = '', note = '', dependencies = [], imageUr
       saveSOP();
     });
   }
-  
+
   // Approval select
   const approvalSelect = step.querySelector('.approval-select');
   if (approvalSelect) {
     approvalSelect.addEventListener('change', () => saveSOP());
   }
-  
+
   // Drag events
   step.addEventListener('dragstart', handleDragStart);
   step.addEventListener('dragend', handleDragEnd);
   step.addEventListener('dragover', handleDragOver);
   step.addEventListener('drop', handleDrop);
   step.addEventListener('dragleave', handleDragLeave);
-  
+
   return step;
 }
 
@@ -685,14 +679,14 @@ function handleDragEnd(e) {
 function handleDragOver(e) {
   if (e.preventDefault) e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
-  
+
   const afterElement = getDragAfterElement(editor, e.clientY);
   if (afterElement == null) {
     editor.appendChild(draggedElement);
   } else {
     editor.insertBefore(draggedElement, afterElement);
   }
-  
+
   return false;
 }
 
@@ -710,11 +704,11 @@ function handleDragLeave(e) {
 
 function getDragAfterElement(container, y) {
   const draggableElements = [...container.querySelectorAll('.sop-step:not(.dragging)')];
-  
+
   return draggableElements.reduce((closest, child) => {
     const box = child.getBoundingClientRect();
     const offset = y - box.top - box.height / 2;
-    
+
     if (offset < 0 && offset > closest.offset) {
       return { offset: offset, element: child };
     } else {
@@ -744,7 +738,7 @@ function addApproval(step) {
     showToast('Approval already added', 'error');
     return;
   }
-  
+
   const approvalHTML = `<div class="approval-section">
     <label>Approval Required</label>
     <select class="approval-select" aria-label="Approver">
@@ -755,7 +749,7 @@ function addApproval(step) {
     </select>
     <span class="approval-status pending">PENDING</span>
   </div>`;
-  
+
   step.querySelector('.note').insertAdjacentHTML('afterend', approvalHTML);
   step.querySelector('.approval-select').addEventListener('change', () => saveSOP());
   updateStats();
@@ -767,16 +761,16 @@ function openDependencyModal(step) {
   currentStepForDependency = step;
   const depList = document.getElementById('dependency-list');
   depList.innerHTML = '';
-  
+
   const steps = editor.querySelectorAll('.sop-step');
   const currentDeps = JSON.parse(step.dataset.dependencies || '[]');
-  
+
   steps.forEach((s, idx) => {
     if (s === step) return;
-    
+
     const title = s.querySelector('.step-title').value || `Step ${idx + 1}`;
     const checked = currentDeps.includes(idx) ? 'checked' : '';
-    
+
     depList.innerHTML += `
       <div class="checkbox-group">
         <input type="checkbox" id="dep-${idx}" value="${idx}" ${checked} />
@@ -784,18 +778,18 @@ function openDependencyModal(step) {
       </div>
     `;
   });
-  
+
   showModal('dependencyModal');
 }
 
 function saveDependencies() {
   if (!currentStepForDependency) return;
-  
+
   const checkboxes = document.querySelectorAll('#dependency-list input:checked');
   const dependencies = Array.from(checkboxes).map(cb => parseInt(cb.value));
-  
+
   currentStepForDependency.dataset.dependencies = JSON.stringify(dependencies);
-  
+
   // Update UI
   const existingDep = currentStepForDependency.querySelector('.step-dependency');
   if (dependencies.length > 0) {
@@ -810,7 +804,7 @@ function saveDependencies() {
   } else if (existingDep) {
     existingDep.remove();
   }
-  
+
   saveSOP();
   closeAllModals();
   showToast('Prerequisites updated');
@@ -820,20 +814,20 @@ function saveDependencies() {
 document.getElementById('image-input').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file || !currentStepForDependency) return;
-  
+
   const reader = new FileReader();
   reader.onload = (event) => {
     const existingImg = currentStepForDependency.querySelector('.step-image');
     if (existingImg) existingImg.remove();
-    
+
     const imgHTML = `<div class="step-image"><img src="${event.target.result}" alt="Step illustration" /><button class="remove-image" aria-label="Remove image">✖</button></div>`;
     currentStepForDependency.querySelector('.note').insertAdjacentHTML('afterend', imgHTML);
-    
+
     currentStepForDependency.querySelector('.remove-image').addEventListener('click', () => {
       currentStepForDependency.querySelector('.step-image').remove();
       saveSOP();
     });
-    
+
     saveSOP();
     showToast('Image added');
   };
@@ -875,13 +869,13 @@ function updateStats() {
   const steps = editor.querySelectorAll('.sop-step');
   let totalTime = 0;
   let approvalCount = 0;
-  
+
   steps.forEach(step => {
     const time = parseInt(step.querySelector('.step-time').value) || 0;
     totalTime += time;
     if (step.querySelector('.approval-section')) approvalCount++;
   });
-  
+
   document.getElementById('total-time').textContent = totalTime;
   document.getElementById('step-count').textContent = steps.length;
   document.getElementById('approval-count').textContent = approvalCount;
@@ -890,13 +884,13 @@ function updateStats() {
 // SOP Management
 function saveSOP() {
   if (!currentSOPId) return;
-  
+
   const steps = [];
   editor.querySelectorAll('.sop-step').forEach(step => {
     const imgEl = step.querySelector('.step-image img');
     const approvalEl = step.querySelector('.approval-select');
     const approvalStatusEl = step.querySelector('.approval-status');
-    
+
     steps.push({
       title: step.querySelector('.step-title').value,
       time: step.querySelector('.step-time').value,
@@ -907,7 +901,7 @@ function saveSOP() {
       approvalStatus: approvalStatusEl ? approvalStatusEl.classList[1] : 'pending'
     });
   });
-  
+
   allSOPs[currentSOPId] = {
     id: currentSOPId,
     title: document.getElementById('sop-title-input').value || 'Untitled SOP',
@@ -916,20 +910,20 @@ function saveSOP() {
     steps: steps,
     lastModified: new Date().toISOString()
   };
-  
+
   localStorage.setItem('all_sops', JSON.stringify(allSOPs));
   updateLastModified();
-  
+
   const anim = document.getElementById('saveAnim');
   anim.classList.add('show');
   setTimeout(() => anim.classList.remove('show'), 2000);
-  
+
   saveVersion();
 }
 
 function saveVersion() {
   if (!currentSOPId || !allSOPs[currentSOPId]) return;
-  
+
   const version = {
     id: generateId(),
     sopId: currentSOPId,
@@ -937,7 +931,7 @@ function saveVersion() {
     data: JSON.parse(JSON.stringify(allSOPs[currentSOPId])),
     note: 'Auto-saved version'
   };
-  
+
   versionHistory = versionHistory.filter(v => v.sopId === currentSOPId).slice(-9);
   versionHistory.push(version);
   localStorage.setItem('version_history', JSON.stringify(versionHistory));
@@ -946,23 +940,23 @@ function saveVersion() {
 function loadSOP(sopId) {
   currentSOPId = sopId;
   const sop = allSOPs[sopId];
-  
+
   if (!sop) {
     showEmptyState();
     return;
   }
-  
+
   editor.innerHTML = '';
   document.getElementById('sop-title-input').value = sop.title || '';
   document.getElementById('department-select').value = sop.department || 'General';
   document.getElementById('priority-select').value = sop.priority || 'Medium';
-  
+
   if (sop.steps && sop.steps.length > 0) {
     sop.steps.forEach(s => {
       editor.appendChild(createStep(s.title, s.time, s.note, s.dependencies || [], s.imageUrl || '', s.approver || '', s.approvalStatus || 'pending'));
     });
   }
-  
+
   showEditorUI();
   renumber();
   updateStats();
@@ -976,7 +970,7 @@ function createNewSOP() {
   document.getElementById('sop-title-input').value = 'New SOP';
   document.getElementById('department-select').value = 'General';
   document.getElementById('priority-select').value = 'Medium';
-  
+
   allSOPs[currentSOPId] = {
     id: currentSOPId,
     title: 'New SOP',
@@ -985,7 +979,7 @@ function createNewSOP() {
     steps: [],
     lastModified: new Date().toISOString()
   };
-  
+
   showEditorUI();
   addStep();
   saveSOP();
@@ -998,12 +992,12 @@ function deleteSOP(sopId) {
     localStorage.setItem('all_sops', JSON.stringify(allSOPs));
     versionHistory = versionHistory.filter(v => v.sopId !== sopId);
     localStorage.setItem('version_history', JSON.stringify(versionHistory));
-    
+
     if (currentSOPId === sopId) {
       currentSOPId = null;
       showEmptyState();
     }
-    
+
     showToast('SOP deleted');
     renderSOPList();
   }
@@ -1014,13 +1008,13 @@ function updateLastModified() {
   const date = new Date(allSOPs[currentSOPId].lastModified);
   const now = new Date();
   const diff = Math.floor((now - date) / 1000);
-  
+
   let text;
   if (diff < 60) text = 'Just now';
   else if (diff < 3600) text = Math.floor(diff / 60) + ' min ago';
   else if (diff < 86400) text = Math.floor(diff / 3600) + ' hours ago';
   else text = date.toLocaleDateString();
-  
+
   document.getElementById('last-modified').textContent = text;
 }
 
@@ -1033,11 +1027,11 @@ function showEmptyState() {
       <button id="empty-start-btn" class="cta-primary" style="margin-top:24px; font-size:18px; padding:16px 32px">Get Started - It's Free</button>
     </div>
   `;
-  
+
   document.getElementById('empty-start-btn').addEventListener('click', () => {
     showModal('templateModal');
   });
-  
+
   document.getElementById('export-menu-btn').style.display = 'none';
   document.getElementById('version-btn').style.display = 'none';
 }
@@ -1052,20 +1046,20 @@ function showEditorUI() {
 function renderSOPList() {
   const list = document.getElementById('sop-list');
   list.innerHTML = '';
-  
+
   const searchTerm = document.getElementById('sop-search').value.toLowerCase();
   const filtered = Object.values(allSOPs).filter(sop => 
     sop.title.toLowerCase().includes(searchTerm) ||
     sop.department.toLowerCase().includes(searchTerm)
   );
-  
+
   if (filtered.length === 0) {
     list.innerHTML = '<p style="text-align:center; color:var(--text-light); padding:20px">No SOPs found</p>';
     return;
   }
-  
+
   filtered.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
-  
+
   filtered.forEach(sop => {
     const date = new Date(sop.lastModified).toLocaleDateString();
     const item = document.createElement('div');
@@ -1080,11 +1074,11 @@ function renderSOPList() {
         <button class="danger" data-action="delete" aria-label="Delete SOP">Delete</button>
       </div>
     `;
-    
+
     item.querySelector('[data-action="load"]').addEventListener('click', () => loadSOP(sop.id));
     item.querySelector('[data-action="duplicate"]').addEventListener('click', () => duplicateSOP(sop.id));
     item.querySelector('[data-action="delete"]').addEventListener('click', () => deleteSOP(sop.id));
-    
+
     list.appendChild(item);
   });
 }
@@ -1092,7 +1086,7 @@ function renderSOPList() {
 function duplicateSOP(sopId) {
   const original = allSOPs[sopId];
   if (!original) return;
-  
+
   const newId = generateId();
   allSOPs[newId] = {
     ...JSON.parse(JSON.stringify(original)),
@@ -1100,7 +1094,7 @@ function duplicateSOP(sopId) {
     title: original.title + ' (Copy)',
     lastModified: new Date().toISOString()
   };
-  
+
   localStorage.setItem('all_sops', JSON.stringify(allSOPs));
   showToast('SOP duplicated');
   renderSOPList();
@@ -1110,7 +1104,7 @@ function duplicateSOP(sopId) {
 function renderTemplates() {
   const grid = document.getElementById('templateGrid');
   if (!grid) return;
-  
+
   const templates = [
     { id: 'restaurant-opening', icon: '🍽️', name: 'Restaurant Opening', desc: 'Complete morning setup', steps: 8 },
     { id: 'restaurant-closing', icon: '🔒', name: 'Restaurant Closing', desc: 'End of day procedures', steps: 10 },
@@ -1121,9 +1115,9 @@ function renderTemplates() {
     { id: 'inventory-count', icon: '📦', name: 'Inventory Count', desc: 'Stock management', steps: 9 },
     { id: 'safety-incident', icon: '⚠️', name: 'Safety Incident', desc: 'Emergency response', steps: 11 }
   ];
-  
+
   grid.innerHTML = '';
-  
+
   // Add custom templates
   Object.values(customTemplates).forEach(t => {
     const card = document.createElement('div');
@@ -1146,7 +1140,7 @@ function renderTemplates() {
     });
     grid.appendChild(card);
   });
-  
+
   // Add built-in templates
   templates.forEach(t => {
     const card = document.createElement('div');
@@ -1252,17 +1246,17 @@ function loadTemplate(id) {
       { title: 'Submit report to HR/Safety', time: '10', note: 'Within required timeframe' }
     ]
   };
-  
+
   const template = templates[id];
   if (!template) {
     showToast('Template not found', 'error');
     return;
   }
-  
+
   createNewSOP();
   editor.innerHTML = '';
   template.forEach(s => editor.appendChild(createStep(s.title, s.time, s.note)));
-  
+
   const templateNames = {
     'restaurant-opening': 'Restaurant Opening Procedure',
     'restaurant-closing': 'Restaurant Closing Procedure',
@@ -1273,9 +1267,9 @@ function loadTemplate(id) {
     'inventory-count': 'Inventory Count Process',
     'safety-incident': 'Safety Incident Response'
   };
-  
+
   document.getElementById('sop-title-input').value = templateNames[id] || 'New SOP';
-  
+
   renumber();
   updateStats();
   saveSOP();
@@ -1295,12 +1289,12 @@ function saveAsTemplate() {
 function saveCustomTemplate() {
   const name = document.getElementById('template-name').value.trim();
   const desc = document.getElementById('template-desc').value.trim();
-  
+
   if (!name) {
     showToast('Please enter a template name', 'error');
     return;
   }
-  
+
   const steps = [];
   editor.querySelectorAll('.sop-step').forEach(step => {
     steps.push({
@@ -1310,7 +1304,7 @@ function saveCustomTemplate() {
       dependencies: JSON.parse(step.dataset.dependencies || '[]')
     });
   });
-  
+
   const templateId = 'custom_' + generateId();
   customTemplates[templateId] = {
     id: templateId,
@@ -1318,12 +1312,12 @@ function saveCustomTemplate() {
     desc: desc || 'Custom template',
     steps: steps
   };
-  
+
   localStorage.setItem('custom_templates', JSON.stringify(customTemplates));
-  
+
   document.getElementById('template-name').value = '';
   document.getElementById('template-desc').value = '';
-  
+
   closeAllModals();
   showToast('Template saved!');
   renderTemplates();
@@ -1332,13 +1326,13 @@ function saveCustomTemplate() {
 function loadCustomTemplate(id) {
   const template = customTemplates[id];
   if (!template) return;
-  
+
   createNewSOP();
   editor.innerHTML = '';
   template.steps.forEach(s => editor.appendChild(createStep(s.title, s.time, s.note, s.dependencies || [])));
-  
+
   document.getElementById('sop-title-input').value = template.name;
-  
+
   renumber();
   updateStats();
   saveSOP();
@@ -1361,11 +1355,11 @@ function showVersionHistory() {
     showToast('No SOP loaded', 'error');
     return;
   }
-  
+
   const versions = versionHistory.filter(v => v.sopId === currentSOPId);
   const list = document.getElementById('version-list');
   list.innerHTML = '';
-  
+
   if (versions.length === 0) {
     list.innerHTML = '<p style="text-align:center; color:var(--text-light); padding:20px">No version history</p>';
   } else {
@@ -1383,7 +1377,7 @@ function showVersionHistory() {
       list.appendChild(item);
     });
   }
-  
+
   showModal('versionModal');
 }
 
@@ -1404,24 +1398,24 @@ function exportPDF() {
     showToast('PDF export not available', 'error');
     return;
   }
-  
+
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF();
   let y = 20;
-  
+
   const title = document.getElementById('sop-title-input').value || 'Standard Operating Procedure';
   pdf.setFontSize(18);
   pdf.setFont(undefined, 'bold');
   pdf.text(title, 20, y);
   y += 10;
-  
+
   pdf.setFontSize(10);
   pdf.setFont(undefined, 'normal');
   const dept = document.getElementById('department-select').value;
   const priority = document.getElementById('priority-select').value;
   pdf.text(`Department: ${dept} | Priority: ${priority}`, 20, y);
   y += 15;
-  
+
   const steps = editor.querySelectorAll('.sop-step');
   steps.forEach((step, i) => {
     const num = step.querySelector('.step-number').textContent;
@@ -1429,24 +1423,24 @@ function exportPDF() {
     const time = step.querySelector('.step-time').value;
     const note = step.querySelector('.note').textContent.trim();
     const deps = JSON.parse(step.dataset.dependencies || '[]');
-    
+
     if (y > 260) {
       pdf.addPage();
       y = 20;
     }
-    
+
     pdf.setFontSize(12);
     pdf.setFont(undefined, 'bold');
     pdf.text(`${num}. ${stepTitle}${time ? ` (${time} min)` : ''}`, 20, y);
     y += 7;
-    
+
     if (deps.length > 0) {
       pdf.setFontSize(9);
       pdf.setFont(undefined, 'italic');
       pdf.text(`Prerequisites: Step ${deps.map(d => d + 1).join(', ')}`, 25, y);
       y += 6;
     }
-    
+
     if (note) {
       pdf.setFontSize(10);
       pdf.setFont(undefined, 'normal');
@@ -1454,10 +1448,10 @@ function exportPDF() {
       pdf.text(lines, 25, y);
       y += lines.length * 5 + 3;
     }
-    
+
     y += 5;
   });
-  
+
   const fileName = (document.getElementById('sop-title-input').value || 'SOP').replace(/[^a-z0-9]/gi, '_') + '.pdf';
   pdf.save(fileName);
   showToast('PDF exported!');
@@ -1468,7 +1462,7 @@ function exportHTML() {
   const title = document.getElementById('sop-title-input').value || 'Standard Operating Procedure';
   const dept = document.getElementById('department-select').value;
   const priority = document.getElementById('priority-select').value;
-  
+
   let html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1490,7 +1484,7 @@ function exportHTML() {
   <h1>${title}</h1>
   <div class="meta">Department: ${dept} | Priority: ${priority}</div>
 `;
-  
+
   const steps = editor.querySelectorAll('.sop-step');
   steps.forEach(step => {
     const num = step.querySelector('.step-number').textContent;
@@ -1499,33 +1493,33 @@ function exportHTML() {
     const note = step.querySelector('.note').textContent.trim();
     const deps = JSON.parse(step.dataset.dependencies || '[]');
     const imgEl = step.querySelector('.step-image img');
-    
+
     html += `  <div class="step">
     <div class="step-header">${num}. ${stepTitle}</div>
     <div class="step-meta">`;
-    
+
     if (time) html += `Time: ${time} minutes`;
     if (deps.length > 0) {
       if (time) html += ' | ';
       html += `Prerequisites: Step ${deps.map(d => d + 1).join(', ')}`;
     }
-    
+
     html += `</div>`;
-    
+
     if (note) html += `
     <div class="step-note">${note}</div>`;
-    
+
     if (imgEl) html += `
     <img src="${imgEl.src}" alt="Step illustration" />`;
-    
+
     html += `
   </div>
 `;
   });
-  
+
   html += `</body>
 </html>`;
-  
+
   const blob = new Blob([html], { type: 'text/html' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1540,32 +1534,32 @@ function exportMarkdown() {
   const title = document.getElementById('sop-title-input').value || 'Standard Operating Procedure';
   const dept = document.getElementById('department-select').value;
   const priority = document.getElementById('priority-select').value;
-  
+
   let md = `# ${title}\n\n`;
   md += `**Department:** ${dept} | **Priority:** ${priority}\n\n`;
   md += `---\n\n`;
-  
+
   const steps = editor.querySelectorAll('.sop-step');
-  
+
   steps.forEach(step => {
     const num = step.querySelector('.step-number').textContent;
     const stepTitle = step.querySelector('.step-title').value || 'Untitled';
     const time = step.querySelector('.step-time').value;
     const note = step.querySelector('.note').textContent.trim();
     const deps = JSON.parse(step.dataset.dependencies || '[]');
-    
+
     md += `## ${num}. ${stepTitle}`;
     if (time) md += ` (${time} min)`;
     md += '\n\n';
-    
+
     if (deps.length > 0) {
       md += `**Prerequisites:** Step ${deps.map(d => d + 1).join(', ')}\n\n`;
     }
-    
+
     if (note) md += `${note}\n\n`;
     md += '---\n\n';
   });
-  
+
   const blob = new Blob([md], { type: 'text/markdown' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1581,7 +1575,7 @@ function exportJSON() {
     showToast('No SOP to export', 'error');
     return;
   }
-  
+
   const blob = new Blob([JSON.stringify(allSOPs[currentSOPId], null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1594,7 +1588,7 @@ function exportJSON() {
 
 function exportCSV() {
   let csv = 'Step,Title,Time (min),Notes,Prerequisites\n';
-  
+
   const steps = editor.querySelectorAll('.sop-step');
   steps.forEach(step => {
     const num = step.querySelector('.step-number').textContent;
@@ -1602,10 +1596,10 @@ function exportCSV() {
     const time = step.querySelector('.step-time').value || '0';
     const note = (step.querySelector('.note').textContent.trim() || '').replace(/"/g, '""');
     const deps = JSON.parse(step.dataset.dependencies || '[]').map(d => d + 1).join('; ');
-    
+
     csv += `${num},"${title}",${time},"${note}","${deps}"\n`;
   });
-  
+
   const blob = new Blob([csv], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1628,7 +1622,7 @@ function handleImport() {
 document.getElementById('import-input').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  
+
   const reader = new FileReader();
   reader.onload = (event) => {
     try {
@@ -1648,69 +1642,47 @@ document.getElementById('import-input').addEventListener('change', (e) => {
 });
 
 function importJSON(content) {
-  try {
-    const data = JSON.parse(content);
-    
-    // Check if it's a full backup or single SOP
-    if (data.sops && data.templates && data.exportDate) {
-      // FULL BACKUP RESTORE
-      if (confirm(`Restore full backup from ${new Date(data.exportDate).toLocaleDateString()}?\n\nThis will merge with existing data.`)) {
-        
-        // Merge SOPs (don't overwrite, add with new IDs)
-        let importCount = 0;
-        for (let sopId in data.sops) {
-          const newId = generateId();
-          data.sops[sopId].id = newId;
-          data.sops[sopId].title += ' (Imported)';
-          allSOPs[newId] = data.sops[sopId];
-          importCount++;
-        }
-        
-        // Merge templates
-        for (let templateId in data.templates) {
-          customTemplates[templateId] = data.templates[templateId];
-        }
-        
-        localStorage.setItem('all_sops', JSON.stringify(allSOPs));
-        localStorage.setItem('custom_templates', JSON.stringify(customTemplates));
-        
-        showToast(`✅ Imported ${importCount} SOPs and ${Object.keys(data.templates).length} templates!`, 'success');
-        renderSOPList();
-        closeAllModals();
-      }
-    } else if (data.steps && Array.isArray(data.steps)) {
-      // SINGLE SOP IMPORT (original functionality)
-      createNewSOP();
-      editor.innerHTML = '';
-      
-      if (data.title) document.getElementById('sop-title-input').value = data.title;
-      if (data.department) document.getElementById('department-select').value = data.department;
-      if (data.priority) document.getElementById('priority-select').value = data.priority;
-      
-      data.steps.forEach(s => {
-        editor.appendChild(createStep(
-          s.title || '',
-          s.time || '',
-          s.note || '',
-          s.dependencies || [],
-          s.imageUrl || '',
-          s.approver || '',
-          s.approvalStatus || 'pending'
-        ));
-      });
-      
-      renumber();
-      updateStats();
-      saveSOP();
-      showToast('✅ SOP imported successfully!', 'success');
-    } else {
-      showToast('❌ Invalid JSON format', 'error');
-    }
-  } catch (error) {
-    showToast('❌ Import failed: ' + error.message, 'error');
+  const data = JSON.parse(content);
+
+  if (data.steps && Array.isArray(data.steps)) {
+    createNewSOP();
+    editor.innerHTML = '';
+
+    if (data.title) document.getElementById('sop-title-input').value = data.title;
+    if (data.department) document.getElementById('department-select').value = data.department;
+    if (data.priority) document.getElementById('priority-select').value = data.priority;
+
+    data.steps.forEach(s => {
+      editor.appendChild(createStep(
+        s.title || '',
+        s.time || '',
+        s.note || '',
+        s.dependencies || [],
+        s.imageUrl || '',
+        s.approver || '',
+        s.approvalStatus || 'pending'
+      ));
+    });
+
+    renumber();
+    updateStats();
+    saveSOP();
+    showToast('JSON imported successfully!');
+  } else {
+    showToast('Invalid JSON format', 'error');
   }
 }
-  
+
+function importCSV(content) {
+  const lines = content.split('\n').filter(line => line.trim());
+  if (lines.length < 2) {
+    showToast('CSV file is empty', 'error');
+    return;
+  }
+
+  createNewSOP();
+  editor.innerHTML = '';
+
   // Skip header row
   for (let i = 1; i < lines.length; i++) {
     const parts = lines[i].split(',');
@@ -1718,11 +1690,11 @@ function importJSON(content) {
       const title = parts[1]?.replace(/^"|"$/g, '').trim() || '';
       const time = parts[2]?.trim() || '';
       const note = parts[3]?.replace(/^"|"$/g, '').trim() || '';
-      
+
       editor.appendChild(createStep(title, time, note));
     }
   }
-  
+
   renumber();
   updateStats();
   saveSOP();
@@ -1733,88 +1705,41 @@ function importJSON(content) {
 function generateEmail() {
   const emails = document.getElementById('email-to').value.trim();
   const message = document.getElementById('email-message').value.trim();
-  
+
   if (!emails) {
     showToast('Please enter email addresses', 'error');
     return;
   }
-  
+
   const title = document.getElementById('sop-title-input').value || 'Standard Operating Procedure';
   const subject = encodeURIComponent(`SOP: ${title}`);
-  
+
   let body = message ? encodeURIComponent(message + '\n\n---\n\n') : '';
   body += encodeURIComponent(`${title}\n\n`);
-  
+
   const steps = editor.querySelectorAll('.sop-step');
   steps.forEach(step => {
     const num = step.querySelector('.step-number').textContent;
     const stepTitle = step.querySelector('.step-title').value || 'Untitled';
     const time = step.querySelector('.step-time').value;
     const note = step.querySelector('.note').textContent.trim();
-    
+
     body += encodeURIComponent(`${num}. ${stepTitle}`);
     if (time) body += encodeURIComponent(` (${time} min)`);
     body += encodeURIComponent('\n');
     if (note) body += encodeURIComponent(`   ${note}\n`);
     body += encodeURIComponent('\n');
   });
-  
+
   const mailto = `mailto:${emails}?subject=${subject}&body=${body}`;
   window.open(mailto, '_blank');
-  
+
   closeAllModals();
   showToast('Email client opened');
 }
 
 // Initialize
-function initialize() 
-// CRASH RECOVERY - Add at start of initialize() function
-
-function checkForCrash() {
-  const inProgress = localStorage.getItem('editing_in_progress');
-  const crashData = localStorage.getItem('crash_recovery_data');
-  
-  if (inProgress === 'true' && crashData) {
-    const data = JSON.parse(crashData);
-    const crashTime = new Date(data.timestamp);
-    const minutesAgo = Math.floor((new Date() - crashTime) / 60000);
-    
-    if (confirm(`⚠️ Looks like the app closed unexpectedly ${minutesAgo} min ago.\n\nRecover unsaved work on "${data.title}"?`)) {
-      // Restore the data
-      currentSOPId = data.sopId;
-      allSOPs[currentSOPId] = data.sopData;
-      localStorage.setItem('all_sops', JSON.stringify(allSOPs));
-      loadSOP(currentSOPId);
-      showToast('✅ Work recovered!', 'success');
-    }
-    
-    localStorage.removeItem('crash_recovery_data');
-  }
-  
-  localStorage.setItem('editing_in_progress', 'true');
-}
-
-// Call this at the start of initialize()
-checkForCrash();
-
-// Save crash recovery data every 30 seconds
-setInterval(() => {
-  if (currentSOPId && allSOPs[currentSOPId]) {
-    const crashData = {
-      timestamp: new Date().toISOString(),
-      sopId: currentSOPId,
-      title: document.getElementById('sop-title-input').value,
-      sopData: allSOPs[currentSOPId]
-    };
-    localStorage.setItem('crash_recovery_data', JSON.stringify(crashData));
-  }
-}, 30000); // Every 30 seconds
-
-// Clean up on proper exit
-window.addEventListener('beforeunload', () => {
-  localStorage.setItem('editing_in_progress', 'false');
-});
-  {
+function initialize() {
   // Load data from localStorage
   const savedSOPs = localStorage.getItem('all_sops');
   if (savedSOPs) {
@@ -1824,7 +1749,7 @@ window.addEventListener('beforeunload', () => {
       console.error('Error loading SOPs:', e);
     }
   }
-  
+
   const savedTemplates = localStorage.getItem('custom_templates');
   if (savedTemplates) {
     try {
@@ -1833,7 +1758,7 @@ window.addEventListener('beforeunload', () => {
       console.error('Error loading templates:', e);
     }
   }
-  
+
   const savedVersions = localStorage.getItem('version_history');
   if (savedVersions) {
     try {
@@ -1842,7 +1767,7 @@ window.addEventListener('beforeunload', () => {
       console.error('Error loading versions:', e);
     }
   }
-  
+
   // Show SOP list or empty state
   if (Object.keys(allSOPs).length > 0) {
     showModal('sopListModal');
@@ -1850,7 +1775,7 @@ window.addEventListener('beforeunload', () => {
   } else {
     showEmptyState();
   }
-  
+
   renderTemplates();
 }
 
@@ -2025,3 +1950,4 @@ setTimeout(checkStorageQuota, 1000);
 
 </body>
 </html>
+
