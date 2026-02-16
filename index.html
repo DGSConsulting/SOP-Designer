@@ -305,7 +305,6 @@ button.danger:hover{background:#dc2626}
 
 <div class="trust-bar">
   <span>● Secure & Private</span>
-  <span>✓ 100+ Businesses Trust Us</span>
   <span>● Create SOPs in Minutes</span>
 </div>
 
@@ -334,14 +333,7 @@ button.danger:hover{background:#dc2626}
         <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
       </svg>
       History
-    </button>
-    <button id="consult-btn" class="cta-primary" aria-label="Book free consultation">Free Consultation</button>
-    <button id="toggle-sidebar" class="secondary" aria-label="Toggle sidebar">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
-    </button>
-  </div>
+     </div>
 </div>
 
 <div class="container">
@@ -498,39 +490,53 @@ button.danger:hover{background:#dc2626}
   <button id="send-email-btn" class="cta-primary" style="width:100%">Generate Email</button>
 </div>
 
-<!-- Consultation Modal -->
-<div class="modal" id="consultModal" role="dialog" aria-labelledby="consultTitle">
-  <div class="modal-header">
-    <h3 id="consultTitle">Book Your Free Strategy Call</h3>
-    <button class="modal-close" aria-label="Close modal">×</button>
-  </div>
-  
-  <div style="background:linear-gradient(135deg, #f0f9ff 0%, #faf5ff 100%); padding:20px; border-radius:12px; margin-bottom:20px">
-    <p style="margin:0; font-size:16px; color:var(--text); line-height:1.6"><strong>In this 15-minute call, we'll:</strong></p>
-    <ul style="margin:12px 0 0 0; padding-left:20px; color:var(--text)">
-      <li>Review your current processes</li>
-      <li>Identify operational gaps</li>
-      <li>Show you how to reduce training time by 60%</li>
-      <li>Provide a custom roadmap</li>
-    </ul>
-  </div>
-  
-  <button id="schedule-call-btn" class="cta-primary" style="width:100%; box-shadow:none; margin-top:20px">Schedule My Free Call</button>
-</div>
-
 <!-- Contact Section -->
-<section id="contact" class="contact" style="background:linear-gradient(135deg, var(--primary) 0%, #0f172a 100%); color:var(--white); padding:60px 20px; text-align:center; margin-top:40px">
-  <div style="max-width:800px; margin:0 auto">
-    <h2 style="font-size:36px; margin:0 0 20px 0; color:var(--white)">Let's simplify your systems.</h2>
-    <p style="font-size:18px; line-height:1.6; margin:0 0 30px 0; color:#e2e8f0">Ready to see where your tools are costing you time and profit? Start with the $99 Tech Stack Red Flag Audit — fast, practical, and focused on measurable wins.</p>
-    <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top:30px">
-      <a href="https://dgsconsulting.solutions/Services/index.html" class="tool-btn" style="background:var(--accent); color:var(--white); padding:14px 28px; text-decoration:none; border-radius:8px; font-weight:600; transition:all 0.3s; display:inline-block">See Services</a>
-      <a href="mailto:DGSConsult@consultant.com" style="background:transparent; color:var(--white); padding:14px 28px; text-decoration:none; border-radius:8px; font-weight:600; border:2px solid var(--white); transition:all 0.3s; display:inline-block">Email Us</a>
-      <a href="https://www.linkedin.com/in/dg-snook/" target="_blank" rel="noopener noreferrer" style="background:transparent; color:var(--white); padding:14px 28px; text-decoration:none; border-radius:8px; font-weight:600; border:2px solid var(--white); transition:all 0.3s; display:inline-block">LinkedIn</a>
-    </div>
-  </div>
-</section>
+// CRASH RECOVERY - Add at start of initialize() function
 
+function checkForCrash() {
+  const inProgress = localStorage.getItem('editing_in_progress');
+  const crashData = localStorage.getItem('crash_recovery_data');
+  
+  if (inProgress === 'true' && crashData) {
+    const data = JSON.parse(crashData);
+    const crashTime = new Date(data.timestamp);
+    const minutesAgo = Math.floor((new Date() - crashTime) / 60000);
+    
+    if (confirm(`⚠️ Looks like the app closed unexpectedly ${minutesAgo} min ago.\n\nRecover unsaved work on "${data.title}"?`)) {
+      // Restore the data
+      currentSOPId = data.sopId;
+      allSOPs[currentSOPId] = data.sopData;
+      localStorage.setItem('all_sops', JSON.stringify(allSOPs));
+      loadSOP(currentSOPId);
+      showToast('✅ Work recovered!', 'success');
+    }
+    
+    localStorage.removeItem('crash_recovery_data');
+  }
+  
+  localStorage.setItem('editing_in_progress', 'true');
+}
+
+// Call this at the start of initialize()
+checkForCrash();
+
+// Save crash recovery data every 30 seconds
+setInterval(() => {
+  if (currentSOPId && allSOPs[currentSOPId]) {
+    const crashData = {
+      timestamp: new Date().toISOString(),
+      sopId: currentSOPId,
+      title: document.getElementById('sop-title-input').value,
+      sopData: allSOPs[currentSOPId]
+    };
+    localStorage.setItem('crash_recovery_data', JSON.stringify(crashData));
+  }
+}, 30000); // Every 30 seconds
+
+// Clean up on proper exit
+window.addEventListener('beforeunload', () => {
+  localStorage.setItem('editing_in_progress', 'false');
+});
 <footer style="background:var(--dark); color:#9ca3af; padding:30px 20px; text-align:center; font-size:14px; line-height:1.8">
   <div style="max-width:800px; margin:0 auto">
     &copy; 2025 DGS Consulting | "Clarity over complexity." | Founded by Darren Snook | Ottawa, ON
@@ -1761,7 +1767,54 @@ function generateEmail() {
 }
 
 // Initialize
-function initialize() {
+function initialize() 
+// CRASH RECOVERY - Add at start of initialize() function
+
+function checkForCrash() {
+  const inProgress = localStorage.getItem('editing_in_progress');
+  const crashData = localStorage.getItem('crash_recovery_data');
+  
+  if (inProgress === 'true' && crashData) {
+    const data = JSON.parse(crashData);
+    const crashTime = new Date(data.timestamp);
+    const minutesAgo = Math.floor((new Date() - crashTime) / 60000);
+    
+    if (confirm(`⚠️ Looks like the app closed unexpectedly ${minutesAgo} min ago.\n\nRecover unsaved work on "${data.title}"?`)) {
+      // Restore the data
+      currentSOPId = data.sopId;
+      allSOPs[currentSOPId] = data.sopData;
+      localStorage.setItem('all_sops', JSON.stringify(allSOPs));
+      loadSOP(currentSOPId);
+      showToast('✅ Work recovered!', 'success');
+    }
+    
+    localStorage.removeItem('crash_recovery_data');
+  }
+  
+  localStorage.setItem('editing_in_progress', 'true');
+}
+
+// Call this at the start of initialize()
+checkForCrash();
+
+// Save crash recovery data every 30 seconds
+setInterval(() => {
+  if (currentSOPId && allSOPs[currentSOPId]) {
+    const crashData = {
+      timestamp: new Date().toISOString(),
+      sopId: currentSOPId,
+      title: document.getElementById('sop-title-input').value,
+      sopData: allSOPs[currentSOPId]
+    };
+    localStorage.setItem('crash_recovery_data', JSON.stringify(crashData));
+  }
+}, 30000); // Every 30 seconds
+
+// Clean up on proper exit
+window.addEventListener('beforeunload', () => {
+  localStorage.setItem('editing_in_progress', 'false');
+});
+  {
   // Load data from localStorage
   const savedSOPs = localStorage.getItem('all_sops');
   if (savedSOPs) {
