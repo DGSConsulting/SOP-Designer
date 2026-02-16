@@ -1848,6 +1848,104 @@ document.addEventListener('keydown', (e) => {
 
 // Initialize app
 initialize();
+  
+// AUTO-BACKUP SYSTEM - Add at bottom of existing code
+
+// Backup all data to downloadable JSON every week
+function autoBackup() {
+  const allData = {
+    sops: allSOPs,
+    templates: customTemplates,
+    versions: versionHistory,
+    exportDate: new Date().toISOString()
+  };
+  
+  const blob = new Blob([JSON.stringify(allData, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `SOP_Backup_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  
+  localStorage.setItem('last_backup', new Date().toISOString());
+  showToast('✅ Backup created! Save this file somewhere safe.', 'success');
+}
+
+// Check if backup is needed (weekly)
+function checkBackupNeeded() {
+  const lastBackup = localStorage.getItem('last_backup');
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  
+  if (!lastBackup || new Date(lastBackup) < weekAgo) {
+    if (Object.keys(allSOPs).length > 0) {
+      if (confirm('🔔 It\'s been a week! Create a backup now?\n\n(Recommended: Yes - takes 2 seconds)')) {
+        autoBackup();
+      }
+    }
+  }
+}
+
+// Check on load
+setTimeout(checkBackupNeeded, 3000); // Wait 3 seconds after page load
+
+// Add backup button to sidebar
+document.querySelector('.sidebar-section').insertAdjacentHTML('afterbegin', `
+  <button id="manual-backup-btn" style="background:#10b981; width:100%; margin-bottom:10px">
+    💾 Create Backup Now
+  </button>
+`);
+document.getElementById('manual-backup-btn').addEventListener('click', autoBackup);
+
+// STORAGE QUOTA WARNING - Add after auto-backup code
+
+function checkStorageQuota() {
+  try {
+    const testKey = 'storage_test_' + Date.now();
+    const testData = new Array(1024).join('a'); // 1KB
+    
+    let used = 0;
+    for (let key in localStorage) {
+      if (localStorage.hasOwnProperty(key)) {
+        used += localStorage[key].length + key.length;
+      }
+    }
+    
+    const usedMB = (used / 1024 / 1024).toFixed(2);
+    const percentUsed = (used / (5 * 1024 * 1024)) * 100; // Assume 5MB limit
+    
+    if (percentUsed > 80) {
+      showToast(`⚠️ Storage ${percentUsed.toFixed(0)}% full (${usedMB}MB). Backup recommended!`, 'warning');
+    }
+    
+    // Update sidebar with storage info
+    const statsSection = document.querySelector('.sidebar-section');
+    const storageHTML = `
+      <div class="stat-item">
+        <span class="stat-label">Storage Used:</span>
+        <span class="stat-value" style="font-size:14px">${usedMB}MB</span>
+      </div>
+    `;
+    
+    if (!document.getElementById('storage-stat')) {
+      statsSection.querySelector('#approval-count').parentElement.insertAdjacentHTML('afterend', storageHTML);
+    }
+  } catch (e) {
+    console.error('Storage check failed:', e);
+  }
+}
+
+// Check storage on every save
+const originalSaveSOP = saveSOP;
+saveSOP = function() {
+  originalSaveSOP();
+  checkStorageQuota();
+};
+
+// Check on load
+setTimeout(checkStorageQuota, 1000);
+
+  
 </script>
 
 </body>
