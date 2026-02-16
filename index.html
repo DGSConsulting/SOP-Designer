@@ -1642,46 +1642,68 @@ document.getElementById('import-input').addEventListener('change', (e) => {
 });
 
 function importJSON(content) {
-  const data = JSON.parse(content);
-  
-  if (data.steps && Array.isArray(data.steps)) {
-    createNewSOP();
-    editor.innerHTML = '';
+  try {
+    const data = JSON.parse(content);
     
-    if (data.title) document.getElementById('sop-title-input').value = data.title;
-    if (data.department) document.getElementById('department-select').value = data.department;
-    if (data.priority) document.getElementById('priority-select').value = data.priority;
-    
-    data.steps.forEach(s => {
-      editor.appendChild(createStep(
-        s.title || '',
-        s.time || '',
-        s.note || '',
-        s.dependencies || [],
-        s.imageUrl || '',
-        s.approver || '',
-        s.approvalStatus || 'pending'
-      ));
-    });
-    
-    renumber();
-    updateStats();
-    saveSOP();
-    showToast('JSON imported successfully!');
-  } else {
-    showToast('Invalid JSON format', 'error');
+    // Check if it's a full backup or single SOP
+    if (data.sops && data.templates && data.exportDate) {
+      // FULL BACKUP RESTORE
+      if (confirm(`Restore full backup from ${new Date(data.exportDate).toLocaleDateString()}?\n\nThis will merge with existing data.`)) {
+        
+        // Merge SOPs (don't overwrite, add with new IDs)
+        let importCount = 0;
+        for (let sopId in data.sops) {
+          const newId = generateId();
+          data.sops[sopId].id = newId;
+          data.sops[sopId].title += ' (Imported)';
+          allSOPs[newId] = data.sops[sopId];
+          importCount++;
+        }
+        
+        // Merge templates
+        for (let templateId in data.templates) {
+          customTemplates[templateId] = data.templates[templateId];
+        }
+        
+        localStorage.setItem('all_sops', JSON.stringify(allSOPs));
+        localStorage.setItem('custom_templates', JSON.stringify(customTemplates));
+        
+        showToast(`✅ Imported ${importCount} SOPs and ${Object.keys(data.templates).length} templates!`, 'success');
+        renderSOPList();
+        closeAllModals();
+      }
+    } else if (data.steps && Array.isArray(data.steps)) {
+      // SINGLE SOP IMPORT (original functionality)
+      createNewSOP();
+      editor.innerHTML = '';
+      
+      if (data.title) document.getElementById('sop-title-input').value = data.title;
+      if (data.department) document.getElementById('department-select').value = data.department;
+      if (data.priority) document.getElementById('priority-select').value = data.priority;
+      
+      data.steps.forEach(s => {
+        editor.appendChild(createStep(
+          s.title || '',
+          s.time || '',
+          s.note || '',
+          s.dependencies || [],
+          s.imageUrl || '',
+          s.approver || '',
+          s.approvalStatus || 'pending'
+        ));
+      });
+      
+      renumber();
+      updateStats();
+      saveSOP();
+      showToast('✅ SOP imported successfully!', 'success');
+    } else {
+      showToast('❌ Invalid JSON format', 'error');
+    }
+  } catch (error) {
+    showToast('❌ Import failed: ' + error.message, 'error');
   }
 }
-
-function importCSV(content) {
-  const lines = content.split('\n').filter(line => line.trim());
-  if (lines.length < 2) {
-    showToast('CSV file is empty', 'error');
-    return;
-  }
-  
-  createNewSOP();
-  editor.innerHTML = '';
   
   // Skip header row
   for (let i = 1; i < lines.length; i++) {
